@@ -91,10 +91,23 @@ export default {
       } else {
         this.$refs.menuTreeNode.setCheckedKeys([]);
       }
+    },
+    /* 展开第一级 */
+    expandFirst(data) {
+      console.log(data[0].id, 2222);
+      this.$refs.menuTreeNode.store.nodesMap[data[0].id].expanded = true;
     }
   }
 };
 </script>
+<style>
+.tree-menu {
+  width: auto !important;
+}
+.el-tree {
+  background: transparent;
+}
+</style>
 <style lang="scss" scoped>
 .tree-menu {
   width: 200px;

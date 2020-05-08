@@ -1,7 +1,23 @@
 <template>
-  <div style="padding:30px;">
-    <el-alert :closable="false" title="menu 1-1" type="success">
-      <router-view />
-    </el-alert>
+  <div class="role">
+    <roleTable></roleTable>
   </div>
 </template>
+<script>
+import RoleTable from "./roleTable";
+export default {
+  name: "RoleManage",
+  components: {
+    RoleTable
+  },
+  data() {
+    return {};
+  },
+  methods: {}
+};
+</script>
+<style lang="scss" scoped>
+.role {
+  width: 100%;
+}
+</style>

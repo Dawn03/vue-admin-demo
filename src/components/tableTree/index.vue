@@ -13,12 +13,12 @@
     >
       >
       <slot name="chechbox"></slot>
+      <!-- show-overflow-tooltip -->
       <el-table-column
         fixed
         label="序号"
         type="index"
         align="center"
-        show-overflow-tooltip
         width="50"
       ></el-table-column>
       <el-table-column

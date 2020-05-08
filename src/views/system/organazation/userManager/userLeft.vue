@@ -4,10 +4,19 @@
       <i class="el-icon-menu"></i>
       <span>组织机构</span>
       <i class="el-icon-edit"></i>
-      <i class="el-icon-arrow-down"></i>
-      <i class="el-icon-refresh"></i>
+      <!-- <div :class="[isActive?'active':'disActive']"></div> -->
+      <i
+        :class="[expandAll ? 'el-icon-arrow-up' : 'el-icon-arrow-down']"
+        @click="switchStatus"
+      ></i>
+      <i class="el-icon-refresh" @click="reSwitchStatus"></i>
     </div>
-    <MenuTree :menu-data="menuData" :default-expand="['1']"></MenuTree>
+    <MenuTree
+      ref="menuTreeDom"
+      :expand-all="expandAll"
+      :menu-data="menuData"
+      :default-expand="defaultExpand"
+    ></MenuTree>
   </div>
 </template>
 <script>
@@ -19,6 +28,8 @@ export default {
   },
   data() {
     return {
+      expandAll: false,
+      defaultExpand: ["1"],
       menuData: [
         {
           label: "苑东生物",
@@ -60,6 +71,18 @@ export default {
         }
       ]
     };
+  },
+  methods: {
+    /* 展开或收起选项 */
+    switchStatus() {
+      this.expandAll = !this.expandAll;
+      this.$refs.menuTreeDom.showOrHiddenAllNodes();
+    },
+    /* 指定展开一级 */
+    reSwitchStatus() {
+      this.$refs.menuTreeDom.expandFirst(this.menuData);
+      // this.$refs.tree.store.nodesMap[data.id].expanded = true;
+    }
   }
 };
 </script>

@@ -123,7 +123,8 @@ export default {
     searchKey() {
       console.log("搜索关键字");
       // this.$refs.menuTreeDom.executeFilter(this.keyVal);
-    }
+    },
+   
   }
 };
 </script>

@@ -1,6 +1,6 @@
 <template>
-  <div class="user">
-    <div id="userLeft" class="user-left">
+  <div class="institution">
+    <div id="institutionLeft" class="institution-left">
       <InstitutionLeft id="bar" class="bar transition-box"></InstitutionLeft>
       <span id="btn" class="toglebtn">
         <i
@@ -9,7 +9,7 @@
         ></i>
       </span>
     </div>
-    <div id="userRight" class="user-right">
+    <div id="institutionRight" class="institution-right">
       <InstitutionRight></InstitutionRight>
     </div>
   </div>
@@ -18,7 +18,7 @@
 import InstitutionLeft from "./institutionLeft";
 import InstitutionRight from "./institutionRight";
 export default {
-  name: "UserManage",
+  name: "InstitutionManage",
   components: {
     InstitutionLeft,
     InstitutionRight
@@ -31,8 +31,8 @@ export default {
   mounted() {
     const _this = this;
     const btn = document.getElementById("btn");
-    const userLeft = document.getElementById("userLeft");
-    const userRight = document.getElementById("userRight");
+    const institutionLeft = document.getElementById("institutionLeft");
+    const institutionRight = document.getElementById("institutionRight");
     // const bar = document.getElementById("bar");
     btn.addEventListener(
       "click",
@@ -44,17 +44,17 @@ export default {
         // } else {
         //   bar.style.display = "block";
         // }
-        const elWidth = userLeft.style.width;
+        const elWidth = institutionLeft.style.width;
         if (elWidth != "0px") {
-          userLeft.style.width = "0px";
-          userRight.style.width = "100%";
+          institutionLeft.style.width = "0px";
+          institutionRight.style.width = "100%";
 
           setTimeout(function() {
             bar.style.display = "none";
           }, 1000);
         } else {
-          userLeft.style.width = "200px";
-          userRight.style.width = "calc(100% - 200px)";
+          institutionLeft.style.width = "200px";
+          institutionRight.style.width = "calc(100% - 200px)";
           bar.style.display = "block";
         }
       },
@@ -65,11 +65,11 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.user {
+.institution {
   width: 100%;
   height: calc(100vh - 100px);
   display: flex;
-  .user-left {
+  .institution-left {
     width: 200px;
     position: relative;
     display: inline-block;
@@ -97,7 +97,7 @@ export default {
       }
     }
   }
-  .user-right {
+  .institution-right {
     display: inline-block;
     width: calc(100% - 200px);
   }

@@ -1,9 +1,9 @@
 <template>
-  <div class="user-right-box">
+  <div class="role-table">
     <div class="current-type clearfix">
       <div class="fl">
         <i class="el-icon-user"></i>
-        <span>用户管理</span>
+        <span>角色管理</span>
       </div>
       <div class="fr">
         <el-button
@@ -14,19 +14,14 @@
         >
           {{ btnText }}
         </el-button>
-        <el-button type="primary" icon="el-icon-plus" size="mini">
+        <el-button
+          type="primary"
+          icon="el-icon-plus"
+          size="mini"
+          @click="addNew({}, '新增机构')"
+        >
           新增
         </el-button>
-        <el-dropdown size="mini" @click="showImportAndExport">
-          <el-button type="primary" size="mini">
-            更多
-            <i class="el-icon-arrow-down el-icon--right"></i>
-          </el-button>
-          <el-dropdown-menu slot="dropdown" size="mini">
-            <el-dropdown-item>导入</el-dropdown-item>
-            <el-dropdown-item>导出</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
       </div>
     </div>
     <div>
@@ -37,25 +32,15 @@
         @clearform="clearform"
       >
         <template slot="btnGroups">
-          <el-button
-            type="primary"
-            icon="el-icon-search"
-            size="mini"
-            @click="searchBtn"
-          >
+          <el-button type="primary" size="mini" @click="searchBtn">
             查询
           </el-button>
           <el-button size="mini" @click="resetForm"> 重置 </el-button>
-          <el-button size="mini" @click="getMore"> 更多 </el-button>
         </template>
       </InputFilter>
-      <InputFilter
-        v-show="showMore"
-        :form-item="moreFormItem"
-        @filterPanel="showFilterPanel"
-      />
     </div>
     <TableTree
+      ref="theTable"
       :table-head="tableHead"
       :table-data="tableData"
       :column-widths="columnWidths"
@@ -63,27 +48,29 @@
       :table-fit="tableFit"
       style="margin-top: 10px;"
     >
-      <!-- <template slot="chechbox">
-        <el-table-column type="selection" width="40"></el-table-column>
-      </template> -->
-      <template slot="loginAccount" slot-scope="scope">
-        <span class="td-color" @click="loginAccount(scope.row)">{{
-          scope.row.loginAccount
-        }}</span>
+      <template slot="roleName" slot-scope="scope">
+        <span class="td-color" @click="roleEdit(scope.row, '编辑角色')">
+          {{ scope.row.roleName }}
+        </span>
       </template>
-      <template slot="userAlias" slot-scope="scope">
-        <span class="td-color">{{ scope.row.userAlias }}</span>
+      <template slot="systemRole" slot-scope="scope">
+        <span>
+          {{ scope.row.systemRole == "1" ? "是" : "否" }}
+        </span>
       </template>
-      <template slot="vehicle_license" slot-scope="scope">
-        <span class="td-color">{{ scope.row.vehicle_license }}</span>
+      <template slot="status" slot-scope="scope">
+        <el-button size="mini" type="success" round>{{
+          scope.row.status
+        }}</el-button>
       </template>
+
       <template slot="oprate">
         <el-table-column fixed="right" label="操作" width="120" align="center">
           <template slot-scope="scope">
             <el-button
               type="text"
               size="small"
-              @click="editHandleClick(scope.row)"
+              @click="roleEdit(scope.row, '编辑角色')"
             >
               <i class="el-icon-edit"></i>
             </el-button>
@@ -97,15 +84,14 @@
             >
               <i class="el-icon-delete"></i>
             </el-button>
-
             <el-popover placement="right" trigger="click">
               <div>
                 <el-button
                   type="text"
                   size="small"
-                  @click="assignRole(scope.row)"
+                  @click="accreditMenu(scope.row)"
                 >
-                  分配角色
+                  授权菜单
                   <i class="el-icon-user-solid"></i>
                 </el-button>
               </div>
@@ -123,9 +109,9 @@
                 <el-button
                   type="text"
                   size="small"
-                  @click="resetPassword(scope.row)"
+                  @click="allotUser(scope.row)"
                 >
-                  重置密码
+                  分配用户
                   <i class="el-icon-coin"></i>
                 </el-button>
               </div>
@@ -144,14 +130,6 @@
                 ></i>
               </el-button>
             </el-popover>
-            <!-- <el-button
-              type="text"
-              size="small"
-              @click="moreHandleClick(scope.row)"
-            >
-              <i v-show="changeArrowDirection" class="el-icon-arrow-down"></i>
-              <i v-show="!changeArrowDirection" class="el-icon-arrow-up"></i>
-            </el-button> -->
           </template>
         </el-table-column>
       </template>
@@ -163,66 +141,84 @@
       @closeDialog="closeDialog"
     ></DailogFrame>
     <!-- table行点击对话框 -->
-    <userEditPanel ref="userEditPanel"></userEditPanel>
-    <AssignRole ref="assignRolePanel"></AssignRole>
-    <DataRights ref="dataRightsPanel"></DataRights>
+    <RoleEditPanel ref="RoleEditPanel"></RoleEditPanel>
+    <AccreditMenu ref="accreditMenuPanel"></AccreditMenu>
   </div>
 </template>
 <script>
-import ColumnBar from "@/components/commonColumn";
 import TableTree from "@/components/tableTree";
 import ChooseTreePanel from "@/components/pageParts/chooseTreePanel";
 import InputFilter from "@/components/inputFliter";
 import DailogFrame from "@/components/dailogPanel/frame";
-import UserEditPanel from "./userEditPanel";
-import AssignRole from "./assignRole";
-import DataRights from "./dataRights";
+import RoleEditPanel from "./roleEditPanel";
+import AccreditMenu from "./accreditMune";
 // import { returnReg } from "@/utils/validate"; /* 表单正则验证 */
 import { clearFilterVal, getInputVal } from "@/utils/pubFunc";
 export default {
-  name: "UserRight",
+  name: "RoleTable",
   components: {
     TableTree,
     InputFilter,
     DailogFrame,
     ChooseTreePanel,
-    UserEditPanel,
-    AssignRole,
-    DataRights
+    RoleEditPanel,
+    AccreditMenu
   },
   data() {
     return {
-      btnText: "查询",
       changeArrowDirection: false,
       currentId: null,
+      btnText: "查询",
       showDailog: false,
-
       titleName: "",
       formInline: [
         {
           type: "input",
-          label: "账号",
+          label: "角色名称",
           key: "acount",
-          value: ""
+          value: "",
+          width: 120
         },
         {
           type: "input",
-          label: "昵称",
+          label: "角色编码",
           key: "alias",
+          value: "",
+          width: 120
+        },
+        {
+          type: "select",
+          label: "用户类型",
+          options: [
+            {
+              label: "测试1",
+              value: "test1"
+            },
+            {
+              label: "测试2",
+              value: "test2"
+            }
+          ],
+          key: "status",
+          width: 120,
           value: ""
         },
         {
-          type: "input",
-          label: "姓名",
-          key: "name",
-          value: ""
-        },
-        {
-          type: "input",
-          label: "手机",
-          key: "phone",
-
-          value: ""
+          type: "select",
+          label: "系统角色",
+          options: [
+            {
+              label: "测试1",
+              value: "test1"
+            },
+            {
+              label: "测试2",
+              value: "test2"
+            }
+          ],
+          key: "status",
+          value: "",
+          width: 120
         },
         {
           type: "select",
@@ -238,116 +234,56 @@ export default {
             }
           ],
           key: "status",
+          width: 120,
           value: ""
         }
       ],
       showMore: false,
-      moreFormItem: [
-        {
-          type: "searchInput",
-          label: "机构",
-          key: "institution",
-          value: ""
-        },
-        {
-          type: "searchInput",
-          label: "公司",
-          key: "company",
-          value: ""
-        },
-        {
-          type: "input",
-          label: "邮箱",
-          key: "email",
-          value: ""
-        },
-        {
-          type: "input",
-          label: "岗位",
-          key: "jobs",
-          value: ""
-        },
-        {
-          type: "input",
-          label: "电话",
-          key: "phone",
-          width: "120",
-          value: ""
-        }
-      ],
       tableFit: true,
       columnWidths: {
-        loginAccount: 130,
+        institutionName: 130,
         number: 130,
         format: 130
       },
-      slotColumns: ["loginAccount", "userAlias", "vehicle_license"],
+      slotColumns: ["roleName", "systemRole", "status"],
       tableHead: {
-        loginAccount: "登录账号",
-        userAlias: "用户昵称",
-        number: "员工姓名",
-        format: "归属机构",
-        department: "归属公司",
-        brand: "电子邮箱",
-        card_time: "手机号",
-        vehicle_license: "办公电话",
-        maintenance: "更新时间",
+        roleName: "角色名称",
+        roleCode: "角色编码",
+        orderNumber: "排序号",
+        systemRole: "系统角色",
+        userType: "用户类型",
+        dataRange: "数据范围",
+        bussinessRange: "业务范围",
+        updataTime: "更新时间",
+        remarkMessage: "备注信息",
         status: "状态"
       },
       tableData: [
         {
           id: 1,
-          loginAccount: "登录账号",
-          userAlias: "用户昵称",
-          number: "员工姓名",
-          format: "归属机构",
-          department: "归属公司",
-          brand: "电子邮箱",
-          card_time: "手机号",
-          vehicle_license: "办公电话",
-          maintenance: "更新时间",
-          status: "状态",
-          children: [
-            {
-              id: 11,
-              loginAccount: "登录账号",
-              userAlias: "用户昵称",
-              number: "员工姓名",
-              format: "归属机构",
-              department: "归属公司",
-              brand: "电子邮箱",
-              card_time: "手机号",
-              vehicle_license: "办公电话",
-              maintenance: "更新时间",
-              status: "状态"
-            },
-            {
-              id: 12,
-              loginAccount: "登录账号",
-              userAlias: "用户昵称",
-              number: "员工姓名",
-              format: "归属机构",
-              department: "归属公司",
-              brand: "电子邮箱",
-              card_time: "手机号",
-              vehicle_license: "办公电话",
-              maintenance: "更新时间",
-              status: "状态"
-            }
-          ]
+          roleName: "部门经理",
+          roleCode: "dept",
+          orderNumber: "40",
+          systemRole: "1",
+          userType: "员工",
+          dataRange: "未设置",
+          bussinessRange: "未设置",
+          updataTime: "2019-07-08 ",
+          remarkMessage: "备注信息",
+          status: "正常"
         },
         {
           id: 2,
-          loginAccount: "登录账号",
-          userAlias: "用户昵称",
-          number: "员工姓名",
-          format: "归属机构",
-          department: "归属公司",
-          brand: "电子邮箱",
-          card_time: "手机号",
-          vehicle_license: "办公电话",
-          maintenance: "更新时间",
-          status: "状态"
+          roleName: "普通员工",
+          roleCode: "user",
+          orderNumber: "50",
+          systemRole: "2",
+          userType: "未设置",
+          dataRange: "未设置",
+          bussinessRange: "未设置",
+          updataTime: "2019-07-09 ",
+          remarkMessage: "备注信息",
+          status: "正常"
         }
       ]
     };
@@ -366,9 +302,41 @@ export default {
     resetForm() {
       clearFilterVal(this.formInline);
     },
-    /* 切换显示更多条件筛选 */
-    getMore() {
-      this.showMore = !this.showMore;
+
+    addNew(row, type) {
+      console.log(row, type);
+      this.$refs.RoleEditPanel.show(row, type);
+    },
+    moreHandleClick(row) {
+      this.currentId = row.id;
+      this.changeArrowDirection = !this.changeArrowDirection;
+    },
+    openDetails(row) {},
+    /* 授权菜单 */
+    accreditMenu(row) {
+      this.$refs.accreditMenuPanel.init(row);
+    },
+    dataRights(row) {
+      this.$refs.dataRightsPanel.init(row);
+    },
+    allotUser(row) {
+      this.$confirm("确认要将该用户密码重置到初始状态吗?", "信息", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "删除成功!"
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
     },
     // 显示对话框选择
     showFilterPanel(item) {
@@ -393,13 +361,11 @@ export default {
       this.initPage(this.pageDetail, this.searchVal);
     },
     /* 编辑表格 */
-    loginAccount(row) {
-      this.$refs.userEditPanel.show(row);
-      console.log(11, row);
+    roleEdit(row, type) {
+      console.log(321, row, type);
+      this.$refs.RoleEditPanel.show(row, type);
     },
-    showImportAndExport() {
-      alert("button click");
-    },
+
     stopUse() {
       this.$confirm("确认要停用该用户吗?", "信息", {
         confirmButtonText: "确定",
@@ -419,9 +385,7 @@ export default {
           });
         });
     },
-    editHandleClick(row) {
-      this.$refs.userEditPanel.show(row);
-    },
+
     deleteHandleClick(row) {
       this.$confirm("确认要删除该用户吗?", "信息", {
         confirmButtonText: "确定",
@@ -440,35 +404,6 @@ export default {
             message: "已取消删除"
           });
         });
-    },
-    assignRole(row) {
-      this.$refs.assignRolePanel.init(row);
-    },
-    dataRights(row) {
-      this.$refs.dataRightsPanel.init(row);
-    },
-    resetPassword(row) {
-      this.$confirm("确认要将该用户密码重置到初始状态吗?", "信息", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.$message({
-            type: "success",
-            message: "删除成功!"
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
-    },
-    moreHandleClick(row) {
-      this.currentId = row.id;
-      this.changeArrowDirection = !this.changeArrowDirection;
     }
   }
 };
@@ -479,7 +414,7 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
-.user-right-box {
+.role-table {
   margin: 0 10px;
   .current-type {
     height: 45px;
