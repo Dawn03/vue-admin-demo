@@ -1,6 +1,7 @@
 <template>
   <div>
     <el-table
+      ref="tableDom"
       :data="tableData"
       border
       stripe
@@ -71,6 +72,14 @@ export default {
     handleSelectionChange(val) {
       // console.log(232, val);
       this.$emit("tableCheckBox", val);
+    },
+    expandFolodTable(arr, isExpand) {
+      arr.forEach(i => {
+        this.$refs.tableDom.toggleRowExpansion(i, isExpand);
+        if (i.children) {
+          this.expandFolodTable(i.children, isExpand);
+        }
+      });
     }
   }
 };
