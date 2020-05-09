@@ -9,6 +9,7 @@
       style="width: 100%"
       row-key="id"
       :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+      :empty-text="'暂无数据'"
       @selection-change="handleSelectionChange"
     >
       >

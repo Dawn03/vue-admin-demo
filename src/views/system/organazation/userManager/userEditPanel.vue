@@ -2,7 +2,7 @@
   <div class="user-edit-panel">
     <DailogFrame
       :dialog-visible="showEditDailog"
-      :title-name="'编辑用户'"
+      :title-name="`${titleName}用户`"
       @closeDialog="closeEditDialog"
     >
       <template slot="content">
@@ -161,7 +161,7 @@
                   type="primary"
                   size="mini"
                   class="el-icon-plus"
-                  style="margin-left: 100px;"
+                  style="margin-left: 120px;"
                   @click="addNew"
                 >
                   增行
@@ -248,7 +248,21 @@ export default {
     ChooseMenuTree
   },
   data() {
+    const validTelNumber = (rule, value, callback) => {
+      const phoneReg = returnReg("phone");
+      const telReg = returnReg("telNumber");
+      if (!phoneReg.test(value) && !telReg.test(value)) {
+        callback(
+          new Error(
+            "请正确填写您的办公号码，固话为区号0(3-4位)号码-(7-9位),手机为1开头的11位手机号段"
+          )
+        );
+      } else {
+        callback();
+      }
+    };
     return {
+      titleName: "",
       exHeight: "0px",
       showEditDailog: false,
       innerDialogVisible: false,
@@ -289,10 +303,10 @@ export default {
           }
         ],
         account: [
-          { required: true, message: "请输入活动名称", trigger: "blur" },
+          { required: true, message: "请输入登录账号", trigger: "blur" },
           { min: 4, max: 20, message: "长度在 4 到 20 个字符", trigger: "blur" }
         ],
-        alias: [{ required: true, message: "请选择活动区域", trigger: "blur" }],
+        alias: [{ required: true, message: "请输入用户昵称", trigger: "blur" }],
         email: [
           {
             pattern: returnReg("email"),
@@ -307,20 +321,7 @@ export default {
             trigger: "blur"
           }
         ],
-        telNumber: [
-          {
-            pattern: returnReg("phone"),
-            message:
-              "请正确填写您的电话号码，固话为区号(3-4位)号码(7-9位),手机为13,14,15,16,17,18,19号段",
-            trigger: "blur"
-          },
-          {
-            pattern: returnReg("telNumber"),
-            message:
-              "请正确填写您的电话号码，固话为区号(3-4位)号码(7-9位),手机为13,14,15,16,17,18,19号段",
-            trigger: "blur"
-          }
-        ],
+        telNumber: [{ validator: validTelNumber, trigger: "blur" }],
         weight: [{ message: "请选择活动资源", trigger: "change" }],
         desc: [{ message: "请填写活动形式", trigger: "blur" }]
       },
@@ -347,9 +348,10 @@ export default {
       this.userForm.extentionForm = concatArr;
     },
     /* 显示对话框 */
-    show(row) {
+    show(row, type) {
       this.showEditDailog = true;
-      console.log(row);
+      this.titleName = type;
+      console.log(row, type);
     },
     /* 关闭编辑对话框 */
     closeEditDialog() {

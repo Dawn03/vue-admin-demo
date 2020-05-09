@@ -21,7 +21,7 @@
             <el-button size="mini" @click="resetForm"> 重置 </el-button>
           </template>
         </InputFliter>
-        <el-row type="flex" :gutter="20">
+        <el-row type="flex" :gutter="10">
           <el-col :span="18">
             <TableTree
               ref="tableDomTree"
@@ -42,6 +42,9 @@
           </el-col>
           <el-col :span="6">
             <div class="choosed-data">
+              <div style="line-height:50px;">
+                当前已选择{{ tableCheckBoxValue.length }}项:
+              </div>
               <el-tag
                 v-for="(tag, index) in tableCheckBoxValue"
                 :key="index"
@@ -54,6 +57,23 @@
             </div>
           </el-col>
         </el-row>
+      </template>
+      <template slot="footer">
+        <div
+          style="text-align:right; border-top: 1px solid #eee; padding-top:10px;"
+        >
+          <el-button
+            type="primary"
+            icon="el-icon-check"
+            size="mini"
+            @click="saveBtn"
+          >
+            确定
+          </el-button>
+          <el-button icon="el-icon-close" size="mini" @click="colseBtn">
+            关闭
+          </el-button>
+        </div>
       </template>
     </DailogPanel>
   </div>
@@ -161,20 +181,14 @@ export default {
     show() {
       this.showDailog = true;
     },
-    // 关闭对话框选择
-    closeDialog() {
-      this.showDailog = false;
-    },
+
     /* 获取填入输入框的值  */
     searchBtn() {
       // const temp = this.formInline.concat(this.moreFormItem);
       const valObj = getInputVal(this.formInline);
       console.log(valObj);
     },
-    /* 清除输入框内的值 */
-    resetForm() {
-      clearFilterVal(this.formInline);
-    },
+
     tableCheckBox(row) {
       this.tableCheckBoxValue = row;
       console.log("选中的row", row);
@@ -186,15 +200,32 @@ export default {
         1
       );
       this.$refs.tableDomTree.cancleChecked(closedTag);
+    },
+    saveBtn() {
+      console.log(this.tableCheckBoxValue);
+    },
+    colseBtn() {
+      this.closeDialog();
+    },
+    // 关闭对话框选择
+    closeDialog() {
+      this.resetForm();
+      this.showDailog = false;
+    },
+    /* 清除输入框内的值 */
+    resetForm() {
+      clearFilterVal(this.formInline);
     }
   }
 };
 </script>
 <style lang="scss" scoped>
+.choosed-data {
+  border: 1px solid #eee;
+  height: 100%;
+  padding: 10px;
+  border-radius: 4px;
+}
 .add-user-box {
-  .choosed-data {
-    border: 1px solid navy;
-    height: 100%;
-  }
 }
 </style>

@@ -338,42 +338,21 @@ export default {
     },
 
     stopUse() {
-      this.$confirm("确认要停用该用户吗?", "信息", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
+      this.$alertMsgBox("确认要停用该用户吗", "信息")
         .then(() => {
-          this.$message({
-            type: "success",
-            message: "删除成功!"
-          });
+          this.$message.success("成功");
         })
         .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
+          this.$message.info("取消");
         });
     },
-
     deleteHandleClick(row) {
-      this.$confirm("确认要删除该用户吗?", "信息", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
+      this.$alertMsgBox("确认要删除该用户吗", "信息")
         .then(() => {
-          this.$message({
-            type: "success",
-            message: "删除成功!"
-          });
+          this.$message.success("成功");
         })
         .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
+          this.$message.info("取消");
         });
     }
   }

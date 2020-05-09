@@ -197,6 +197,7 @@ export default {
       this.roleForm = JSON.parse(JSON.stringify(row));
       this.showAssginRole = true;
     },
+    // 多选操作
     tableCheckBox(row) {
       this.tableCheckBoxValue = row;
       console.log("选中的row", row);
@@ -226,13 +227,16 @@ export default {
     resetForm() {
       clearFilterVal(this.formInline);
     },
-    /* 单个删除 */
+    /* 单个取消 */
     singleCancel(row) {
+      this.$alertMsgBox("确认要取消该用户角色吗？", "信息")
+        .then(() => {
+          this.$message.success("成功");
+        })
+        .catch(() => {
+          this.$message.info("取消");
+        });
       console.log(row, "单个取消");
-    },
-    // 多选操作
-    tableCheckBox(row) {
-      this.tableCheckBoxValue = row;
     },
     /* 保存 */
     saveAssignRole() {

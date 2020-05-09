@@ -14,7 +14,12 @@
         >
           {{ btnText }}
         </el-button>
-        <el-button type="primary" icon="el-icon-plus" size="mini">
+        <el-button
+          type="primary"
+          icon="el-icon-plus"
+          size="mini"
+          @click="editHandleClick({}, '新增')"
+        >
           新增
         </el-button>
         <el-dropdown size="mini" @click="showImportAndExport">
@@ -58,11 +63,8 @@
       :table-fit="tableFit"
       style="margin-top: 10px;"
     >
-      <!-- <template slot="chechbox">
-        <el-table-column type="selection" width="40"></el-table-column>
-      </template> -->
       <template slot="loginAccount" slot-scope="scope">
-        <span class="td-color" @click="loginAccount(scope.row)">{{
+        <span class="td-color" @click="editHandleClick(scope.row, '编辑')">{{
           scope.row.loginAccount
         }}</span>
       </template>
@@ -78,7 +80,7 @@
             <el-button
               type="text"
               size="small"
-              @click="editHandleClick(scope.row)"
+              @click="editHandleClick(scope.row, '编辑')"
             >
               <i class="el-icon-edit"></i>
             </el-button>
@@ -155,9 +157,7 @@
   </div>
 </template>
 <script>
-import ColumnBar from "@/components/commonColumn";
 import TableTree from "@/components/tableTree";
-import ChooseTreePanel from "@/components/pageParts/chooseTreePanel";
 import InputFilter from "@/components/inputFliter";
 import DailogFrame from "@/components/dailogPanel/frame";
 import UserEditPanel from "./userEditPanel";
@@ -171,7 +171,6 @@ export default {
     TableTree,
     InputFilter,
     DailogFrame,
-    ChooseTreePanel,
     UserEditPanel,
     AssignRole,
     DataRights
@@ -292,35 +291,7 @@ export default {
           card_time: "手机号",
           vehicle_license: "办公电话",
           maintenance: "更新时间",
-          status: "状态",
-          children: [
-            {
-              id: 11,
-              loginAccount: "登录账号",
-              userAlias: "用户昵称",
-              number: "员工姓名",
-              format: "归属机构",
-              department: "归属公司",
-              brand: "电子邮箱",
-              card_time: "手机号",
-              vehicle_license: "办公电话",
-              maintenance: "更新时间",
-              status: "状态"
-            },
-            {
-              id: 12,
-              loginAccount: "登录账号",
-              userAlias: "用户昵称",
-              number: "员工姓名",
-              format: "归属机构",
-              department: "归属公司",
-              brand: "电子邮箱",
-              card_time: "手机号",
-              vehicle_license: "办公电话",
-              maintenance: "更新时间",
-              status: "状态"
-            }
-          ]
+          status: "状态"
         },
         {
           id: 2,
@@ -366,52 +337,29 @@ export default {
       this.showDailog = false;
     },
     /* 编辑表格 */
-    loginAccount(row) {
-      this.$refs.userEditPanel.show(row);
+    editHandleClick(row, type) {
+      this.$refs.userEditPanel.show(row, type);
       console.log(11, row);
     },
     showImportAndExport() {
       alert("button click");
     },
     stopUse() {
-      this.$confirm("确认要停用该用户吗?", "信息", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
+      this.$alertMsgBox("确认要停用该用户吗", "信息")
         .then(() => {
-          this.$message({
-            type: "success",
-            message: "删除成功!"
-          });
+          this.$message.success("成功");
         })
         .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
+          this.$message.info("取消");
         });
     },
-    editHandleClick(row) {
-      this.$refs.userEditPanel.show(row);
-    },
     deleteHandleClick(row) {
-      this.$confirm("确认要删除该用户吗?", "信息", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
+      this.$alertMsgBox("确认要删除该用户吗", "信息")
         .then(() => {
-          this.$message({
-            type: "success",
-            message: "删除成功!"
-          });
+          this.$message.success("成功");
         })
         .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
+          this.$message.info("取消");
         });
     },
     assignRole(row) {
@@ -421,22 +369,12 @@ export default {
       this.$refs.dataRightsPanel.init(row);
     },
     resetPassword(row) {
-      this.$confirm("确认要将该用户密码重置到初始状态吗?", "信息", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
+      this.$alertMsgBox("确认要将该用户密码重置到初始状态吗", "信息")
         .then(() => {
-          this.$message({
-            type: "success",
-            message: "删除成功!"
-          });
+          this.$message.success("成功");
         })
         .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
+          this.$message.info("取消");
         });
     },
     moreHandleClick(row) {
