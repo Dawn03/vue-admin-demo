@@ -38,12 +38,7 @@
               </el-button>
             </div>
           </div>
-          <InputFliter
-            :form-item="formInline"
-            style="margin-bottom: 10px;"
-            @searchIt="searchIt"
-            @clearform="clearform"
-          >
+          <InputFliter :form-item="formInline" style="margin-bottom: 10px;">
             <template slot="btnGroups">
               <el-button type="primary" size="mini" @click="searchBtn">
                 查询
@@ -73,13 +68,18 @@
                 align="center"
               >
                 <template slot-scope="scope">
-                  <el-button type="text" size="small" @click="singleCancel">
+                  <el-button
+                    type="text"
+                    size="small"
+                    @click="singleCancel(scope.row)"
+                  >
                     <i class="el-icon-circle-close"></i>
                   </el-button>
                 </template>
               </el-table-column>
             </template>
           </TableTree>
+          <AddUserPanel ref="showAddUserPanel"></AddUserPanel>
         </div>
       </template>
     </DailogFrame>
@@ -89,17 +89,20 @@
 import DailogFrame from "@/components/dailogPanel/frame";
 import TableTree from "@/components/tableTree";
 import InputFliter from "@/components/inputFliter";
+import AddUserPanel from "./addUserPanel";
 import { clearFilterVal, getInputVal } from "@/utils/pubFunc";
+
 export default {
   name: "AssignRole",
   components: {
     DailogFrame,
     TableTree,
-    InputFliter
+    InputFliter,
+    AddUserPanel
   },
   data() {
     return {
-      showAssginRole: true,
+      showAssginRole: false,
       roleForm: {
         roleName: "",
         roleCode: "",
@@ -199,10 +202,19 @@ export default {
       console.log("选中的row", row);
     },
     /* 添加用户 */
-    addUser() {},
+    addUser() {
+      this.$refs.showAddUserPanel.show();
+    },
     /* 批量取消*/
     multipleCancel() {
-      console.log(this.tableCheckBoxValue);
+      if (this.tableCheckBoxValue.length === 0) {
+        this.$message({
+          message: "请选择需要批量取消的数据",
+          type: "warning"
+        });
+      } else {
+        console.log(this.tableCheckBoxValue);
+      }
     },
     /* 获取填入输入框的值  */
     searchBtn() {
@@ -214,21 +226,10 @@ export default {
     resetForm() {
       clearFilterVal(this.formInline);
     },
-
-    searchIt(val) {
-      // console.log(265, val);
-      this.searchVal = val;
-      this.pageDetail.page = 1;
-      this.initPage(this.pageDetail, this.searchVal);
+    /* 单个删除 */
+    singleCancel(row) {
+      console.log(row, "单个取消");
     },
-    clearform() {
-      for (let i = 0, len = this.ruleForm.length; i < len; i++) {
-        this.ruleForm[i].value = "";
-      }
-      this.pageDetail.page = 1;
-      this.initPage(this.pageDetail, this.searchVal);
-    },
-    singleCancel(row) {},
     // 多选操作
     tableCheckBox(row) {
       this.tableCheckBoxValue = row;
@@ -240,7 +241,7 @@ export default {
     },
     colseAssignRole(formName) {
       this.showAssginRole = false;
-      this.clearform();
+      this.resetForm();
       this.tableCheckBoxValue = [];
     }
   }

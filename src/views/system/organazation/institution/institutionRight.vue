@@ -49,12 +49,7 @@
       </div>
     </div>
     <div>
-      <InputFilter
-        v-show="btnText == '隐藏'"
-        :form-item="formInline"
-        @searchIt="searchIt"
-        @clearform="clearform"
-      >
+      <InputFilter v-show="btnText == '隐藏'" :form-item="formInline">
         <template slot="btnGroups">
           <el-button type="primary" size="mini" @click="searchBtn">
             查询
@@ -319,19 +314,6 @@ export default {
     // 关闭对话框选择
     closeDialog() {
       this.showDailog = false;
-    },
-    searchIt(val) {
-      // console.log(265, val);
-      this.searchVal = val;
-      this.pageDetail.page = 1;
-      this.initPage(this.pageDetail, this.searchVal);
-    },
-    clearform() {
-      for (let i = 0, len = this.ruleForm.length; i < len; i++) {
-        this.ruleForm[i].value = "";
-      }
-      this.pageDetail.page = 1;
-      this.initPage(this.pageDetail, this.searchVal);
     },
     /* 编辑表格 */
     institutionEdit(row, type) {

@@ -30,12 +30,7 @@
       </div>
     </div>
     <div>
-      <InputFilter
-        v-show="btnText == '隐藏'"
-        :form-item="formInline"
-        @searchIt="searchIt"
-        @clearform="clearform"
-      >
+      <InputFilter v-show="btnText == '隐藏'" :form-item="formInline">
         <template slot="btnGroups">
           <el-button
             type="primary"
@@ -143,14 +138,6 @@
                 ></i>
               </el-button>
             </el-popover>
-            <!-- <el-button
-              type="text"
-              size="small"
-              @click="moreHandleClick(scope.row)"
-            >
-              <i v-show="changeArrowDirection" class="el-icon-arrow-down"></i>
-              <i v-show="!changeArrowDirection" class="el-icon-arrow-up"></i>
-            </el-button> -->
           </template>
         </el-table-column>
       </template>
@@ -377,19 +364,6 @@ export default {
     // 关闭对话框选择
     closeDialog() {
       this.showDailog = false;
-    },
-    searchIt(val) {
-      // console.log(265, val);
-      this.searchVal = val;
-      this.pageDetail.page = 1;
-      this.initPage(this.pageDetail, this.searchVal);
-    },
-    clearform() {
-      for (let i = 0, len = this.ruleForm.length; i < len; i++) {
-        this.ruleForm[i].value = "";
-      }
-      this.pageDetail.page = 1;
-      this.initPage(this.pageDetail, this.searchVal);
     },
     /* 编辑表格 */
     loginAccount(row) {

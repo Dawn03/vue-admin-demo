@@ -80,6 +80,9 @@ export default {
           this.expandFolodTable(i.children, isExpand);
         }
       });
+    },
+    cancleChecked(tag) {
+      this.$refs.tableDom.toggleRowSelection(tag[0], false);
     }
   }
 };

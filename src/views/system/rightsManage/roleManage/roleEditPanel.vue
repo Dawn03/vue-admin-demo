@@ -19,8 +19,7 @@
             <el-row :gutter="gutterVal">
               <el-col :span="12">
                 <el-form-item label="角色名称：" prop="roleName">
-                  <el-input v-model="roleForm.roleName">
-                  </el-input>
+                  <el-input v-model="roleForm.roleName"> </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -30,7 +29,6 @@
               </el-col>
             </el-row>
             <el-row :gutter="gutterVal">
-
               <el-col :span="12">
                 <el-form-item label="排序号：" prop="orderNumber">
                   <el-input v-model="roleForm.orderNumber"></el-input>
@@ -38,7 +36,11 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item label="用户类型：" prop="userType">
-                  <el-select v-model="roleForm.userType" style="width: 336px;" placeholder="请选择用户类型">
+                  <el-select
+                    v-model="roleForm.userType"
+                    style="width: 336px;"
+                    placeholder="请选择用户类型"
+                  >
                     <el-option
                       v-for="item in options"
                       :key="item.value"
@@ -53,13 +55,21 @@
             <el-row :gutter="gutterVal">
               <el-col :span="12">
                 <el-form-item label="系统角色：" prop="RoleRole">
-                  <el-radio v-model="roleForm.systemRole" label="1">是</el-radio>
-                  <el-radio v-model="roleForm.systemRole" label="2">否</el-radio>
+                  <el-radio v-model="roleForm.systemRole" label="1">
+                    是
+                  </el-radio>
+                  <el-radio v-model="roleForm.systemRole" label="2">
+                    否
+                  </el-radio>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="角色分类：" prop="roleClassify">
-                  <el-select v-model="roleForm.roleClassify" placeholder="请选择" style="width: 336px;">
+                  <el-select
+                    v-model="roleForm.roleClassify"
+                    placeholder="请选择"
+                    style="width: 336px;"
+                  >
                     <el-option
                       v-for="item in options"
                       :key="item.value"
@@ -71,15 +81,16 @@
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-row :span="24" style="margin-top: 20px;" :rows="4">
-              <el-form-item label="备注信息：" prop="remark">
-                <el-input
-                  v-model="roleForm.remark"
-                  type="textarea"
-                ></el-input>
-              </el-form-item>
+            <el-row style="margin-top: 20px;" :rows="4">
+              <el-col :span="24">
+                <el-form-item label="备注信息：" prop="remark">
+                  <el-input
+                    v-model="roleForm.remark"
+                    type="textarea"
+                  ></el-input>
+                </el-form-item>
+              </el-col>
             </el-row>
-            </el-col>
             <ColumnBar
               :column-text="'扩展字段'"
               :icon-tips="true"
@@ -92,10 +103,14 @@
               :extention-form="roleForm.extentionForm"
               @extentionFormVal="extentionFormVal"
             ></ExtentionFeild>
+            <div v-if="titleType == '新增角色'">
+              <ColumnBar :column-text="'授权功能菜单'"></ColumnBar>
+              <MenuRights></MenuRights>
+            </div>
           </el-form>
         </div>
       </template>
-
+      <!-- 新增比编辑多授权功能选择项 -->
       <template slot="footer">
         <div style="text-indent: 100px;">
           <el-button
@@ -123,6 +138,7 @@
 import DailogFrame from "@/components/dailogPanel/frame";
 import ColumnBar from "@/components/commonColumn";
 import ExtentionFeild from "@/components/extentionFeild";
+import MenuRights from "@/components/menuRights";
 import { returnReg } from "@/utils/validate";
 import { createKey } from "@/utils/pubFunc";
 export default {
@@ -130,7 +146,8 @@ export default {
   components: {
     DailogFrame,
     ColumnBar,
-    ExtentionFeild
+    ExtentionFeild,
+    MenuRights
   },
   data() {
     return {
@@ -162,7 +179,9 @@ export default {
         roleCode: [
           { required: true, message: "请输入活动名称", trigger: "blur" }
         ],
-        orderNumber: [{ required: true, message: "请选择活动区域", trigger: "blur" }],
+        orderNumber: [
+          { required: true, message: "请选择活动区域", trigger: "blur" }
+        ],
         systemRole: [
           {
             required: true,

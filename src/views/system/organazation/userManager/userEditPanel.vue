@@ -11,7 +11,7 @@
           <el-form
             ref="userForm"
             :model="userForm"
-            label-width="100px"
+            label-width="120px"
             class="demo-ruleForm"
             size="mini"
             :rules="rules"

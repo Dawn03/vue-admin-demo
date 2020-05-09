@@ -7,6 +7,7 @@
     :width="width"
     :before-close="handleClose"
     :title="titleName"
+    :append-to-body="appToBody"
   >
     <!-- // 这里的插槽会替换title显示的内容 -->
     <div
@@ -18,10 +19,10 @@
     </div>
     <div class="dialog-body">
       <div>
-        <slot name="content">  </slot>
+        <slot name="content"> </slot>
       </div>
       <div class="dialog-footer">
-        <slot name="footer">  </slot>
+        <slot name="footer"> </slot>
       </div>
     </div>
   </el-dialog>
@@ -44,6 +45,10 @@ export default {
       default: "60%"
     },
     dialogVisible: {
+      type: Boolean,
+      default: false
+    },
+    appToBody: {
       type: Boolean,
       default: false
     }
