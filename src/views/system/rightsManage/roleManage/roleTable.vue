@@ -18,7 +18,7 @@
           type="primary"
           icon="el-icon-plus"
           size="mini"
-          @click="addNew({}, '新增机构')"
+          @click="addNew({}, '新增角色')"
         >
           新增
         </el-button>
@@ -59,12 +59,12 @@
         </span>
       </template>
       <template slot="status" slot-scope="scope">
-        <el-button size="mini" type="success" round>{{
-          scope.row.status
-        }}</el-button>
+        <el-button size="mini" type="success" round>
+          {{ scope.row.status }}
+        </el-button>
       </template>
 
-      <template slot="oprate">
+      <template slot="operate">
         <el-table-column fixed="right" label="操作" width="120" align="center">
           <template slot-scope="scope">
             <el-button
@@ -84,7 +84,11 @@
             >
               <i class="el-icon-delete"></i>
             </el-button>
-            <el-popover placement="right" trigger="click">
+            <el-popover
+              placement="right"
+              trigger="hover"
+              @show="moreHandleClick(scope.row)"
+            >
               <div>
                 <el-button
                   type="text"
@@ -115,12 +119,7 @@
                   <i class="el-icon-coin"></i>
                 </el-button>
               </div>
-              <el-button
-                slot="reference"
-                type="text"
-                size="small"
-                @click="moreHandleClick(scope.row)"
-              >
+              <el-button slot="reference" type="text" size="small">
                 <i
                   :class="[
                     changeArrowDirection && currentId == scope.row.id
@@ -143,6 +142,8 @@
     <!-- table行点击对话框 -->
     <RoleEditPanel ref="RoleEditPanel"></RoleEditPanel>
     <AccreditMenu ref="accreditMenuPanel"></AccreditMenu>
+    <DataRights ref="dataRightsPanel"></DataRights>
+    <AllotUser ref="allotUserPanel"></AllotUser>
   </div>
 </template>
 <script>
@@ -152,6 +153,8 @@ import InputFilter from "@/components/inputFliter";
 import DailogFrame from "@/components/dailogPanel/frame";
 import RoleEditPanel from "./roleEditPanel";
 import AccreditMenu from "./accreditMune";
+import DataRights from "./dataRights";
+import AllotUser from "./allotUser";
 // import { returnReg } from "@/utils/validate"; /* 表单正则验证 */
 import { clearFilterVal, getInputVal } from "@/utils/pubFunc";
 export default {
@@ -162,7 +165,9 @@ export default {
     DailogFrame,
     ChooseTreePanel,
     RoleEditPanel,
-    AccreditMenu
+    AccreditMenu,
+    DataRights,
+    AllotUser
   },
   data() {
     return {
@@ -320,23 +325,7 @@ export default {
       this.$refs.dataRightsPanel.init(row);
     },
     allotUser(row) {
-      this.$confirm("确认要将该用户密码重置到初始状态吗?", "信息", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.$message({
-            type: "success",
-            message: "删除成功!"
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
+      this.$refs.allotUserPanel.init(row);
     },
     // 显示对话框选择
     showFilterPanel(item) {

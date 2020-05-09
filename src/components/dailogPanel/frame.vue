@@ -18,10 +18,10 @@
     </div>
     <div class="dialog-body">
       <div>
-        <slot name="content"> content </slot>
+        <slot name="content">  </slot>
       </div>
       <div class="dialog-footer">
-        <slot name="footer"> footer </slot>
+        <slot name="footer">  </slot>
       </div>
     </div>
   </el-dialog>

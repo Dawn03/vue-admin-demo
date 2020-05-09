@@ -145,7 +145,7 @@ export default {
   },
   data() {
     return {
-      showDataRights: true,
+      showDataRights: false,
       checked: true,
       dataRightsForm: {
         loginAccount: "",

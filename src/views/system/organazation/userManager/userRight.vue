@@ -77,7 +77,7 @@
       <template slot="vehicle_license" slot-scope="scope">
         <span class="td-color">{{ scope.row.vehicle_license }}</span>
       </template>
-      <template slot="oprate">
+      <template slot="operate">
         <el-table-column fixed="right" label="操作" width="120" align="center">
           <template slot-scope="scope">
             <el-button
@@ -98,7 +98,11 @@
               <i class="el-icon-delete"></i>
             </el-button>
 
-            <el-popover placement="right" trigger="click">
+            <el-popover
+              placement="right"
+              trigger="hover"
+              @click="moreHandleClick(scope.row)"
+            >
               <div>
                 <el-button
                   type="text"
@@ -129,12 +133,7 @@
                   <i class="el-icon-coin"></i>
                 </el-button>
               </div>
-              <el-button
-                slot="reference"
-                type="text"
-                size="small"
-                @click="moreHandleClick(scope.row)"
-              >
+              <el-button slot="reference" type="text" size="small">
                 <i
                   :class="[
                     changeArrowDirection && currentId == scope.row.id

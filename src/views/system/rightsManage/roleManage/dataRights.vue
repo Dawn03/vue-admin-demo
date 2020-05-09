@@ -2,7 +2,7 @@
   <div class="assign-role-panel">
     <DailogFrame
       :dialog-visible="showAssginRole"
-      :title-name="'用户分配角色'"
+      :title-name="'角色分配数据权限'"
       @closeDialog="colseAssignRole"
     >
       <template slot="content">
@@ -10,46 +10,59 @@
           <el-form
             ref="roleForm"
             :model="roleForm"
-            label-width="100px"
+            label-width="120px"
             class="demo-ruleForm"
             size="mini"
             :rules="rules"
           >
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="登录账号：" prop="loginAccount">
-                  <el-input v-model="roleForm.loginAccount" :disabled="true">
+                <el-form-item label="角色名称：" prop="roleName">
+                  <el-input v-model="roleForm.roleName" :disabled="true">
                   </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="用户昵称：" prop="userAlias">
-                  <el-input v-model="roleForm.userAlias" :disabled="true">
+                <el-form-item label="角色编码：" prop="roleCode">
+                  <el-input v-model="roleForm.roleCode" :disabled="true">
                   </el-input>
                 </el-form-item>
               </el-col>
             </el-row>
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="数据范围：" prop="roleCode">
+                  <i
+                    class="el-icon-question"
+                    style="margin-right:10px"
+                    title="指定数据权限范围类型，多个角色同时指定，之间为或者关系"
+                  ></i>
+                  <el-radio
+                    v-for="(item, index) in radioArr"
+                    :key="index"
+                    v-model="dataRange"
+                    :label="item.value"
+                  >
+                    {{ item.label }}
+                  </el-radio>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="控制业务范围：" prop="userAlias">
+                  <i
+                    class="el-icon-question"
+                    style="margin-right:10px"
+                    title="在 addFilter 权限过滤的时候指定适应的业务范围，不指定代表所有生效，如：有的功能看本部门，有的功能看本公司；新的业务范围从字典 sys_role_biz_scope 类型添加。"
+                  ></i>
+                  <div style="width: calc(100% - 30px); display: inline-block;">
+                    <el-input v-model="roleForm.controlRange"> </el-input>
+                  </div>
+                </el-form-item>
+              </el-col>
+            </el-row>
           </el-form>
-          <ColumnBar :column-text="'分配角色'"></ColumnBar>
-          <TableTree
-            :table-head="tableHead"
-            :table-data="tableData"
-            @tableCheckBox="tableCheckBox"
-          >
-            <template slot="chechbox">
-              <el-table-column type="selection" width="40"></el-table-column>
-            </template>
-            <template slot="affiation" slot-scope="scope">
-              <el-input v-model="scope.row.affiation">
-                <el-button slot="append" icon="el-icon-search"></el-button>
-              </el-input>
-            </template>
-            <template slot="jobs" slot-scope="scope">
-              <el-input v-model="scope.row.jobs">
-                <el-button slot="append" icon="el-icon-search"></el-button>
-              </el-input>
-            </template>
-          </TableTree>
         </div>
       </template>
       <template slot="footer">
@@ -90,14 +103,39 @@ export default {
   data() {
     return {
       showAssginRole: false,
+      dataRange: "2",
       roleForm: {
-        loginAccount: "",
-        userAlias: ""
+        roleName: "",
+        roleCode: "",
+        dataRange: "3",
+        controlRange: ""
       },
+      radioArr: [
+        {
+          label: "未设置",
+          value: "1"
+        },
+        {
+          label: "全部数据",
+          value: "2"
+        },
+        {
+          label: "自定义数据",
+          value: "3"
+        },
+        {
+          label: "本公司数据",
+          value: "4"
+        },
+        {
+          label: "本部门和本公司数据",
+          value: "5"
+        }
+      ],
       tableCheckBoxValue: [],
       rules: {
         loginAccount: [{ required: true }],
-        userAlias: [{ required: true }]
+        roleCode: [{ required: true }]
       },
       tableHead: {
         roleName: "角色名称",

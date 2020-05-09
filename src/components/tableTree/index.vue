@@ -39,7 +39,7 @@
           <template v-else>{{ scope.row[key] }}</template>
         </template>
       </el-table-column>
-      <slot name="oprate"></slot>
+      <slot name="operate"></slot>
     </el-table>
   </div>
 </template>

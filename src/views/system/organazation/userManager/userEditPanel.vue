@@ -133,7 +133,7 @@
                       </el-input>
                     </template>
 
-                    <template slot="oprate">
+                    <template slot="operate">
                       <el-table-column
                         fixed="right"
                         label="操作"

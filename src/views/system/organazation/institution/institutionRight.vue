@@ -83,7 +83,7 @@
       <template slot="vehicle_license" slot-scope="scope">
         <span class="td-color">{{ scope.row.vehicle_license }}</span>
       </template>
-      <template slot="oprate">
+      <template slot="operate">
         <el-table-column fixed="right" label="操作" width="120" align="center">
           <template slot-scope="scope">
             <el-button
