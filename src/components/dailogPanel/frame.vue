@@ -18,7 +18,12 @@
       <slot name="title">{{ titleName }}</slot>
     </div>
     <div class="dialog-body">
-      <div>
+      <el-backtop target=".el-dialog__body" :right="230" :bottom="120">
+        <div class="back-top" >
+          <i class="el-icon-top"></i>
+        </div>
+      </el-backtop>
+      <div style="height:900px">
         <slot name="content"> </slot>
       </div>
       <div class="dialog-footer">
@@ -42,7 +47,7 @@ export default {
     },
     width: {
       type: String,
-      default: "60%"
+      default: "80%"
     },
     dialogVisible: {
       type: Boolean,
@@ -71,14 +76,26 @@ export default {
   background: #fff;
 }
 .el-dialog__body {
+  position: relative;
   // background: #f4f6f8;
   padding: 5px 20px 20px;
-  height: 450px;
+  height: 70vh;
   overflow-y: scroll;
   overflow-x: hidden;
 }
 .dialog-footer {
   padding: 20px 0;
+}
+.back-top {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: #f2f5f6;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.12);
+  text-align: center;
+  line-height: 40px;
+  border-radius: 4px;
+  color: #1989fa;
 }
 </style>
 <style lang="scss" scoped></style>
