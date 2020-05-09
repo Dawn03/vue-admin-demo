@@ -297,7 +297,6 @@ export default {
         institution: [
           { required: true, message: "必填信息", trigger: "change" },
           {
-            // pattern: returnReg("otaGrade"),
             message: "请输入账号",
             trigger: "blur"
           }
@@ -330,7 +329,6 @@ export default {
         affiation: "附属机构",
         jobs: "所属岗位"
       },
-      // tableData: [],
       addCountIndex: 0
     };
   },

@@ -1,0 +1,55 @@
+<template>
+  <div class="page-box">
+    <el-pagination
+      :current-page="currentPage"
+      :page-size="pageSize"
+      layout="total, prev, pager, next, jumper"
+      :total="total"
+      :hide-on-single-page="true"
+      prev-text="上一页"
+      next-text="下一页"
+      @current-change="handleCurrentChange"
+    >
+    </el-pagination>
+  </div>
+</template>
+<script>
+export default {
+  props: {
+    currentPage: {
+      type: Number,
+      default: 2
+    },
+    total: {
+      type: Number,
+      default: 0
+    },
+    pageSize: {
+      type: Number,
+      default: 20
+    }
+  },
+  data() {
+    return {
+      //   currentPage: 2
+    };
+  },
+  methods: {
+    handleSizeChange(val) {
+      this.$emit("sizeChange", val);
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+      this.$emit("currentChange", val);
+      console.log(`当前页: ${val}`);
+    }
+  }
+};
+</script>
+<style lang="scss">
+.page-box {
+  height: 40px;
+  line-height: 40px;
+  margin: 20px 0;
+}
+</style>

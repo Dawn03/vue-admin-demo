@@ -70,7 +70,7 @@ export default {
   height: calc(100vh - 100px);
   display: flex;
   .user-left {
-    width: 200px;
+    width: 220px;
     position: relative;
     display: inline-block;
     height: 100%;
@@ -78,7 +78,7 @@ export default {
     transition: width 1s;
     -webkit-transition: width 1s;
     .bar {
-      width: 200px;
+      width: 220px;
       height: 100%;
       // transition: width 1s;
       // -webkit-transition: width 1s;
@@ -99,7 +99,7 @@ export default {
   }
   .user-right {
     display: inline-block;
-    width: calc(100% - 200px);
+    width: calc(100% - 220px);
   }
   .td-color {
     color: #1890ff;

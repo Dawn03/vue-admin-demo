@@ -144,6 +144,11 @@
         </el-table-column>
       </template>
     </TableTree>
+    <Pagination
+      :total="40"
+      :page-size="2"
+      @currentChange="currentChange"
+    ></Pagination>
     <!-- 筛选搜索对话框 -->
     <DailogFrame
       :dialog-visible="showDailog"
@@ -160,6 +165,7 @@
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
 import DailogFrame from "@/components/dailogPanel/frame";
+import Pagination from "@/components/pagination";
 import UserEditPanel from "./userEditPanel";
 import AssignRole from "./assignRole";
 import DataRights from "./dataRights";
@@ -173,7 +179,8 @@ export default {
     DailogFrame,
     UserEditPanel,
     AssignRole,
-    DataRights
+    DataRights,
+    Pagination
   },
   data() {
     return {
@@ -380,6 +387,9 @@ export default {
     moreHandleClick(row) {
       this.currentId = row.id;
       this.changeArrowDirection = !this.changeArrowDirection;
+    },
+    currentChange(val) {
+      console.log(val);
     }
   }
 };

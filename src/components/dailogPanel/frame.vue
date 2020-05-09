@@ -1,5 +1,4 @@
 <template>
-  <!-- // 也可以这样写,但是没有办法单独控制name age的显示 -->
   <el-dialog
     ref="dialog__wrapper"
     v-dialogDrag
@@ -19,7 +18,7 @@
     </div>
     <div class="dialog-body">
       <el-backtop target=".el-dialog__body" :right="230" :bottom="120">
-        <div class="back-top" >
+        <div class="back-top">
           <i class="el-icon-top"></i>
         </div>
       </el-backtop>

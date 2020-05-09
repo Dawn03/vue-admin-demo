@@ -1,21 +1,13 @@
 <template>
   <div class="user-head ">
-    <div class="part-left">
-      <i class="el-icon-menu"></i>
-      <span>组织机构</span>
-      <i class="el-icon-edit"></i>
-      <i class="el-icon-arrow-down"></i>
-      <i class="el-icon-refresh"></i>
-    </div>
-    <MenuTree :menu-data="menuData" :default-expand="['1']"></MenuTree>
+    <LeftTree :title-name="'组织机构'" :menu-data="menuData"></LeftTree>
   </div>
 </template>
 <script>
-import MenuTree from "@/components/menuTree";
-
+import LeftTree from "@/components/leftTree";
 export default {
   components: {
-    MenuTree
+    LeftTree
   },
   data() {
     return {

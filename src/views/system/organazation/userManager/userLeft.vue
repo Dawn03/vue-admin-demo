@@ -1,35 +1,22 @@
 <template>
-  <div class="user-head ">
-    <div class="part-left">
-      <i class="el-icon-menu"></i>
-      <span>组织机构</span>
-      <i class="el-icon-edit"></i>
-      <!-- <div :class="[isActive?'active':'disActive']"></div> -->
-      <i
-        :class="[expandAll ? 'el-icon-arrow-up' : 'el-icon-arrow-down']"
-        @click="switchStatus"
-      ></i>
-      <i class="el-icon-refresh" @click="reSwitchStatus"></i>
-    </div>
-    <MenuTree
-      ref="menuTreeDom"
-      :expand-all="expandAll"
+  <div class="user-left">
+    <LeftTree
+      :title-name="'组织机构'"
       :menu-data="menuData"
-      :default-expand="defaultExpand"
-    ></MenuTree>
+      :show-edit-btn="true"
+      @goToIt="gotoInsitution"
+    ></LeftTree>
   </div>
 </template>
 <script>
-import MenuTree from "@/components/menuTree";
+import LeftTree from "@/components/leftTree";
 
 export default {
   components: {
-    MenuTree
+    LeftTree
   },
   data() {
     return {
-      expandAll: false,
-      defaultExpand: ["1"],
       menuData: [
         {
           label: "苑东生物",
@@ -73,15 +60,8 @@ export default {
     };
   },
   methods: {
-    /* 展开或收起选项 */
-    switchStatus() {
-      this.expandAll = !this.expandAll;
-      this.$refs.menuTreeDom.showOrHiddenAllNodes();
-    },
-    /* 指定展开一级 */
-    reSwitchStatus() {
-      this.$refs.menuTreeDom.expandFirst(this.menuData);
-      // this.$refs.tree.store.nodesMap[data.id].expanded = true;
+    gotoInsitution() {
+      this.$router.push("institution");
     }
   }
 };
