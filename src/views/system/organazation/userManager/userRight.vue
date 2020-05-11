@@ -63,16 +63,27 @@
       :table-fit="tableFit"
       style="margin-top: 10px;"
     >
-      <template slot="loginAccount" slot-scope="scope">
+      <template slot="userName" slot-scope="scope">
         <span class="td-color" @click="editHandleClick(scope.row, '编辑')">{{
-          scope.row.loginAccount
+          scope.row.userName
         }}</span>
       </template>
-      <template slot="userAlias" slot-scope="scope">
-        <span class="td-color">{{ scope.row.userAlias }}</span>
+      <template slot="refName" slot-scope="scope">
+        <span>{{ scope.row.refName }}</span>
       </template>
-      <template slot="vehicle_license" slot-scope="scope">
-        <span class="td-color">{{ scope.row.vehicle_license }}</span>
+      <template slot="employee.empName" slot-scope="scope">
+        <span>{{ scope.row.employee.empName }}</span>
+      </template>
+      <template slot="employee.company.companyName" slot-scope="scope">
+        {{ scope.row.employee.company.companyName }}
+      </template>
+      <template slot="employee.office.officeName" slot-scope="scope">
+        {{ scope.row.employee.office.officeName }}
+      </template>
+      <template slot="statusText" slot-scope="scope">
+        <el-button round type="success" size="mini">
+          {{ scope.row.statusText }}
+        </el-button>
       </template>
       <template slot="operate">
         <el-table-column fixed="right" label="操作" width="120" align="center">
@@ -145,8 +156,8 @@
       </template>
     </TableTree>
     <Pagination
-      :total="40"
-      :page-size="2"
+      :total="pageNation.total"
+      :page-size="pageNation.pageSize"
       @currentChange="currentChange"
     ></Pagination>
     <!-- 筛选搜索对话框 -->
@@ -169,9 +180,10 @@ import Pagination from "@/components/pagination";
 import UserEditPanel from "./userEditPanel";
 import AssignRole from "./assignRole";
 import DataRights from "./dataRights";
-import axios from "axios";
 // import { returnReg } from "@/utils/validate"; /* 表单正则验证 */
 import { clearFilterVal, getInputVal } from "@/utils/pubFunc";
+import { orgApi } from "@/api/organization";
+import { statusMap } from "@/utils/pubFunc";
 export default {
   name: "UserRight",
   components: {
@@ -189,8 +201,12 @@ export default {
       changeArrowDirection: false,
       currentId: null,
       showDailog: false,
-
       titleName: "",
+      pageNation: {
+        pageSize: 20,
+        pageNo: 1,
+        total: 0
+      },
       formInline: [
         {
           type: "input",
@@ -270,64 +286,69 @@ export default {
       ],
       tableFit: true,
       columnWidths: {
-        loginAccount: 130,
-        number: 130,
+        userName: 130,
+        "employee.empName": 130,
         format: 130
       },
-      slotColumns: ["loginAccount", "userAlias", "vehicle_license"],
+      slotColumns: [
+        "userName",
+        "refName",
+        "employee.empName",
+        "employee.company.companyName",
+        "employee.office.officeName",
+        "statusText"
+      ],
       tableHead: {
-        loginAccount: "登录账号",
-        userAlias: "用户昵称",
-        number: "员工姓名",
-        format: "归属机构",
-        department: "归属公司",
-        brand: "电子邮箱",
-        card_time: "手机号",
+        userName: "登录账号",
+        refName: "用户昵称",
+        "employee.empName": "员工姓名",
+        "employee.office.officeName": "归属机构",
+        "employee.company.companyName": "归属公司",
+        email: "电子邮箱",
+        mobile: "手机号",
         vehicle_license: "办公电话",
-        maintenance: "更新时间",
-        status: "状态"
+        updateDate: "更新时间",
+        statusText: "状态"
       },
       tableData: [
         {
           id: 1,
-          loginAccount: "登录账号",
-          userAlias: "用户昵称",
-          number: "员工姓名",
-          format: "归属机构",
-          department: "归属公司",
-          brand: "电子邮箱",
-          card_time: "手机号",
-          vehicle_license: "办公电话",
-          maintenance: "更新时间",
-          status: "状态"
-        },
-        {
-          id: 2,
-          loginAccount: "登录账号",
-          userAlias: "用户昵称",
-          number: "员工姓名",
-          format: "归属机构",
-          department: "归属公司",
-          brand: "电子邮箱",
-          card_time: "手机号",
-          vehicle_license: "办公电话",
-          maintenance: "更新时间",
-          status: "状态"
+          userName: "登录账号",
+          refName: "用户昵称",
+          "employee.empName": "员工姓名",
+          "employee.office.officeName": "归属机构",
+          "employee.company.companyName": "归属公司",
+          email: "电子邮箱",
+          mobile: "手机号",
+          phone: "办公电话",
+          updateDate: "更新时间",
+          statusText: "状态"
         }
       ]
     };
   },
   mounted() {
-    axios
-      .get("http://192.168.7.107:8980/web/a/sys/empUser/listData", {})
-      .then(function(response) {
-        console.log(324423, response);
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+    this.init(this.pageNation.pageSize, this.pageNation.pageNo);
   },
   methods: {
+    init(pageSize, pageNo) {
+      console.log(9999, pageSize, pageNo);
+      orgApi
+        .getUserList({ pageSize, pageNo })
+        .then(response => {
+          const obj = {
+            "0": "正常",
+            "2": "停用",
+            "3": "冻结"
+          };
+          this.pageNation.total = response.count;
+          this.tableData = statusMap(response.list, obj);
+          console.log(324423, this.tableData);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
     showOrHidden() {
       this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
     },
@@ -400,7 +421,9 @@ export default {
       this.changeArrowDirection = !this.changeArrowDirection;
     },
     currentChange(val) {
-      console.log(val);
+      this.pageNation.pageNo = val;
+      console.log(23323, val);
+      this.init(this.pageNation.pageSize, this.pageNation.pageNo);
     }
   }
 };

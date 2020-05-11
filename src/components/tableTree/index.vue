@@ -5,6 +5,7 @@
       :data="tableData"
       border
       stripe
+      :height="550"
       :fit="tableFit"
       style="width: 100%"
       row-key="id"

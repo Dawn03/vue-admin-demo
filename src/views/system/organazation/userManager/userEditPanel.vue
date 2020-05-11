@@ -37,13 +37,13 @@
             </el-row>
             <el-row :gutter="gutterVal">
               <el-col :span="12">
-                <el-form-item label="登录账号：" prop="account">
-                  <el-input v-model="userForm.account"></el-input>
+                <el-form-item label="登录账号：" prop="userName">
+                  <el-input v-model="userForm.userName"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="用户昵称：" prop="alias">
-                  <el-input v-model="userForm.alias"></el-input>
+                <el-form-item label="用户昵称：" prop="refName">
+                  <el-input v-model="userForm.refName"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -91,8 +91,8 @@
               </el-col>
 
               <el-col :span="12">
-                <el-form-item label="员工姓名：" prop="employeeName">
-                  <el-input v-model="userForm.employeeName"></el-input>
+                <el-form-item label="员工姓名：" prop="employee.empName">
+                  <el-input v-model="userForm.employee.empName"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -274,13 +274,15 @@ export default {
       userForm: {
         institution: "",
         company: "",
-        account: "",
-        alias: "",
+        userName: "",
+        refName: "",
         email: "",
         phone: "",
         telNumber: "",
         employeeIDNumber: "",
-        employeeName: "",
+        employee: {
+          empName: ''
+        },
         job: "",
         englishName: "",
         tableData: [],
@@ -301,11 +303,13 @@ export default {
             trigger: "blur"
           }
         ],
-        account: [
+        userName: [
           { required: true, message: "请输入登录账号", trigger: "blur" },
           { min: 4, max: 20, message: "长度在 4 到 20 个字符", trigger: "blur" }
         ],
-        alias: [{ required: true, message: "请输入用户昵称", trigger: "blur" }],
+        refName: [
+          { required: true, message: "请输入用户昵称", trigger: "blur" }
+        ],
         email: [
           {
             pattern: returnReg("email"),

@@ -18,7 +18,7 @@ export default {
   props: {
     currentPage: {
       type: Number,
-      default: 2
+      default: 1
     },
     total: {
       type: Number,

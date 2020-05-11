@@ -18,6 +18,8 @@ import '@/icons' // icon
 import '@/permission' // permission control
 
 import '@/components/messageBox'
+import baseUrl_ from '@/api/config'
+Vue.prototype.GLOBAL = baseUrl_;
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

@@ -55,7 +55,7 @@
         style="width:100%;margin-top:20px; "
         @click.native.prevent="handleLogin"
       >
-        Login
+        登录
       </el-button>
       <!--
       <div class="tips">
@@ -68,6 +68,7 @@
 
 <script>
 import { validUsername } from "@/utils/validate";
+import { loginApi } from "@/api/login";
 
 export default {
   name: "Login",
@@ -80,7 +81,7 @@ export default {
       }
     };
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
+      if (value.length < 4) {
         callback(new Error("The password can not be less than 6 digits"));
       } else {
         callback();
@@ -88,8 +89,9 @@ export default {
     };
     return {
       loginForm: {
-        username: "admin",
-        password: "111111"
+        username: "system",
+        password: "admin"
+        // __sid: "2a6669501bf24afebcf4ff63eb048a56"
       },
       loginRules: {
         username: [
@@ -124,6 +126,17 @@ export default {
       });
     },
     handleLogin() {
+      // this.$refs.loginForm.validate(valid => {
+      //   if (valid) {
+      //     loginApi.login(params).then(res => {
+      //       console.log(134, res);
+      //       this.$router.push({ path: this.redirect || "/" });
+      //       this.loading = false;
+      //     });
+      //     console.log("error submit!!");
+      //     return false;
+      //   }
+      // });
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true;

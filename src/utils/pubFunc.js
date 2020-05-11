@@ -38,3 +38,16 @@ export const createKey = (keyType, count, type) => {
   }
   return arrKey;
 }
+/**
+ * 状态值映射
+ *
+ * ***/
+export const statusMap = (arr, obj) => {
+  const temp = JSON.parse(JSON.stringify(arr));
+  for (let i = 0, len = temp.length; i < len; i++) {
+    if (temp[i].hasOwnProperty("status")) {
+      temp[i].statusText = obj[temp[i].status];
+    }
+  }
+  return temp;
+}

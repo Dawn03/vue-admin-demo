@@ -3,14 +3,9 @@
  */
 import axios from 'axios'
 import Qs from 'qs'
-// import {
-//   getToken
-// } from '../utils/auth';
-const hostname = window.location.hostname
-// if (hostname === '192.168.0.4' || hostname === 'localhost' || hostname === '127.0.0.1') {
-//   axios.defaults.baseURL = 'http://zhihuihuanwei.cd.southmeteor.com:801/'
-// }
-
+import {
+  getToken
+} from '../utils/auth';
 const httpRequestor = {
   // 默认的异常处理方法，会传入完整的data对象，可以在这里弹提示框
   defaultErrorHandler: null
@@ -24,8 +19,8 @@ const axiosInstance = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
   timeout: DEFAULT_TIME_OUT,
   headers: {
-    // 'Authorization': `Bearer ${getToken()}`
-    'Content-Type': 'application/json'
+    '__sid': getToken()
+    // 'Content-Type': 'application/json'
   }
 });
 axiosInstance.interceptors.response.use(handleResponseSuccess, handleResponseFail);
@@ -49,7 +44,6 @@ function addVersionToUrl(url) {
  * @return {Promise} 返回一个promise对象。其中then方法传递回包中的data数据；catch事件则传递整个回包，其参数为{data:{},status{code:123,message:'xxx'}}
  */
 httpRequestor.get = function get(url, params = {}, throwError, timeout) {
-  // console.log(525252)
   return commonAjax({
     method: 'GET',
     url,
@@ -159,7 +153,6 @@ httpRequestor.postFormData = function postFormData(url, data = {}, throwError, t
     // withCredentials: true,
     headers: {
       'Content-Type': "application/x-www-form-urlencoded"
-      // 'Content-Type': 'application/x-www-form-urlencoded',
       // 'X-Requested-With': 'XMLHttpRequest'
     }
   });
@@ -279,24 +272,24 @@ function commonAjaxDelete(config) {
 function handleResponseSuccess(response) {
   // console.log("请求成功", 231, getToken(), response)
   const result = response.data;
-  if (typeof result.status !== 'number') {
-    // 老版本协议下发的数据，只有data
-    // console.warn('Old version of protocol.', response.config.url)
-    return result
-  }
-  if (result.status === 200) {
-    // 后端在data为undefined时下发的包体里就没有data属性了，所以这里不能写result.data||result
+  // if (typeof result.status !== 'number') {
+  //   // 老版本协议下发的数据，只有data
+  //   return result
+  // }
+  console.log("请求成功", 280, getToken(), response.status)
+  if (response.status === 200) {
+    console.log("请求成功", 234, getToken(), response)
     return result;
   }
   return handleError(response.config, result);
 }
-
 /**
  * 对发送失败的请求进行数据预处理，将error对象封装为统一的形式
  * @param error
  * @returns {Promise}
  */
 function handleResponseFail(error) {
+  console.log('token验证失效', error)
   let result
   /* token验证失效 */
   if (error.response.status === 401) {
@@ -354,6 +347,8 @@ function fillErrorMessage(code, debugMessage, data = null) {
  * @returns {Promise}
  */
 function handleError(requestConfig, result) {
+  console.log('为什么进了catch',
+    requestConfig, result)
   // 必须是Error对象，否则throw时vuex要报warning
   let err;
   if (result instanceof Error) {
