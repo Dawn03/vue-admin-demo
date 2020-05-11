@@ -169,6 +169,7 @@ import Pagination from "@/components/pagination";
 import UserEditPanel from "./userEditPanel";
 import AssignRole from "./assignRole";
 import DataRights from "./dataRights";
+import axios from "axios";
 // import { returnReg } from "@/utils/validate"; /* 表单正则验证 */
 import { clearFilterVal, getInputVal } from "@/utils/pubFunc";
 export default {
@@ -315,6 +316,16 @@ export default {
         }
       ]
     };
+  },
+  mounted() {
+    axios
+      .get("http://192.168.7.107:8980/web/a/sys/empUser/listData", {})
+      .then(function(response) {
+        console.log(324423, response);
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
   },
   methods: {
     showOrHidden() {
