@@ -2,17 +2,16 @@
 <template>
   <div class="extention-box">
     <el-row :gutter="gutterVal">
-      <el-col v-for="(item, index) in extentionForm" :key="index" :span="12">
-        <el-form-item :label="`${item.lable}：`">
-          <el-input
-            v-if="item.type == 'input'"
-            v-model="extentionForm[index].value"
-          >
-          </el-input>
-
+      <el-col
+        v-for="(value, key, index) in extentionForm"
+        :key="key"
+        :span="12"
+      >
+        <el-form-item :label="`${key}：`">
+          <el-input v-if="index < 16" v-model="extentionForm[key]"> </el-input>
           <el-date-picker
-            v-if="item.type == 'date'"
-            v-model="extentionForm[index].value"
+            v-else
+            v-model="extentionForm[key]"
             type="date"
             placeholder="选择日期"
           >
@@ -23,28 +22,42 @@
   </div>
 </template>
 <script>
-// import xx from "@/xx";
 export default {
   name: "ExtentionFeild",
   components: {},
   props: {
     extentionForm: {
-      type: Array,
+      type: Object,
       default: () => {
-        return [];
+        return {};
       }
     }
   },
   data() {
     return {
       gutterVal: 100
-      // extentionForm: [
-      //   {
-      //     lable: "String1",
-      //     value: "",
-      //     type: "input"
-      //   },
-      // ]
+      // extentionForm: {
+      //   String11: "",
+      //   String12: "",
+      //   String13: "",
+      //   String14: "",
+      //   String15: "",
+      //   String16: "",
+      //   String17: "",
+      //   String18: "",
+      //   Integer1: "",
+      //   Integer2: "",
+      //   Integer3: "",
+      //   Integer4: "",
+      //   Float1: "",
+      //   Float2: "",
+      //   Float3: "",
+      //   Float4: "",
+      //   Date1: "",
+      //   Date2: "",
+      //   Date3: "",
+      //   Date4: ""
+      // }
     };
   },
   computed: {

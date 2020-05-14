@@ -16,7 +16,7 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
-
+import 'default-passive-events'
 import '@/components/messageBox'
 import baseUrl_ from '@/api/config'
 Vue.prototype.GLOBAL = baseUrl_;

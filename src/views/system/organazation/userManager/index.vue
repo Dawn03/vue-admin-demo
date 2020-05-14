@@ -1,7 +1,13 @@
 <template>
   <div class="user">
     <div id="userLeft" class="user-left">
-      <UserLeft id="bar" class="bar transition-box"></UserLeft>
+      <UserLeft
+        id="bar"
+        :inst-menu-data="instMenuData"
+        class="bar transition-box"
+        :default-expand="defaultExpand"
+        @clickNodeReslut="clickNodeReslut"
+      ></UserLeft>
       <span id="btn" class="toglebtn">
         <i
           :class="arrow === true ? 'el-icon-caret-right' : 'el-icon-caret-left'"
@@ -10,13 +16,15 @@
       </span>
     </div>
     <div id="userRight" class="user-right">
-      <UserRight></UserRight>
+      <UserRight ref="userRight" :inst-menu-data="instMenuData"></UserRight>
     </div>
   </div>
 </template>
 <script>
 import UserLeft from "./userLeft";
 import UserRight from "./userRight";
+import { orgApi } from "@/api/organization";
+import { toTreeData } from "@/utils/pubFunc";
 export default {
   name: "UserManage",
   components: {
@@ -25,43 +33,69 @@ export default {
   },
   data() {
     return {
-      arrow: true
+      arrow: true,
+      instMenuData: [],
+      defaultExpand: "" // 左侧菜单的默认展开值
     };
   },
   mounted() {
-    const _this = this;
-    const btn = document.getElementById("btn");
-    const userLeft = document.getElementById("userLeft");
-    const userRight = document.getElementById("userRight");
-    // const bar = document.getElementById("bar");
-    btn.addEventListener(
-      "click",
-      function() {
-        _this.arrow = !_this.arrow;
-        // const display = bar.style.display;
-        // if (display != "none") {
-        //   bar.style.display = "none";
-        // } else {
-        //   bar.style.display = "block";
-        // }
-        const elWidth = userLeft.style.width;
-        if (elWidth != "0px") {
-          userLeft.style.width = "0px";
-          userRight.style.width = "100%";
-
-          setTimeout(function() {
-            bar.style.display = "none";
-          }, 1000);
-        } else {
-          userLeft.style.width = "200px";
-          userRight.style.width = "calc(100% - 200px)";
-          bar.style.display = "block";
-        }
-      },
-      false
-    );
+    this.init();
+    this.getInsMenuTree();
   },
-  methods: {}
+  methods: {
+    init() {
+      const _this = this;
+      const btn = document.getElementById("btn");
+      const userLeft = document.getElementById("userLeft");
+      const userRight = document.getElementById("userRight");
+      // const bar = document.getElementById("bar");
+      btn.addEventListener(
+        "click",
+        function() {
+          _this.arrow = !_this.arrow;
+          // const display = bar.style.display;
+          // if (display != "none") {
+          //   bar.style.display = "none";
+          // } else {
+          //   bar.style.display = "block";
+          // }
+          const elWidth = userLeft.style.width;
+          if (elWidth != "0px") {
+            userLeft.style.width = "0px";
+            userRight.style.width = "100%";
+
+            setTimeout(function() {
+              bar.style.display = "none";
+            }, 1000);
+          } else {
+            userLeft.style.width = "200px";
+            userRight.style.width = "calc(100% - 200px)";
+            bar.style.display = "block";
+          }
+        },
+        false
+      );
+    },
+    getInsMenuTree() {
+      orgApi.getInstitutionMenuTree({ ctrlPermi: 2 }).then(res => {
+        const attributes = {
+          id: "id",
+          parentId: "pId",
+          label: "name",
+          rootId: "0"
+        };
+        const treeData = toTreeData(res, attributes);
+        this.instMenuData = treeData;
+        this.defaultExpand = treeData[0].id;
+        console.log("treeData", this.defaultExpand, treeData);
+      });
+    },
+    // 双击树节点获取数据查询结果
+    clickNodeReslut(data) {
+      this.$refs.userRight.searchBtn(data);
+      console.log("左侧树节点双击", data);
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -74,7 +108,7 @@ export default {
     position: relative;
     display: inline-block;
     height: 100%;
-    border-right: 5px solid #fafafa;
+    // border-right: 1px solid #fafafa;
     transition: width 1s;
     -webkit-transition: width 1s;
     .bar {

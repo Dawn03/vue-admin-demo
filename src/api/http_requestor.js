@@ -6,6 +6,12 @@ import Qs from 'qs'
 import {
   getToken
 } from '../utils/auth';
+import {
+  MessageBox,
+  Message
+} from 'element-ui'
+import errorCode from './error_code'
+import store from '@/store'
 const httpRequestor = {
   // 默认的异常处理方法，会传入完整的data对象，可以在这里弹提示框
   defaultErrorHandler: null
@@ -260,7 +266,7 @@ function commonAjax(config) {
 }
 
 function commonAjaxDelete(config) {
-  console.log(215, config)
+  // console.log(215, config)
   config.url = addVersionToUrl(config.url)
   return axiosInstance(config)
 }
@@ -276,9 +282,9 @@ function handleResponseSuccess(response) {
   //   // 老版本协议下发的数据，只有data
   //   return result
   // }
-  console.log("请求成功", 280, getToken(), response.status)
+  // console.log("请求成功", 280, getToken(), response.status)
   if (response.status === 200) {
-    console.log("请求成功", 234, getToken(), response)
+    // console.log("请求成功", 234, getToken(), response)
     return result;
   }
   return handleError(response.config, result);
@@ -289,11 +295,27 @@ function handleResponseSuccess(response) {
  * @returns {Promise}
  */
 function handleResponseFail(error) {
-  console.log('token验证失效', error)
+  console.log('token验证失效', error.response)
   let result
+  if (error.response.status === 400) {
+    Message({
+      message: error.data.message,
+      type: 'warning'
+    });
+    // 跳转到默认页
+    // window.location.href = "/index/index.html#/"
+  }
   /* token验证失效 */
   if (error.response.status === 401) {
-    alert('token失效，请重新登录！')
+    MessageBox.confirm('你的登录已经过期，请重新登录', '登录超时', {
+      confirmButtonText: '重新登录',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      store.dispatch('user/resetToken').then(() => {
+        location.reload()
+      })
+    })
     // 跳转到默认页
     // window.location.href = "/index/index.html#/"
   }
@@ -347,8 +369,6 @@ function fillErrorMessage(code, debugMessage, data = null) {
  * @returns {Promise}
  */
 function handleError(requestConfig, result) {
-  console.log('为什么进了catch',
-    requestConfig, result)
   // 必须是Error对象，否则throw时vuex要报warning
   let err;
   if (result instanceof Error) {

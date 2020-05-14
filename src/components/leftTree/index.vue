@@ -14,7 +14,8 @@
       ref="menuTreeDom"
       :expand-all="expandAll"
       :menu-data="menuData"
-      :default-expand="defaultExpand"
+      :default-expand="[$attrs['default-expand']]"
+      v-on="$listeners"
     ></MenuTree>
   </div>
 </template>
@@ -40,11 +41,17 @@ export default {
       type: Boolean,
       default: false
     }
+    // defaultExpand: {
+    //   type: Array,
+    //   default: () => {
+    //     return [];
+    //   }
+    // }
   },
   data() {
     return {
       expandAll: false,
-      defaultExpand: ["1"],
+      // defaultExpand: ["YD"],
       menuData2: [
         {
           label: "苑东生物",

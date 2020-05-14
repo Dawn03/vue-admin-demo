@@ -22,7 +22,7 @@
           <i class="el-icon-top"></i>
         </div>
       </el-backtop>
-      <div style="height:900px">
+      <div >
         <slot name="content"> </slot>
       </div>
       <div class="dialog-footer">

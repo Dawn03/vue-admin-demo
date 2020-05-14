@@ -36,34 +36,69 @@ export default {
     showCheckbox: {
       type: Boolean,
       default: false
+    },
+
+    titleName: {
+      // 主要用来区分同个页面多个弹窗选择
+      type: String,
+      default: ""
+    },
+    clickType: {
+      type: Boolean,
+      default: false
+    },
+    clickResource: {
+      type: String,
+      default: ""
     }
   },
   data() {
     return {
       defaultProps: {
         children: "children",
-        label: "label"
+        label: "label",
+        titleNameVal: ""
       },
-      clickCount: 0
+      clickCount: 0,
+      dbIsTrue: false
     };
   },
-
+  watch: {
+    clickType: {
+      handler(newVal, val) {
+        this.dbIsTrue = newVal;
+      },
+      immediate: true
+    },
+    titleName: {
+      handler(newVal, val) {
+        this.titleNameVal = newVal;
+      },
+      immediate: true
+    }
+  },
   methods: {
     /* 当前点击的节点 */
     handleNodeClick(data) {
-      // this.$emit("clickNodeReslut", data);
       // 发送双击事件
-      const _this = this;
-      this.clickCount++;
-      const fnEmitDblClick = debounce(() => {
-        if (this.clickCount > 1) {
-          _this.$emit("clickNodeReslut", data);
-        }
-        _this.clickCount = 0;
-      }, 500);
-      fnEmitDblClick();
+      console.log("this.dbIsTrue", this.dbIsTrue);
+      if (this.dbIsTrue) {
+        // console.log("sssss", data);
+        const _this = this;
+        this.clickCount++;
+        const fnEmitDblClick = debounce(() => {
+          if (this.clickCount > 1) {
+            _this.$emit("clickNodeReslut", data);
+            // console.log("dbclick", data);
+          }
+          _this.clickCount = 0;
+        }, 500);
+        fnEmitDblClick();
+      } else {
+        // console.log("vvvvv", data);
+        this.$emit("clickNodeReslut", data);
+      }
     },
-
     /* 搜索关键字 */
     filterNode(value, data) {
       if (!value) return true;

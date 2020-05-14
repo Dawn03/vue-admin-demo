@@ -24,6 +24,7 @@
           :style="{
             width: item.width ? `${item.width}px` : `${defaultWidth}px`
           }"
+          @change="changeResult($event, item)"
         >
           <el-option
             v-for="val in item.options"
@@ -68,20 +69,20 @@ export default {
   },
   data() {
     return {
-      defaultWidth: "90"
+      defaultWidth: "150",
+      selectOptions: []
     };
   },
+  watch: {
+    formItem(newVal, val) {
+      console.log(78, newVal, val);
+      this.selectOptions = newVal;
+    }
+  },
   methods: {
-    //     onSubmit() {
-    //       const obj = {};
-    //       for (let i = 0, len = this.formItem.length; i < len; i++) {
-    //         if (this.formItem[i].value) {
-    //           obj[this.formItem[i].key] = this.formItem[i].value;
-    //         }
-    //       }
-    //       this.$emit("searchIt", obj);
-    //     },
-    /* 触发筛选框中的弹窗 */
+    changeResult(val, item) {
+      this.$emit("statusValChange", val, item);
+    },
     showChoosePanel(item) {
       //   console.log(2343);
       this.$emit("filterPanel", item);

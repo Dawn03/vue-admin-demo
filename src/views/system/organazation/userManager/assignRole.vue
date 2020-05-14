@@ -30,7 +30,12 @@
               </el-col>
             </el-row>
           </el-form>
-          <ColumnBar :column-text="'分配角色'"></ColumnBar>
+          <AssignRoleDetail
+            :table-head="tableHead"
+            :table-data="tableData"
+            :table-check-box-value="tableCheckBoxValue"
+          ></AssignRoleDetail>
+          <!-- <ColumnBar :column-text="'分配角色'"></ColumnBar>
           <TableTree
             :table-head="tableHead"
             :table-data="tableData"
@@ -49,7 +54,7 @@
                 <el-button slot="append" icon="el-icon-search"></el-button>
               </el-input>
             </template>
-          </TableTree>
+          </TableTree> -->
         </div>
       </template>
       <template slot="footer">
@@ -76,16 +81,13 @@
   </div>
 </template>
 <script>
-// import { } from "module";
-import ColumnBar from "@/components/commonColumn";
 import DailogFrame from "@/components/dailogPanel/frame";
-import TableTree from "@/components/tableTree";
+import AssignRoleDetail from "./assignRoleDetail";
 export default {
   name: "AssignRole",
   components: {
     DailogFrame,
-    ColumnBar,
-    TableTree
+    AssignRoleDetail
   },
   data() {
     return {

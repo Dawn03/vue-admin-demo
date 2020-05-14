@@ -35,7 +35,11 @@
       </div>
     </div>
     <div>
-      <InputFilter v-show="btnText == '隐藏'" :form-item="formInline">
+      <InputFilter
+        v-show="btnText == '隐藏'"
+        :form-item="formInline"
+        @statusValChange="statusValChange"
+      >
         <template slot="btnGroups">
           <el-button
             type="primary"
@@ -53,6 +57,7 @@
         v-show="showMore"
         :form-item="moreFormItem"
         @filterPanel="showFilterPanel"
+        @statusValChange="statusValChange"
       />
     </div>
     <TableTree
@@ -63,22 +68,30 @@
       :table-fit="tableFit"
       style="margin-top: 10px;"
     >
-      <template slot="userName" slot-scope="scope">
+      <template slot="loginCode" slot-scope="scope">
         <span class="td-color" @click="editHandleClick(scope.row, '编辑')">{{
-          scope.row.userName
+          scope.row.loginCode
         }}</span>
       </template>
       <template slot="refName" slot-scope="scope">
         <span>{{ scope.row.refName }}</span>
       </template>
       <template slot="employee.empName" slot-scope="scope">
-        <span>{{ scope.row.employee.empName }}</span>
+        {{ scope.row.employee.empName }}
+        <!-- <span v-for="(value, key) in scope.row.employee" :key="key">
+          <span v-if="key == 'empName'"> {{ value }} </span>
+        </span> -->
       </template>
       <template slot="employee.company.companyName" slot-scope="scope">
         {{ scope.row.employee.company.companyName }}
+        <!-- <span v-for="(value, key) in scope.row.employee.company" :key="key">
+          <span v-if="key == 'companyName'"> {{ value }} </span>
+        </span> -->
       </template>
       <template slot="employee.office.officeName" slot-scope="scope">
-        {{ scope.row.employee.office.officeName }}
+        <span v-for="(value, key) in scope.row.employee.office" :key="key">
+          <span v-if="key == 'officeName'"> {{ value }} </span>
+        </span>
       </template>
       <template slot="statusText" slot-scope="scope">
         <el-button round type="success" size="mini">
@@ -160,77 +173,79 @@
       :page-size="pageNation.pageSize"
       @currentChange="currentChange"
     ></Pagination>
-    <!-- 筛选搜索对话框 -->
-    <DailogFrame
-      :dialog-visible="showDailog"
-      :title-name="titleName"
-      @closeDialog="closeDialog"
-    ></DailogFrame>
+
     <!-- table行点击对话框 -->
     <userEditPanel ref="userEditPanel"></userEditPanel>
     <AssignRole ref="assignRolePanel"></AssignRole>
     <DataRights ref="dataRightsPanel"></DataRights>
+    <InAndCompany
+      ref="inAndCompanyPanel"
+      @getClickNode="getClickNode"
+    ></InAndCompany>
   </div>
 </template>
 <script>
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
-import DailogFrame from "@/components/dailogPanel/frame";
 import Pagination from "@/components/pagination";
 import UserEditPanel from "./userEditPanel";
 import AssignRole from "./assignRole";
 import DataRights from "./dataRights";
+import InAndCompany from "./insAndcompanyPanel";
+
 // import { returnReg } from "@/utils/validate"; /* 表单正则验证 */
-import { clearFilterVal, getInputVal } from "@/utils/pubFunc";
+import { clearFilterVal, getInputVal, toTreeData } from "@/utils/pubFunc";
 import { orgApi } from "@/api/organization";
 import { statusMap } from "@/utils/pubFunc";
+// import { returnReg } from "../../../../utils/validate";
 export default {
   name: "UserRight",
   components: {
     TableTree,
     InputFilter,
-    DailogFrame,
     UserEditPanel,
     AssignRole,
     DataRights,
-    Pagination
+    Pagination,
+    InAndCompany
+  },
+  props: {
+    instMenuData: {
+      type: Array,
+      default: () => {
+        return [];
+      }
+    }
   },
   data() {
     return {
       btnText: "查询",
       changeArrowDirection: false,
       currentId: null,
-      showDailog: false,
       titleName: "",
-      pageNation: {
-        pageSize: 20,
-        pageNo: 1,
-        total: 0
-      },
       formInline: [
         {
           type: "input",
           label: "账号",
-          key: "acount",
+          key: "loginCode",
           value: ""
         },
         {
           type: "input",
           label: "昵称",
-          key: "alias",
+          key: "userName",
           value: ""
         },
         {
           type: "input",
           label: "姓名",
-          key: "name",
+          key: "refName",
           value: ""
         },
         {
           type: "input",
           label: "手机",
-          key: "phone",
-
+          key: "mobile",
           value: ""
         },
         {
@@ -238,18 +253,23 @@ export default {
           label: "状态",
           options: [
             {
-              label: "测试1",
-              value: "test1"
+              label: "正常",
+              value: "0"
             },
             {
-              label: "测试2",
-              value: "test2"
+              label: "停用",
+              value: "2"
+            },
+            {
+              label: "冻结",
+              value: "3"
             }
           ],
           key: "status",
           value: ""
         }
       ],
+
       showMore: false,
       moreFormItem: [
         {
@@ -271,27 +291,39 @@ export default {
           value: ""
         },
         {
-          type: "input",
+          type: "select",
           label: "岗位",
-          key: "jobs",
+          key: "employee.postCode",
+          options: [
+            {
+              label: "总经理",
+              value: "ceo"
+            },
+            {
+              label: "财务经理",
+              value: "cfo"
+            },
+            {
+              label: "人力经理",
+              value: "hrm"
+            }
+          ],
           value: ""
         },
         {
           type: "input",
           label: "电话",
           key: "phone",
-          width: "120",
           value: ""
         }
       ],
       tableFit: true,
       columnWidths: {
-        userName: 130,
-        "employee.empName": 130,
-        format: 130
+        updateDate: 130
+        // email: 170
       },
       slotColumns: [
-        "userName",
+        "loginCode",
         "refName",
         "employee.empName",
         "employee.company.companyName",
@@ -299,11 +331,11 @@ export default {
         "statusText"
       ],
       tableHead: {
-        userName: "登录账号",
-        refName: "用户昵称",
+        loginCode: "登录账号",
+        userName: "用户昵称",
         "employee.empName": "员工姓名",
-        "employee.office.officeName": "归属机构",
-        "employee.company.companyName": "归属公司",
+        "employee.company.companyName": "归属机构",
+        "employee.office.officeName": "归属公司",
         email: "电子邮箱",
         mobile: "手机号",
         vehicle_license: "办公电话",
@@ -311,30 +343,63 @@ export default {
         statusText: "状态"
       },
       tableData: [
-        {
-          id: 1,
-          userName: "登录账号",
-          refName: "用户昵称",
-          "employee.empName": "员工姓名",
-          "employee.office.officeName": "归属机构",
-          "employee.company.companyName": "归属公司",
-          email: "电子邮箱",
-          mobile: "手机号",
-          phone: "办公电话",
-          updateDate: "更新时间",
-          statusText: "状态"
-        }
-      ]
+        // {
+        //   id: 1,
+        //   loginCode: "",
+        //   refName: "",
+        //   employe: {
+        //     empName: ""
+        //   },
+        //   employee: {
+        //     company: {
+        //       companyName: ""
+        //     },
+        //     office: {
+        //       officeName: ""
+        //     }
+        //   },
+        //   email: "",
+        //   mobile: "",
+        //   vehicle_license: "",
+        //   updateDate: "",
+        //   statusText: ""
+        // }
+      ],
+      statusOption: {},
+      pageNation: {
+        total: 0,
+        pageSize: 20,
+        pageNo: 1,
+        ctrlPermi: 2
+      },
+      searchVal: {
+        loginCode: null,
+        refName: null,
+        mobile: null,
+        status: null,
+        "employee.office.officeName": null, // 企管部
+        "employee.office.officeCode": null, // SDJN01
+        "employee.company.companyName": null, // 济南公司
+        "employee.company.companyCode": null, // SDJN
+        email: null, // 邮箱
+        "employee.postCode": null, // ceo
+        phone: null, // 08277648513
+        orderBy: null //
+      }
     };
   },
   mounted() {
-    this.init(this.pageNation.pageSize, this.pageNation.pageNo);
+    const obj = {
+      pageSize: this.searchVal.pageSize,
+      pageNo: this.searchVal.pageNo
+    };
+    this.init(obj);
+    // console.log(397, '刚刚启动时进入页面')
   },
   methods: {
-    init(pageSize, pageNo) {
-      console.log(9999, pageSize, pageNo);
+    init(obj) {
       orgApi
-        .getUserList({ pageSize, pageNo })
+        .getUserList(obj)
         .then(response => {
           const obj = {
             "0": "正常",
@@ -343,37 +408,85 @@ export default {
           };
           this.pageNation.total = response.count;
           this.tableData = statusMap(response.list, obj);
-          console.log(324423, this.tableData);
         })
         .catch(function(error) {
           console.log(error);
         });
     },
+
     showOrHidden() {
       this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
     },
+    // select
+    statusValChange(val, item) {
+      const searchObj = {
+        pageSize: this.pageNation.pageSize,
+        pageNo: this.pageNation.pageNo
+      };
+      if (item.key === "status") {
+        searchObj.status = val;
+        this.init(searchObj);
+      } else {
+        this.searchVal[item.key] = val;
+      }
+    },
     /* 获取填入输入框的值  */
-    searchBtn() {
-      // const temp = this.formInline.concat(this.moreFormItem);
-      const valObj = getInputVal(this.formInline);
-      console.log(valObj);
+    searchBtn(data = {}) {
+      this.searchVal["employee.office.officeName"] = data.label;
+      this.searchVal["employee.office.officeCode"] = data.id;
+      this.searchVal = Object.assign(
+        this.searchVal,
+        this.pageNation,
+        getInputVal(this.formInline),
+        getInputVal(this.moreFormItem)
+      );
+      this.init(this.searchVal);
     },
     /* 清除输入框内的值 */
     resetForm() {
       clearFilterVal(this.formInline);
+      clearFilterVal(this.moreFormItem);
+      this.searchVal = {};
+      const obj = {
+        pageSize: this.pageNation.pageSize,
+        pageNo: 1
+      };
+      this.init(obj);
+      console.log(this.searchVal);
     },
     /* 切换显示更多条件筛选 */
     getMore() {
       this.showMore = !this.showMore;
     },
-    // 显示对话框选择
+    // 显示带搜索图标的对话框
     showFilterPanel(item) {
-      this.showDailog = true;
       this.titleName = `${item.label}选择`;
+      if (item.key === "institution") {
+        this.$refs.inAndCompanyPanel.show(item, this.instMenuData);
+      } else {
+        orgApi.getCompanyMenuTree({ ctrlPermi: 2 }).then(res => {
+          const attributes = {
+            id: "id",
+            parentId: "pId",
+            label: "name",
+            rootId: "0"
+          };
+          const treeData = toTreeData(res, attributes);
+          this.$refs.inAndCompanyPanel.show(item, treeData);
+        });
+      }
     },
-    // 关闭对话框选择
-    closeDialog() {
-      this.showDailog = false;
+    getClickNode(val, typeVal) {
+      console.log("typeVal.key", val);
+      if (typeVal.key === "institution") {
+        this.moreFormItem[0].value = val.label;
+        this.searchVal["employee.office.officeCode"] = val.id;
+        this.searchVal["employee.office.officeName"] = val.label;
+      } else {
+        this.moreFormItem[1].value = val.label;
+        this.searchVal["employee.company.companyCode"] = val.id;
+        this.searchVal["employee.company.companyName"] = val.label;
+      }
     },
     /* 编辑表格 */
     editHandleClick(row, type) {
@@ -421,9 +534,13 @@ export default {
       this.changeArrowDirection = !this.changeArrowDirection;
     },
     currentChange(val) {
-      this.pageNation.pageNo = val;
+      this.searchVal.pageNo = val;
       console.log(23323, val);
-      this.init(this.pageNation.pageSize, this.pageNation.pageNo);
+      const obj = {
+        pageSize: this.pageNation.pageSize,
+        pageNo: this.pageNation.pageNo
+      };
+      this.init(obj);
     }
   }
 };

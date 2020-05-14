@@ -11,16 +11,16 @@
           <el-form
             ref="userForm"
             :model="userForm"
-            label-width="120px"
+            label-width="140px"
             class="demo-ruleForm"
             size="mini"
             :rules="rules"
           >
             <el-row :gutter="gutterVal">
               <el-col :span="12">
-                <el-form-item label="归属机构：" prop="institution">
+                <el-form-item label="归属机构：" prop="officeName">
                   <el-input
-                    v-model="userForm.institution"
+                    v-model="userForm['officeName']"
                     @focus="institutionChoose"
                   >
                     <el-button slot="append" icon="el-icon-search"></el-button>
@@ -28,8 +28,11 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="归属公司：">
-                  <el-input v-model="userForm.company" @focus="companyChoose">
+                <el-form-item label="归属公司：" prop="companyName">
+                  <el-input
+                    v-model="userForm['companyName']"
+                    @focus="companyChoose"
+                  >
                     <el-button slot="append" icon="el-icon-search"></el-button>
                   </el-input>
                 </el-form-item>
@@ -37,13 +40,13 @@
             </el-row>
             <el-row :gutter="gutterVal">
               <el-col :span="12">
-                <el-form-item label="登录账号：" prop="userName">
-                  <el-input v-model="userForm.userName"></el-input>
+                <el-form-item label="登录账号：" prop="loginCode">
+                  <el-input v-model="userForm.loginCode"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="用户昵称：" prop="refName">
-                  <el-input v-model="userForm.refName"></el-input>
+                <el-form-item label="用户昵称：" prop="userName">
+                  <el-input v-model="userForm.userName"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -56,8 +59,8 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="手机号：" prop="phone">
-                  <el-input v-model="userForm.phone">
+                <el-form-item label="手机号：" prop="mobile">
+                  <el-input v-model="userForm.mobile">
                     <el-button
                       slot="append"
                       icon="el-icon-mobile-phone"
@@ -68,15 +71,15 @@
             </el-row>
             <el-row :gutter="gutterVal">
               <el-col :span="12">
-                <el-form-item label="办公电话：" prop="telNumber">
-                  <el-input v-model="userForm.telNumber">
+                <el-form-item label="办公电话：" prop="phone">
+                  <el-input v-model="userForm.phone">
                     <el-button slot="append" icon="el-icon-phone"></el-button>
                   </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="权重（排序）：" prop="weight">
-                  <el-input v-model="userForm.weight"></el-input>
+                <el-form-item label="权重（排序）：" prop="userWeight">
+                  <el-input v-model="userForm.userWeight"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -85,26 +88,33 @@
 
             <el-row :gutter="gutterVal">
               <el-col :span="12">
-                <el-form-item label="员工工号：" prop="employeeIDNumber">
-                  <el-input v-model="userForm.employeeIDNumber"> </el-input>
+                <el-form-item label="员工工号：" prop="empNo">
+                  <el-input v-model="userForm['empNo']"> </el-input>
                 </el-form-item>
               </el-col>
 
               <el-col :span="12">
-                <el-form-item label="员工姓名：" prop="employee.empName">
-                  <el-input v-model="userForm.employee.empName"></el-input>
+                <el-form-item label="员工姓名：" prop="empName">
+                  <el-input v-model="userForm['empName']"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="gutterVal">
               <el-col :span="12">
-                <el-form-item label="所在岗位：" prop="job">
-                  <el-input v-model="userForm.job"> </el-input>
+                <el-form-item label="所在岗位：" prop="employeePosts">
+                  <el-select v-model="employeePosts" multiple>
+                    <el-option
+                      v-for="item in employeePostsOptions"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id"
+                    />
+                  </el-select>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="英文名：" prop="englishName">
-                  <el-input v-model="userForm.englishName"> </el-input>
+                <el-form-item label="英文名：" prop="empNameEn">
+                  <el-input v-model="userForm['empNameEn']"> </el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -113,24 +123,32 @@
                 <el-form-item label="附属机构：" prop="englishName">
                   <TableTree
                     :table-head="tableHead"
-                    :table-data="userForm.tableData"
+                    :table-data="employeeOfficeList"
                     :slot-columns="slotColumns"
+                    :show-overflow="false"
+                    :default-height="200"
+                    :show-index="false"
                   >
-                    <template slot="affiation" slot-scope="scope">
-                      <el-input v-model="scope.row.affiation">
+                    <template slot="officeName" slot-scope="scope">
+                      <el-input
+                        v-model="scope.row.officeName"
+                        @focus="attchEmployeeChoose(scope.row)"
+                      >
                         <el-button
                           slot="append"
                           icon="el-icon-search"
                         ></el-button>
                       </el-input>
                     </template>
-                    <template slot="jobs" slot-scope="scope">
-                      <el-input v-model="scope.row.jobs">
-                        <el-button
-                          slot="append"
-                          icon="el-icon-search"
-                        ></el-button>
-                      </el-input>
+                    <template slot="postCode" slot-scope="scope">
+                      <el-select v-model="scope.row.postCode">
+                        <el-option
+                          v-for="item in employeePostsOptions"
+                          :key="item.id"
+                          :label="item.name"
+                          :value="item.id"
+                        />
+                      </el-select>
                     </template>
 
                     <template slot="operate">
@@ -161,7 +179,7 @@
                   type="primary"
                   size="mini"
                   class="el-icon-plus"
-                  style="margin-left: 120px;"
+                  style="margin-left: 140px;"
                   @click="addNew"
                 >
                   增行
@@ -170,15 +188,18 @@
             </el-row>
             <el-col>
               <el-row :span="24" style="margin-top: 20px;" :rows="4">
-                <el-form-item label="备注信息：" prop="remark">
+                <el-form-item label="备注信息：" prop="remarks">
                   <el-input
-                    v-model="userForm.remark"
+                    v-model="userForm.remarks"
                     type="textarea"
                   ></el-input>
                 </el-form-item>
               </el-row>
             </el-col>
-
+            <AssignRoleDetail
+              v-if="titleName === '新增'"
+              @tableCheckBoxVal="getCheckVal"
+            ></AssignRoleDetail>
             <!-- @click="showExtentionDetail" -->
             <ColumnBar
               :column-text="'扩展字段'"
@@ -189,9 +210,10 @@
               ref="extentionDom"
               :style="{ height: exHeight }"
               style="overflow: hidden;"
-              :extention-form="userForm.extentionForm"
+              :extention-form="extentionForm"
               @extentionFormVal="extentionFormVal"
             ></ExtentionFeild>
+            <!-- :extention-form="userForm.extentionForm" -->
           </el-form>
           <ChooseMenuTree
             :inner-dialog-visible="innerDialogVisible"
@@ -237,7 +259,10 @@ import TableTree from "@/components/tableTree";
 import ExtentionFeild from "@/components/extentionFeild";
 import ChooseMenuTree from "@/components/chooseMenuTree";
 import { returnReg } from "@/utils/validate";
-import { createKey } from "@/utils/pubFunc";
+import { toTreeData, filterNokeyVal, stringVal } from "@/utils/pubFunc";
+import { orgApi } from "@/api/organization";
+import AssignRoleDetail from "./assignRoleDetail";
+
 export default {
   name: "UserEdit",
   components: {
@@ -245,13 +270,58 @@ export default {
     ColumnBar,
     TableTree,
     ExtentionFeild,
-    ChooseMenuTree
+    ChooseMenuTree,
+    AssignRoleDetail
   },
   data() {
+    //    op: add
+    // userType: employee
+    // userCode:
+    // employee.office.officeName: 质量保证部
+    // employee.office.officeCode: CDSD01
+    // employee.company.companyName: 四川阳光润禾
+    // employee.company.companyCode: SCRH
+    // oldLoginCode:
+    // loginCode: 登录账号：
+    // userName: 用户昵称
+    // email: 17715333082@163.com
+    // mobile: 19915413362
+    // phone: 08277648513
+    // userWeight: 0
+    // employee.empNo: 员工工号
+    // employee.empName: 员工姓名
+    // !employee.employeePosts:
+    // employee.employeePosts: cfo
+    // employee.empNameEn: 英文名
+    // employee.employeeOfficeList[0].officeName: 质量保证部
+    // employee.employeeOfficeList[0].officeCode: CDYL01
+    // employee.employeeOfficeList[0].postCode: ceo
+    // remarks: 备注信息
+    // userRoleString: corpAdmin,demo,dept,test,user,mdemo
+    // extend.extendS1: String 1
+    // extend.extendS2: String 2
+    // extend.extendS3:
+    // extend.extendS4:
+    // extend.extendS5:
+    // extend.extendS6:
+    // extend.extendS7:
+    // extend.extendS8:
+    // extend.extendI1:
+    // extend.extendI2:
+    // extend.extendI3:
+    // extend.extendI4:
+    // extend.extendF1:
+    // extend.extendF2:
+    // extend.extendF3:
+    // extend.extendF4:
+    // extend.extendD1: 2020-05-08
+    // extend.extendD2:
+    // extend.extendD3:
+    // extend.extendD4:
     const validTelNumber = (rule, value, callback) => {
       const phoneReg = returnReg("phone");
       const telReg = returnReg("telNumber");
-      if (!phoneReg.test(value) && !telReg.test(value)) {
+      if (!phoneReg.test(value) && !telReg.test(value) && value !== "") {
         callback(
           new Error(
             "请正确填写您的办公号码，固话为区号0(3-4位)号码-(7-9位),手机为1开头的11位手机号段"
@@ -263,6 +333,7 @@ export default {
     };
     return {
       titleName: "",
+      test: [],
       exHeight: "0px",
       showEditDailog: false,
       innerDialogVisible: false,
@@ -271,43 +342,100 @@ export default {
       defaultExpand: ["1"],
       menuData: [],
       gutterVal: 100,
+
+      officeCodeClick: {},
+      companyClick: {},
+      currentRow: {},
+      extentionForm: {
+        String11: "",
+        String12: "",
+        String13: "",
+        String14: "",
+        String15: "",
+        String16: "",
+        String17: "",
+        String18: "",
+        Integer1: "",
+        Integer2: "",
+        Integer3: "",
+        Integer4: "",
+        Float1: "",
+        Float2: "",
+        Float3: "",
+        Float4: "",
+        Date1: "",
+        Date2: "",
+        Date3: "",
+        Date4: ""
+      },
+      attchCurrentRow: {},
+      attchOfficeName: "",
+      employeePostsOptions: [],
+      employeePosts: [], // cfo 所在岗位
+      employeeOfficeList: [], // 附属公司列表
       userForm: {
-        institution: "",
-        company: "",
-        userName: "",
-        refName: "",
-        email: "",
-        phone: "",
-        telNumber: "",
-        employeeIDNumber: "",
-        employee: {
-          empName: ''
-        },
-        job: "",
-        englishName: "",
-        tableData: [],
-        remark: "",
-        extentionForm: [
-          {
-            lable: "String1",
-            value: "",
-            type: "input"
-          }
-        ]
+        op: "add", // add  edit
+        userType: "employee", // employee
+        userCode: "",
+        officeName: "", // 企管部
+        officeCode: "", // SDQD01
+        companyName: "", // 山东公司
+        companyCode: "", // SD
+        loginCode: "三生三世", // 登录账号
+        userName: "323r23rq", // 用户昵称
+        email: "17715333082@163.com", // 17715333082@163.com
+        mobile: "19915413362", // 19915413362
+        phone: "", // 08277648513
+        userWeight: "23", // 22
+        empNo: "23", // mdemo
+        empName: "ww", // 管员工姓名
+
+        empNameEn: "englishName", // 英文名
+        remarks: "备注内容", //
+        jqg_roleGrid_corp01: "", // on
+        jqg_roleGrid_dept: "", // on
+        jqg_roleGrid_user: "", // on
+        userRoleString: "" // 角色编码 corp01
+        // employeeOfficeList: [] // [],
+
+        // op: "", // add  edit
+        // userType: "employee", // employee
+        // userCode: "", //
+        // officeName: "", // 企管部
+        // officeCode: "", // SDQD01
+        // companyName: "", // 山东公司
+        // companyCode: "", // SD
+        // loginCode: "", // 登录账号
+        // userName: "", // 用户昵称
+        // email: "", // 17715333082@163.com
+        // mobile: "", // 19915413362
+        // phone: "", // 08277648513
+        // userWeight: "", // 22
+        // empNo: "", // mdemo
+        // empName: "", // 管员工姓名
+        // employeePosts: [], // cfo
+        // empNameEn: "", // 英文名
+        // remarks: "", //
+        // jqg_roleGrid_corp01: "", // on
+        // jqg_roleGrid_corp01: "", // on
+        // jqg_roleGrid_dept: "", // on
+        // jqg_roleGrid_user: "", // on
+        // userRoleString: "", // 角色编码 corp01
+        // employeeOfficeList: [] // [],
       },
       rules: {
-        institution: [
-          { required: true, message: "必填信息", trigger: "change" },
+        officeName: [
+          { required: true, message: "请选择归属机构", trigger: "change" },
           {
             message: "请输入账号",
             trigger: "blur"
           }
         ],
-        userName: [
+        loginCode: [
           { required: true, message: "请输入登录账号", trigger: "blur" },
           { min: 4, max: 20, message: "长度在 4 到 20 个字符", trigger: "blur" }
         ],
-        refName: [
+        userName: [
           { required: true, message: "请输入用户昵称", trigger: "blur" }
         ],
         email: [
@@ -317,128 +445,87 @@ export default {
             trigger: "blur"
           }
         ],
-        phone: [
+        mobile: [
           {
             pattern: returnReg("phone"),
             message: "输入正确的手机号",
             trigger: "blur"
           }
         ],
-        telNumber: [{ validator: validTelNumber, trigger: "blur" }],
-        weight: [{ message: "请选择活动资源", trigger: "change" }],
-        desc: [{ message: "请填写活动形式", trigger: "blur" }]
+        phone: [{ validator: validTelNumber, trigger: "change" }],
+        userWeight: [{ message: "请选择活动资源", trigger: "change" }]
       },
-      slotColumns: ["affiation", "jobs"],
+      slotColumns: ["officeName", "postCode"],
       tableHead: {
-        affiation: "附属机构",
-        jobs: "所属岗位"
+        officeName: "附属机构",
+        postCode: "附属岗位"
       },
       addCountIndex: 0
     };
   },
   mounted() {
-    this.initExtention();
+    this.getEmployeePosts();
   },
   methods: {
-    /* 初始化扩展字段 */
-    initExtention() {
-      const concatArr = createKey("String", 8, "input").concat(
-        createKey("Integer", 4, "input"),
-        createKey("Float", 4, "input"),
-        createKey("Date", 4, "date")
-      );
-      this.userForm.extentionForm = concatArr;
+    // 获取岗位
+    getEmployeePosts() {
+      orgApi.getEmployeePosts().then(res => {
+        this.employeePostsOptions = res;
+      });
     },
     /* 显示对话框 */
     show(row, type) {
       this.showEditDailog = true;
       this.titleName = type;
-      console.log(row, type);
+      this.userForm.op = type === "新增" ? "add" : "edit";
+      this.currentRow = row;
+      console.log(row);
     },
     /* 关闭编辑对话框 */
     closeEditDialog() {
       this.showEditDailog = false;
     },
     /* 触发选择归属机构 */
-    institutionChoose() {
+    institutionChoose(typeText) {
       this.menuTreeTitle = "机构选择";
-      console.log(323);
-      this.menuData = [
-        {
-          label: "苑东生物",
-          id: "1",
-          children: [
-            {
-              id: "1-1",
-              label: "成都硕德",
-              children: [
-                {
-                  id: "1-1-1",
-                  label: "质量保证部"
-                },
-                {
-                  id: "1-1-2",
-                  label: "财务部"
-                }
-              ]
-            },
-            {
-              id: "2-1",
-              label: "成都优洛生物",
-              children: [
-                {
-                  id: "2-1-1",
-                  label: "质量保证部"
-                },
-                {
-                  id: "2-1-2",
-                  label: "财务部"
-                },
-                {
-                  id: "2-1-3",
-                  label: "生产技术部"
-                }
-              ]
-            }
-          ]
-        }
-      ];
-      this.innerDialogVisible = true;
-      // console.log(531);
+      this.getInstitutionMenuList();
+    },
+    /*  触发选择附属公司选择*/
+    attchEmployeeChoose(row) {
+      this.getInstitutionMenuList();
+      this.menuTreeTitle = "附属机构选择";
+      this.attchCurrentRow = row;
+      // 选择之后值的归属问题
+      console.log(523, row);
+    },
+    /* 获取归属公司列表 */
+    getInstitutionMenuList() {
+      orgApi.getInstitutionMenuTree().then(res => {
+        const attributes = {
+          id: "id",
+          parentId: "pId",
+          label: "name",
+          rootId: "0"
+        };
+        this.menuData = toTreeData(res, attributes);
+        this.innerDialogVisible = true;
+      });
     },
     /*  触发选择归属公司*/
     companyChoose() {
-      this.menuTreeTitle = "公司选择";
-      this.innerDialogVisible = true;
-      this.menuData = [
-        {
-          label: "苑东生物",
-          id: "1",
-          children: [
-            {
-              id: "1-1",
-              label: "四川阳光润禾"
-            },
-            {
-              id: "1-2",
-              label: "四川青木制药"
-            },
-            {
-              id: "1-3",
-              label: "西藏润禾"
-            },
-            {
-              id: "1-4",
-              label: "成都硕德"
-            },
-            {
-              id: "1-5",
-              label: "成都优诺生物"
-            }
-          ]
-        }
-      ];
+      this.menuTreeTitle = "归属公司选择";
+      orgApi.getCompanyMenuTree().then(res => {
+        const attributes = {
+          id: "id",
+          parentId: "pId",
+          label: "name",
+          rootId: "0"
+        };
+        this.menuData = toTreeData(res, attributes);
+        this.innerDialogVisible = true;
+      });
     },
+
     /* 关闭选择归属机构或者归属公司 */
     closeMuneTreeChoose() {
       this.innerDialogVisible = false;
@@ -450,11 +537,25 @@ export default {
     },
     /* 菜单树中当前点击的树节点*/
     clickNodeReslut(data) {
-      // console.log(384, data);
+      // console.log(384, data, this.menuTreeTitle);
       if (this.menuTreeTitle === "机构选择") {
-        this.userForm.institution = data.label;
+        this.userForm.officeName = data.label;
+        this.officeCodeClick = data;
+      } else if (this.menuTreeTitle === "附属机构选择") {
+        for (let i = 0, len = this.employeeOfficeList.length; i < len; i++) {
+          if (
+            this.attchCurrentRow.flagId === this.employeeOfficeList[i].flagId
+          ) {
+            console.log(567, data);
+            this.employeeOfficeList[i].officeName = data.label;
+            this.employeeOfficeList[i].officeCode = data.id;
+            this.innerDialogVisible = false;
+            return;
+          }
+        }
       } else {
-        this.userForm.company = data.label;
+        this.companyClick = data;
+        this.userForm.companyName = data.label;
       }
       this.closeMuneTreeChoose();
       this.keyVal = "";
@@ -462,38 +563,62 @@ export default {
     /* 新增 */
     addNew() {
       const obj = {
-        affiation: "",
-        jobs: "",
-        id: this.addCountIndex
+        officeName: "",
+        postCode: "",
+        officeCode: "",
+        flagId: this.addCountIndex
       };
-      this.userForm.tableData.push(obj);
+      this.employeeOfficeList.push(obj);
       this.addCountIndex++;
-      // console.log(this.userForm.tableData);
+      console.log(this.employeeOfficeList);
     },
     /* 删除新增 */
     deleteAdd(row) {
-      // console.log(row);
-      for (let i = 0, len = this.userForm.tableData.length; i < len; i++) {
-        if (row.id === this.userForm.tableData[i].id) {
-          this.userForm.tableData.splice(this.userForm.tableData[i], 1);
+      for (let i = 0, len = this.employeeOfficeList.length; i < len; i++) {
+        if (row.flagId === this.employeeOfficeList[i].flagId) {
+          this.employeeOfficeList.splice(this.employeeOfficeList[i], 1);
           return;
         }
       }
     },
     /* 显示扩展字段 */
     showExtentionDom() {
-      this.exHeight = this.exHeight == "0px" ? "480px" : "0px";
+      this.exHeight = this.exHeight === "0px" ? "auto" : "0px";
     },
     /* 扩展字段值 */
     extentionFormVal(val) {
-      this.userForm.extentionForm = val;
+      console.log("扩展字段值", val);
+      this.extentionForm = val;
+    },
+    /* 获取角色checkbox */
+    getCheckVal(checkboxVal) {
+      this.userForm.userRoleString = stringVal(checkboxVal, "id");
+      // console.log(12345, this.tableChecked);
     },
     /* 提交 */
     submitForm(formName) {
-      // console.log(467, this.userForm);
+      // this.userForm.userRoleString
+      // return;
+      console.log(9990, this.employeeOfficeList);
       this.$refs[formName].validate(valid => {
         if (valid) {
-          console.log("submit!");
+          const obj = filterNokeyVal(
+            Object.assign(this.extentionForm, this.userForm)
+          );
+          console.log("submit!", obj);
+          obj["employee.office.officeCode"] = this.officeCodeClick.id;
+          obj["employee.office.officeName"] = this.officeCodeClick.label;
+          obj["employee.company.companyName"] = this.companyClick.label;
+          obj["employee.company.companyCode"] = this.companyClick.id;
+          obj["employee.empNo"] = this.userForm.empNo;
+          obj["employee.empName"] = this.userForm.empName;
+          obj["employee.employeePosts"] = this.userForm.employeePosts;
+          obj["employee.empNameEn"] = this.userForm.empNameEn;
+          obj["employe.employeeOfficeList"] = this.employeeOfficeList;
+          console.log(obj);
+          orgApi.addNewUser(obj).then(res => {
+            console.log(604, res);
+          });
         } else {
           console.log("error submit!!");
           return false;

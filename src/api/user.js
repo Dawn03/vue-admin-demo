@@ -32,7 +32,6 @@ export function logout() {
 export const loginApi = {
   //  登录
   login: (param) => {
-    console.log(111111, param)
     return httpRequestor.get(`a/login?__login=true&__ajax=json`, param).catch(err => {
       Message.error('服务器请求失败，请检查网络环境。')
       console.log('请检查网络环境', err);

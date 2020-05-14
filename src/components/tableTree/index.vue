@@ -5,7 +5,7 @@
       :data="tableData"
       border
       stripe
-      :height="550"
+      :height="defaultHeight"
       :fit="tableFit"
       style="width: 100%"
       row-key="id"
@@ -15,7 +15,6 @@
     >
       >
       <slot name="chechbox"></slot>
-      <!-- show-overflow-tooltip -->
       <el-table-column
         fixed
         label="序号"
@@ -30,13 +29,11 @@
         :label="value"
         :width="columnWidths[key]"
         align="center"
+        :show-overflow-tooltip="showOverflow"
       >
         <template slot-scope="scope">
-          <slot
-            v-if="slotColumns.indexOf(key) > -1"
-            :name="key"
-            v-bind="scope"
-          ></slot>
+          <slot v-if="slotColumns.indexOf(key) > -1" :name="key" v-bind="scope">
+          </slot>
           <!-- 用于某一列需要特殊处理  判断slotColumns传进来的值key里边是否存在 给调用他的父级传scope -->
           <template v-else>{{ scope.row[key] }}</template>
         </template>
@@ -67,10 +64,44 @@ export default {
     slotColumns: {
       type: Array,
       default: () => []
+    },
+    showOverflow: {
+      type: Boolean,
+      default: true
+    },
+    defaultHeight: {
+      type: Number,
+      default: 500
     }
   },
-  mounted() {},
+  data() {
+    return {
+      tablHeight: 500
+    };
+  },
+  // watch: {
+  //   tablHeight: function() {
+  //     this.changeFixed(this.tablHeight);
+  //   }
+  // },
+
+  mounted() {
+    // const that = this;
+    // console.log(1213, document.body.clientHeight, window.screen.height);
+    // window.onresize = () => {
+    //   return (() => {
+    //     const heightStyle = window.screen.height - 250;
+    //     that.tablHeight = heightStyle;
+    //   })();
+    // };
+    console.log(83, this.tablHeight);
+  },
   methods: {
+    changeFixed(clientHeight) {
+      // 动态修改样式
+      console.log(clientHeight);
+      this.$refs.tableDom.style.height = clientHeight + "px";
+    },
     handleSelectionChange(val) {
       // console.log(232, val);
       this.$emit("tableCheckBox", val);

@@ -22,8 +22,7 @@ export const loginApi = {
   //   //  登出
   //   logout: (param) => {
   //     return httpRequestor.post(`${backUrl}/quit`, param).catch(err => {
-  //       console.log('退出登录', err);
-  //       Message.error('服务器请求失败，请检查网络环境。')
+  //       console.log('退出登录', err);  //       Message.error('服务器请求失败，请检查网络环境。')
   //     })
   //   }
 

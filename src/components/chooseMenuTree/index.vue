@@ -36,6 +36,7 @@
             :menu-data="menuData"
             :default-expand="defaultExpand"
             :expand-all="expandAll"
+            :click-type="true"
             v-on="$listeners"
           ></MenuTree>
         </el-col>
@@ -111,7 +112,7 @@ export default {
     /* 收或展开 关键字搜素 */
     expandFunc() {
       this.showKeyVal = !this.showKeyVal;
-      this.display = this.display == "block" ? " none" : "block";
+      this.display = this.display === "block" ? " none" : "block";
     },
 
     /* 展开或收起选项 */
@@ -123,8 +124,7 @@ export default {
     searchKey() {
       console.log("搜索关键字");
       // this.$refs.menuTreeDom.executeFilter(this.keyVal);
-    },
-   
+    }
   }
 };
 </script>

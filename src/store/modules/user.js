@@ -1,5 +1,5 @@
 import {
-  login,
+  // login,
   logout,
   getInfo
 } from '@/api/user'
@@ -9,8 +9,7 @@ import {
 import {
   getToken,
   setToken,
-  removeToken,
-  setUserName
+  removeToken
 } from '@/utils/auth'
 import {
   resetRouter
@@ -50,7 +49,6 @@ const actions = {
         commit('SET_TOKEN', data.sessionid)
         commit('SET_NAME', data.user.loginCode)
         setToken(data.sessionid)
-        // setUserName(data.data.user.loginCode)
         resolve()
       }).catch(error => {
         reject(error)
@@ -92,7 +90,7 @@ const actions = {
     state
   }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
+      logout(state.__sid).then(() => {
         removeToken() // must remove  token  first
         resetRouter()
         commit('RESET_STATE')
