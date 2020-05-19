@@ -25,8 +25,8 @@ const axiosInstance = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
   timeout: DEFAULT_TIME_OUT,
   headers: {
-    '__sid': getToken()
-    // 'Content-Type': 'application/json'
+    '__sid': getToken(),
+    withCredentials: true,
   }
 });
 axiosInstance.interceptors.response.use(handleResponseSuccess, handleResponseFail);
@@ -143,9 +143,14 @@ httpRequestor.put = function putFunc(url, params = {}, throwError, timeout) {
  * @return {Promise} 返回一个promise对象。其中then方法传递回包中的data数据；catch事件则传递整个回包，其参数为{data:{},status{code:123,message:'xxx'}}
  */
 httpRequestor.postFormData = function postFormData(url, data = {}, throwError, timeout, fileType = '') {
-  let ret = '';
+  let ret = ''
   for (const it in data) {
-    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&';
+    if (ret !== '') ret += '&'
+    if (Object.prototype.toString.call(data[it]) === '[object Array]' && !data[it].length) {
+      ret += encodeURIComponent(it) + '=' + '[]'
+    } else {
+      ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it])
+    }
   }
   data = ret;
   return commonAjax({
@@ -158,7 +163,7 @@ httpRequestor.postFormData = function postFormData(url, data = {}, throwError, t
     timeout: timeout || DEFAULT_TIME_OUT,
     // withCredentials: true,
     headers: {
-      'Content-Type': "application/x-www-form-urlencoded"
+      'Content-Type': "application/x-www-form-urlencoded;charset=UTF-8"
       // 'X-Requested-With': 'XMLHttpRequest'
     }
   });
@@ -182,9 +187,8 @@ httpRequestor.postByFormStr = function postFormStr(url, data = {}, throwError, t
     timeout: timeout || DEFAULT_TIME_OUT,
     // withCredentials: true,
     headers: {
-      // 'Content-Type': 'application/json'
-      'Content-Type': 'application/x-www-form-urlencoded'
-      // 'X-Requested-With': 'XMLHttpRequest'
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-Requested-With': 'XMLHttpRequest'
     }
   });
 };
@@ -276,17 +280,20 @@ function commonAjaxDelete(config) {
  * @returns {Promise}
  */
 function handleResponseSuccess(response) {
-  // console.log("请求成功", 231, getToken(), response)
+  // console.log("请求成功", response.data)
+  // console.log("请求成功", getToken(), response)
   const result = response.data;
-  // if (typeof result.status !== 'number') {
-  //   // 老版本协议下发的数据，只有data
-  //   return result
-  // }
-  // console.log("请求成功", 280, getToken(), response.status)
-  if (response.status === 200) {
-    // console.log("请求成功", 234, getToken(), response)
-    return result;
+  if (response.data.result === "login") {
+    Message({
+      message: response.data.message,
+      type: 'warning'
+    });
+    store.dispatch('user/resetToken').then(() => {
+      location.reload()
+    })
   }
+  return result;
+  // }
   return handleError(response.config, result);
 }
 /**
@@ -295,7 +302,7 @@ function handleResponseSuccess(response) {
  * @returns {Promise}
  */
 function handleResponseFail(error) {
-  console.log('token验证失效', error.response)
+  // console.log('token验证失效', error.response)
   let result
   if (error.response.status === 400) {
     Message({

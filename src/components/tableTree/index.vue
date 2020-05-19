@@ -11,6 +11,7 @@
       row-key="id"
       :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       :empty-text="'暂无数据'"
+      :select-on-indeterminate="selectOnIndeterminate"
       @selection-change="handleSelectionChange"
     >
       >
@@ -72,6 +73,10 @@ export default {
     defaultHeight: {
       type: Number,
       default: 500
+    },
+    selectOnIndeterminate: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -94,7 +99,6 @@ export default {
     //     that.tablHeight = heightStyle;
     //   })();
     // };
-    console.log(83, this.tablHeight);
   },
   methods: {
     changeFixed(clientHeight) {
@@ -103,8 +107,23 @@ export default {
       this.$refs.tableDom.style.height = clientHeight + "px";
     },
     handleSelectionChange(val) {
-      // console.log(232, val);
+      console.log("tableCheckBox", val);
       this.$emit("tableCheckBox", val);
+    },
+    /* 回显或清除掉所有选中状态 */
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          console.log("回显checkedbox", rows);
+          rows.forEach(row => {
+            console.log(123, row);
+            this.$refs.tableDom.toggleRowSelection(row);
+          });
+        });
+      } else {
+        console.log("清空checkedbox", rows);
+        this.$refs.tableDom.clearSelection(); // 清空选项，项目中：请求接口后，重新请求数据渲染页面的时候，使用此方式，清空选中勾选状态。
+      }
     },
     expandFolodTable(arr, isExpand) {
       arr.forEach(i => {

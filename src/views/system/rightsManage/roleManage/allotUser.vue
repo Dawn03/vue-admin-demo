@@ -214,7 +214,7 @@ export default {
           type: "warning"
         });
       } else {
-        console.log(this.tableCheckBoxValue);
+        // console.log(this.tableCheckBoxValue);
       }
     },
     /* 获取填入输入框的值  */

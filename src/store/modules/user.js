@@ -1,11 +1,7 @@
 import {
-  // login,
-  logout,
-  getInfo
-} from '@/api/user'
-import {
   loginApi
 } from "@/api/login"
+
 import {
   getToken,
   setToken,
@@ -30,6 +26,9 @@ const mutations = {
   SET_TOKEN: (state, token) => {
     state.__sid = token
   },
+  SET_ROLES: (state, roles) => {
+    state.roles = roles
+  },
   SET_NAME: (state, name) => {
     state.username = name
   },
@@ -37,13 +36,11 @@ const mutations = {
     state.avatar = avatar
   }
 }
-
 const actions = {
   // user login
   login({
     commit
   }, userInfo) {
-    console.log("userInfo", userInfo)
     return new Promise((resolve, reject) => {
       loginApi.login(userInfo).then((data) => {
         commit('SET_TOKEN', data.sessionid)
@@ -55,7 +52,7 @@ const actions = {
       })
     })
   },
-  // get user info
+  // get user info 暂时未启用
   getInfo({
     commit,
     state
@@ -65,11 +62,9 @@ const actions = {
         const {
           data
         } = response
-
         if (!data) {
           reject('Verification failed, please Login again.')
         }
-
         const {
           username,
           avatar
@@ -90,10 +85,14 @@ const actions = {
     state
   }) {
     return new Promise((resolve, reject) => {
-      logout(state.__sid).then(() => {
-        removeToken() // must remove  token  first
+      loginApi.loginOut(state.__sid).then((data) => {
+        commit('SET_TOKEN', '')
+        commit('SET_ROLES', [])
+        removeToken()
         resetRouter()
-        commit('RESET_STATE')
+        // dispatch('tagsView/delAllViews', null, {
+        //   root: true
+        // })
         resolve()
       }).catch(error => {
         reject(error)
@@ -112,7 +111,6 @@ const actions = {
     })
   }
 }
-
 export default {
   namespaced: true,
   state,

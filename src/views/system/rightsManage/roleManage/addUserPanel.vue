@@ -138,42 +138,15 @@ export default {
         status: "状态"
       },
       tableData: [
-        {
-          loginAccount: "dsd",
-          alias: "用户昵称",
-          email: "电子邮箱",
-          phome: "手机号码",
-          tel: "办公电话",
-          updataTime: "更新时间",
-          status: "状态"
-        },
-        {
-          loginAccount: "fsfff",
-          alias: "用户昵称",
-          email: "电子邮箱",
-          phome: "手机号码",
-          tel: "办公电话",
-          updataTime: "更新时间",
-          status: "状态"
-        },
-        {
-          loginAccount: "ffff",
-          alias: "用户昵称",
-          email: "电子邮箱",
-          phome: "手机号码",
-          tel: "办公电话",
-          updataTime: "更新时间",
-          status: "状态"
-        },
-        {
-          loginAccount: "43343",
-          alias: "用户昵称",
-          email: "电子邮箱",
-          phome: "手机号码",
-          tel: "办公电话",
-          updataTime: "更新时间",
-          status: "状态"
-        }
+        // {
+        //   loginAccount: "dsd",
+        //   alias: "用户昵称",
+        //   email: "电子邮箱",
+        //   phone: "手机号码",
+        //   tel: "办公电话",
+        //   updataTime: "更新时间",
+        //   status: "状态"
+        // }
       ]
     };
   },
@@ -191,7 +164,7 @@ export default {
 
     tableCheckBox(row) {
       this.tableCheckBoxValue = row;
-      console.log("选中的row", row);
+      // console.log("选中的row", row);
     },
     /* 取消已经选择tag */
     handleClose(tag) {

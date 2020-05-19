@@ -17,14 +17,14 @@
           >
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="登录账号：" prop="loginAccount">
-                  <el-input v-model="roleForm.loginAccount" :disabled="true">
+                <el-form-item label="登录账号：" prop="loginCode">
+                  <el-input v-model="roleForm.loginCode" :disabled="true">
                   </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="用户昵称：" prop="userAlias">
-                  <el-input v-model="roleForm.userAlias" :disabled="true">
+                <el-form-item label="用户昵称：" prop="userName">
+                  <el-input v-model="roleForm.userName" :disabled="true">
                   </el-input>
                 </el-form-item>
               </el-col>
@@ -34,27 +34,9 @@
             :table-head="tableHead"
             :table-data="tableData"
             :table-check-box-value="tableCheckBoxValue"
+            @tableCheckBoxVal="tableCheckBoxVal"
+            ref="tableCheckRef"
           ></AssignRoleDetail>
-          <!-- <ColumnBar :column-text="'分配角色'"></ColumnBar>
-          <TableTree
-            :table-head="tableHead"
-            :table-data="tableData"
-            @tableCheckBox="tableCheckBox"
-          >
-            <template slot="chechbox">
-              <el-table-column type="selection" width="40"></el-table-column>
-            </template>
-            <template slot="affiation" slot-scope="scope">
-              <el-input v-model="scope.row.affiation">
-                <el-button slot="append" icon="el-icon-search"></el-button>
-              </el-input>
-            </template>
-            <template slot="jobs" slot-scope="scope">
-              <el-input v-model="scope.row.jobs">
-                <el-button slot="append" icon="el-icon-search"></el-button>
-              </el-input>
-            </template>
-          </TableTree> -->
         </div>
       </template>
       <template slot="footer">
@@ -83,6 +65,8 @@
 <script>
 import DailogFrame from "@/components/dailogPanel/frame";
 import AssignRoleDetail from "./assignRoleDetail";
+import { orgApi } from "@/api/organization";
+import { stringVal } from "@/utils/pubFunc";
 export default {
   name: "AssignRole",
   components: {
@@ -93,53 +77,80 @@ export default {
     return {
       showAssginRole: false,
       roleForm: {
-        loginAccount: "",
-        userAlias: ""
+        loginCode: "",
+        userName: ""
       },
       tableCheckBoxValue: [],
+      userRoleString: "",
       rules: {
         loginAccount: [{ required: true }],
         userAlias: [{ required: true }]
       },
       tableHead: {
-        roleName: "角色名称",
-        roleCode: "角色编码"
+        name: "角色名称",
+        id: "角色编码"
       },
       tableData: [
-        {
-          roleName: "系统管理员",
-          roleCode: "corpAdmin"
-        },
-        {
-          roleName: "业务演示角色",
-          roleCode: "demo"
-        },
-        {
-          roleName: "部门经理",
-          roleCode: "dept"
-        },
-        {
-          roleName: "普通员工",
-          roleCode: "user"
-        }
+        // {
+        //   name: "系统管理员",
+        //   id: "corpAdmin"
+        // }
       ]
     };
   },
   mounted() {},
   methods: {
     init(row) {
-      //   console.log(99, row);
-      this.roleForm = JSON.parse(JSON.stringify(row));
-      this.showAssginRole = true;
+      this.tableData = this.$store.state.role.roleList;
+      this.roleForm = row;
+      orgApi
+        .getUserDetail({
+          userCode: row.userCode,
+          op: "auth"
+        })
+        .then(res => {
+          let temp = JSON.parse(JSON.stringify(res.roleList));
+          if (res.result === "false" || res.result === "login") {
+            this.$message.warning(res.message);
+          } else {
+            this.showAssginRole = true;
+            /* 控制表格回显 有显示 无清空*/
+            this.$nextTick(() => {
+              let tempArr = [];
+              for (let i = 0, len = temp.length; i < len; i++) {
+                tempArr.push({
+                  id: temp[i].roleCode,
+                  name: temp[i].roleName
+                });
+              }
+              this.$refs.tableCheckRef.showHadCheckedRow(tempArr);
+            });
+          }
+        });
     },
     // 多选操作
-    tableCheckBox(row) {
-      this.tableCheckBoxValue = row;
+    tableCheckBoxVal(row) {
+      this.userRoleString = stringVal(row, "id");
     },
     /* 保存 */
     saveAssignRole() {
-      console.log(467, this.roleForm, this.tableCheckBoxValue);
-      this.colseAssignRole();
+      let obj = {
+        op: "auth",
+        userType: this.roleForm.userType,
+        userCode: this.roleForm.userCode,
+        oldLoginCode: this.roleForm.loginCode,
+        loginCode: this.roleForm.loginCode,
+        userName: this.roleForm.userName,
+        userRoleString: this.userRoleString
+      };
+      orgApi.saveUserRole(obj).then(res => {
+        if (res.result === "false") {
+          this.$message.warning(res.message);
+        } else {
+          this.$message.success(res.message);
+          this.colseAssignRole();
+        }
+      });
     },
     colseAssignRole(formName) {
       this.showAssginRole = false;

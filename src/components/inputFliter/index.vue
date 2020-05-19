@@ -69,7 +69,7 @@ export default {
   },
   data() {
     return {
-      defaultWidth: "150",
+      defaultWidth: "140",
       selectOptions: []
     };
   },

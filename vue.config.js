@@ -40,13 +40,13 @@ module.exports = {
     proxy: {
       '/apis': {
         // 测试环境
-        target: 'http://192.168.7.147:8980/js', // 接口域名  192.168.7.147 贺龙ip
+        target: 'http://192.168.3.32:8980/js', // 接口域名  192.168.7.147 贺龙ip
         changeOrigin: true, // 是否跨域
         pathRewrite: {
           '^/apis': '' // 需要rewrite重写的,
         }
       }
-    },
+    }
     // before: require('./mock/mock-server.js')
   },
   configureWebpack: {

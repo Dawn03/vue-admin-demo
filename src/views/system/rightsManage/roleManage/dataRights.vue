@@ -174,7 +174,6 @@ export default {
     },
     /* 保存 */
     saveAssignRole() {
-      console.log(467, this.roleForm, this.tableCheckBoxValue);
       this.colseAssignRole();
     },
     colseAssignRole(formName) {

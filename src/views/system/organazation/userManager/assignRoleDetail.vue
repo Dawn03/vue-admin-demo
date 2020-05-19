@@ -2,6 +2,7 @@
   <div>
     <ColumnBar :column-text="'分配角色'"> </ColumnBar>
     <TableTree
+      ref="table"
       :table-head="tableHead"
       :table-data="tableData"
       :default-height="200"
@@ -34,16 +35,12 @@ export default {
     TableTree
   },
   props: {
-    // tableHead: {
-    //   type: Object,
-    //   default: () => ({})
-    // },
-    // tableData: {
-    //   type: Array,
-    //   default: () => {
-    //     return [];
-    //   }
-    // },
+    tableData: {
+      type: Array,
+      default: () => {
+        return [];
+      }
+    },
     tableCheckBoxValue: {
       type: Array,
       default: () => {
@@ -56,8 +53,7 @@ export default {
       tableHead: {
         name: "角色名称",
         id: "角色编码"
-      },
-      tableData: []
+      }
     };
   },
   computed: {
@@ -70,20 +66,30 @@ export default {
       }
     }
   },
-  mounted() {
-    this.getRoleData();
-  },
+  mounted() {},
   methods: {
-    getRoleData() {
-      orgApi.getRole().then(res => {
-        // console.log("juse", res);
-        this.tableData = res;
-      });
+    // 多选回显
+    showHadCheckedRow(rows) {
+      console.log(105, rows);
+      if (rows.length > 0) {
+        //  toggleSelection
+        this.$refs.table.toggleSelection(rows);
+        // rows.forEach(row => {
+
+        // });
+      } else {
+        /* 无值清空 */
+        // this.toggleSelection();
+      }
     },
     // 多选操作
     tableCheckBox(row) {
-      console.log("多选操作", row);
       this.tableCheckBoxValueDetail = row;
+    },
+    // 清除checkedBox多选操作
+    toggleSelection() {
+      console.log(999);
+      this.$refs.table.toggleSelection();
     }
   }
 };

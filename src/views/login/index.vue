@@ -68,6 +68,7 @@
 
 <script>
 import { validUsername } from "@/utils/validate";
+
 export default {
   name: "Login",
   data() {
@@ -133,6 +134,7 @@ export default {
               this.$router.push({ path: this.redirect || "/" });
               this.loading = false;
             })
+
             .catch(() => {
               this.loading = false;
             });

@@ -78,15 +78,9 @@
       </template>
       <template slot="employee.empName" slot-scope="scope">
         {{ scope.row.employee.empName }}
-        <!-- <span v-for="(value, key) in scope.row.employee" :key="key">
-          <span v-if="key == 'empName'"> {{ value }} </span>
-        </span> -->
       </template>
       <template slot="employee.company.companyName" slot-scope="scope">
         {{ scope.row.employee.company.companyName }}
-        <!-- <span v-for="(value, key) in scope.row.employee.company" :key="key">
-          <span v-if="key == 'companyName'"> {{ value }} </span>
-        </span> -->
       </template>
       <template slot="employee.office.officeName" slot-scope="scope">
         <span v-for="(value, key) in scope.row.employee.office" :key="key">
@@ -197,7 +191,6 @@ import InAndCompany from "./insAndcompanyPanel";
 import { clearFilterVal, getInputVal, toTreeData } from "@/utils/pubFunc";
 import { orgApi } from "@/api/organization";
 import { statusMap } from "@/utils/pubFunc";
-// import { returnReg } from "../../../../utils/validate";
 export default {
   name: "UserRight",
   components: {
@@ -220,6 +213,7 @@ export default {
   data() {
     return {
       btnText: "查询",
+      sys_user_status: [], // 用户状态键值存储
       changeArrowDirection: false,
       currentId: null,
       titleName: "",
@@ -338,33 +332,11 @@ export default {
         "employee.office.officeName": "归属公司",
         email: "电子邮箱",
         mobile: "手机号",
-        vehicle_license: "办公电话",
+        phone: "办公电话",
         updateDate: "更新时间",
-        statusText: "状态"
+        statusText: "状态" // status
       },
-      tableData: [
-        // {
-        //   id: 1,
-        //   loginCode: "",
-        //   refName: "",
-        //   employe: {
-        //     empName: ""
-        //   },
-        //   employee: {
-        //     company: {
-        //       companyName: ""
-        //     },
-        //     office: {
-        //       officeName: ""
-        //     }
-        //   },
-        //   email: "",
-        //   mobile: "",
-        //   vehicle_license: "",
-        //   updateDate: "",
-        //   statusText: ""
-        // }
-      ],
+      tableData: [],
       statusOption: {},
       pageNation: {
         total: 0,
@@ -394,6 +366,8 @@ export default {
       pageNo: this.searchVal.pageNo
     };
     this.init(obj);
+    // 获取用户角色
+    this.$store.dispatch("role/getRole");
     // console.log(397, '刚刚启动时进入页面')
   },
   methods: {
@@ -401,19 +375,25 @@ export default {
       orgApi
         .getUserList(obj)
         .then(response => {
-          const obj = {
-            "0": "正常",
-            "2": "停用",
-            "3": "冻结"
-          };
-          this.pageNation.total = response.count;
-          this.tableData = statusMap(response.list, obj);
+          const obj = {};
+          /* 获取用户状态 匹配显示汉字*/
+          orgApi
+            .getUserStaus({
+              dictType: "sys_user_status"
+            })
+            .then(res => {
+              this.sys_user_status = res;
+              for (let i = 0, len = res.length; i < len; i++) {
+                obj[res[i]["dictValue"]] = res[i]["dictLabel"];
+              }
+              this.pageNation.total = response.count;
+              this.tableData = statusMap(response.list, obj);
+            });
         })
         .catch(function(error) {
           console.log(error);
         });
     },
-
     showOrHidden() {
       this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
     },
@@ -490,16 +470,31 @@ export default {
     },
     /* 编辑表格 */
     editHandleClick(row, type) {
+      // console.log(11, row);
       this.$refs.userEditPanel.show(row, type);
-      console.log(11, row);
     },
     showImportAndExport() {
       alert("button click");
     },
-    stopUse() {
+    /* 禁用启用 */
+    stopUse(row) {
+      console.log(472, row);
+      if (row.status === "0") {
+        this.stopOrStart = "disable";
+      } else {
+        this.stopOrStart = "enable";
+      }
+      this.stopOrStart = row.status;
       this.$alertMsgBox("确认要停用该用户吗", "信息")
         .then(() => {
-          this.$message.success("成功");
+          orgApi
+            .stopUseOrStart({
+              stopOrStart: this.stopOrStart,
+              userCode: row.userCode
+            })
+            .then(res => {
+              this.$message.success(res, "成功");
+            });
         })
         .catch(() => {
           this.$message.info("取消");
@@ -508,7 +503,13 @@ export default {
     deleteHandleClick(row) {
       this.$alertMsgBox("确认要删除该用户吗", "信息")
         .then(() => {
-          this.$message.success("成功");
+          orgApi.deleteUser(row.userCode).then(res => {
+            if (res.result === "false") {
+              this.$message.warning(res.message);
+            } else {
+              this.$message.success(res.message);
+            }
+          });
         })
         .catch(() => {
           this.$message.info("取消");

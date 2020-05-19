@@ -29,7 +29,11 @@
           />
         </el-tooltip>
       </div>
-      <div class="fr"></div>
+      <div class="fr">
+        <el-button @click.native="loginOut" type="primary" size="mini"
+          >退出</el-button
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -62,7 +66,17 @@ export default {
     },
     closeDailog() {
       this.$refs.closeThem.closeThemPanel();
-      console.log(232);
+    },
+    async loginOut() {
+      await this.$store.dispatch("user/logout");
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`);
+      // .then(() => {
+      //   this.$router.push({ path: this.redirect || "/" });
+      //   this.loading = false;
+      // })
+      // .catch(() => {
+      //   this.loading = false;
+      // });
     }
   }
 };
