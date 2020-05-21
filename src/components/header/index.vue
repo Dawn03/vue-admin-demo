@@ -29,10 +29,10 @@
           />
         </el-tooltip>
       </div>
-      <div class="fr">
-        <el-button @click.native="loginOut" type="primary" size="mini"
-          >退出</el-button
-        >
+      <div class="fr" style="margin-right:20px;">
+        <el-button type="primary" size="mini" @click.native="loginOut">
+          退出
+        </el-button>
       </div>
     </div>
   </div>

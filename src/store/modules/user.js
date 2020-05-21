@@ -28,6 +28,7 @@ const mutations = {
   },
   SET_TOKEN: (state, token) => {
     state.__sid = token
+    console.log("最新__sid", token)
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles

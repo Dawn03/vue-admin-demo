@@ -12,6 +12,10 @@ import {
 } from 'element-ui'
 import errorCode from './error_code'
 import store from '@/store'
+import {
+  showFullScreenLoading,
+  tryHideFullScreenLoading
+} from "./loading"
 const httpRequestor = {
   // 默认的异常处理方法，会传入完整的data对象，可以在这里弹提示框
   defaultErrorHandler: null
@@ -23,12 +27,22 @@ const DEFAULT_UPLOAD_TIME_OUT = 120000;
 
 const axiosInstance = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
-  timeout: DEFAULT_TIME_OUT,
-  headers: {
-    '__sid': getToken(),
-    withCredentials: true
-  }
+  timeout: DEFAULT_TIME_OUT
+  // headers: {
+  //   '__sid': getToken(),
+  //   withCredentials: true
+  // }
 });
+// 在发送请求之前做某件事
+axiosInstance.interceptors.request.use((config) => {
+  if (getToken()) {
+    config.headers['__sid'] = getToken();
+  }
+  return config
+}, error => {
+  console.log("error", error)
+  return Promise.reject(error)
+})
 axiosInstance.interceptors.response.use(handleResponseSuccess, handleResponseFail);
 
 /**
@@ -57,10 +71,8 @@ httpRequestor.get = function get(url, params = {}, throwError, timeout) {
     // params: Qs.stringify(params),
     errorHandler: !throwError && httpRequestor.defaultErrorHandler || null,
     timeout: timeout || DEFAULT_TIME_OUT,
-    // withCredentials: true,
     headers: {
       'Content-Type': 'application/json'
-      // 'Content-Type': 'application/x-www-form-urlencoded',
       // 'X-Requested-With': 'XMLHttpRequest'
     }
   });
@@ -85,7 +97,6 @@ httpRequestor.post = function postJson(url, data = {}, throwError, timeout) {
     // withCredentials: true,
     headers: {
       'Content-Type': 'application/json'
-      // 'Content-Type': 'application/x-www-form-urlencoded',
       // 'X-Requested-With': 'XMLHttpRequest'
     }
   })
@@ -106,10 +117,8 @@ httpRequestor.delete = function deletes(url, params = '', throwError, timeout) {
     // params: Qs.stringify(params),
     errorHandler: !throwError && httpRequestor.defaultErrorHandler || null,
     timeout: timeout || DEFAULT_TIME_OUT,
-    // withCredentials: true,
     headers: {
       'Content-Type': 'application/json'
-      // 'Content-Type': 'application/x-www-form-urlencoded',
       // 'X-Requested-With': 'XMLHttpRequest'
     }
   });
@@ -161,10 +170,8 @@ httpRequestor.postFormData = function postFormData(url, data = {}, throwError, t
     // data: Qs.stringify(data),
     errorHandler: !throwError && httpRequestor.defaultErrorHandler || null,
     timeout: timeout || DEFAULT_TIME_OUT,
-    // withCredentials: true,
     headers: {
       'Content-Type': "application/x-www-form-urlencoded;charset=UTF-8"
-      // 'X-Requested-With': 'XMLHttpRequest'
     }
   });
 };
@@ -280,20 +287,21 @@ function commonAjaxDelete(config) {
  * @returns {Promise}
  */
 function handleResponseSuccess(response) {
-  // console.log("请求成功", response.data)
   // console.log("请求成功", getToken(), response)
+  const token = getToken()
+  if (token) {
+    axios.defaults.headers.common['__sid'] = token;
+  }
+  showFullScreenLoading()
   const result = response.data;
-  // if (response.data.result === "login") {
-  //   Message({
-  //     message: response.data.message,
-  //     type: 'warning'
-  //   });
-  //   store.dispatch('user/resetToken').then(() => {
+  if (response.status === 200) {
+    tryHideFullScreenLoading()
+    return result;
+  }
+  // store.dispatch('user/resetToken').then(() => {
   //     location.reload()
   //   })
-  // }
-  return result;
-  // }
+  tryHideFullScreenLoading()
   return handleError(response.config, result);
 }
 /**
