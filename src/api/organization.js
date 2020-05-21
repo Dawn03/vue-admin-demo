@@ -52,15 +52,7 @@ export const orgApi = {
   },
   // 保存数据权限 http://demo.jeesite.com/js/a/sys/empUser/saveAuthDataScope
   saveDataRightDetail: (param) => {
-    // userCode: user8_6s3j
-    // loginCode: user8
-    // userName: 用户08
-    // userDataScopeListJson: [
-    //   { "ctrlType": "Office", "ctrlData": "SD" },
-    //   { "ctrlType": "Office", "ctrlData": "SDJN" },
-    //   { "ctrlType": "Office", "ctrlData": "SDJN01" }
-    // ]
-    return httpRequestor.postFormData(`/a/sys/empUser/saveAuthDataScope.form.json?userCode=${param.userCode}`).catch(err => {
+    return httpRequestor.postFormData(`/a/sys/empUser/saveAuthDataScope.form.json`, param).catch(err => {
       Message.error(err)
     })
   },

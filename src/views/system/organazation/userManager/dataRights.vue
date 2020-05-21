@@ -8,23 +8,28 @@
       <template slot="content">
         <div>
           <el-form
-            ref="dataRightsForm"
-            :model="dataRightsForm"
+            ref="formDetail"
+            :model="formDetail"
             label-width="100px"
             class="demo-ruleForm"
             size="mini"
-            :rules="rules"
           >
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item label="登录账号：" prop="loginCode">
-                  <el-input v-model="dataRightsForm.loginCode" :disabled="true">
+                  <el-input
+                    v-model="formDetail.empUser.loginCode"
+                    :disabled="true"
+                  >
                   </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="用户昵称：" prop="userName">
-                  <el-input v-model="dataRightsForm.userName" :disabled="true">
+                  <el-input
+                    v-model="formDetail.empUser.userName"
+                    :disabled="true"
+                  >
                   </el-input>
                 </el-form-item>
               </el-col>
@@ -57,6 +62,7 @@
                     :expand-all="expandAll1"
                     :show-checkbox="true"
                     :checked-arr="officeCheckedArr"
+                    @passCheckedNode="officePassCheckedNode"
                   ></MenuTree>
                 </el-col>
               </el-row>
@@ -86,6 +92,7 @@
                     :expand-all="expandAll2"
                     :show-checkbox="true"
                     :checked-arr="companyCheckedArr"
+                    @passCheckedNode="companyPassCheckedNode"
                   ></MenuTree>
                 </el-col>
               </el-row>
@@ -120,6 +127,7 @@
 import ColumnBar from "@/components/commonColumn";
 import DailogFrame from "@/components/dailogPanel/frame";
 import MenuTree from "@/components/menuTree";
+import { orgApi } from "@/api/organization";
 export default {
   name: "DataRights",
   components: {
@@ -131,25 +139,18 @@ export default {
     return {
       showDataRights: false,
       checked: true,
-      formDetail: null,
-      dataRightsForm: {
-        loginCode: "",
-        userName: ""
-      },
-      rules: {
-        loginCode: [{ required: true }],
-        userName: [{ required: true }]
+      formDetail: {
+        empUser: {
+          loginCode: "",
+          userName: ""
+        }
       },
       officeMenuData: [],
       officeCheckedArr: [],
+      officeCheckedArrSave: [],
       companyMenuData: [],
       companyCheckedArr: [],
-      menuData: [
-        // {
-        //   label: "苑东生物",
-        //   id: "1",
-        // }
-      ],
+      companyCheckedArrSave: [],
       checkAll1: false,
       checkAll2: false,
       defaultExpand1: [],
@@ -161,8 +162,6 @@ export default {
   methods: {
     init(res) {
       this.formDetail = JSON.parse(JSON.stringify(res));
-      this.dataRightsForm.loginCode = this.formDetail.empUser.loginCode;
-      this.dataRightsForm.userName = this.formDetail.empUser.userName;
       this.officeMenuData = this.$store.state.publicData.officeList;
       this.companyMenuData = this.$store.state.publicData.companyList;
       // 已经选择的 默认的
@@ -174,6 +173,10 @@ export default {
           this.officeCheckedArr.push(temp[i].ctrlData);
         }
       }
+      this.$nextTick(() => {
+        this.$refs.menuTreeDom1.expandFirst(this.officeMenuData);
+        this.$refs.menuTreeDom2.expandFirst(this.companyMenuData);
+      });
       this.showDataRights = true;
     },
     /* 展开或收起选项 */
@@ -187,8 +190,24 @@ export default {
     },
     /* 保存 */
     saveDataRights() {
-      this.$refs.menuTreeDom1.getCheckedKeys();
-      this.colseDataRights();
+      // [{"ctrlType":"Company","ctrlData":"SD"},{"ctrlType":"Office","ctrlData":"SDJN"}]
+      const temp = this.officeCheckedArrSave.concat(this.companyCheckedArrSave);
+      console.log(191, temp);
+      orgApi
+        .saveDataRightDetail({
+          userCode: this.formDetail.empUser.userCode,
+          loginCode: this.formDetail.empUser.loginCode,
+          userName: this.formDetail.empUser.userName,
+          userDataScopeListJson: temp || []
+        })
+        .then(res => {
+          if (res.result === "true") {
+            this.$message.success(res.message);
+            this.colseDataRights();
+          } else {
+            this.$message.warning(res.message);
+          }
+        });
     },
     colseDataRights(formName) {
       this.showDataRights = false;
@@ -203,6 +222,26 @@ export default {
     /* 设置全选反选 */
     handleCheckAllChange2(val) {
       this.$refs.menuTreeDom2.checkAll(val);
+    },
+    // 已选择机构
+    officePassCheckedNode(data) {
+      this.officeCheckedArrSave = this.resetVal(data, "Office");
+    },
+    // 已选择公司
+    companyPassCheckedNode(data) {
+      this.companyCheckedArrSave = this.resetVal(data, "Company");
+    },
+    /* 重组保存已选值 */
+    resetVal(arr, ctrlType) {
+      //  id: "YD", lable: "苑东生物";
+      const result = [];
+      for (let i = 0, len = arr.length; i < len; i++) {
+        result.push({
+          ctrlType,
+          ctrlData: arr[i]
+        });
+      }
+      return result;
     }
   }
 };

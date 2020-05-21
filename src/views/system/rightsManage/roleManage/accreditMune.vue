@@ -134,7 +134,7 @@ export default {
     },
     /* 保存 */
     saveDataRights() {
-      this.$refs.menuTreeDom1.getCheckedKeys();
+      // this.$refs.menuTreeDom1.getCheckedKeys();
       this.colseDataRights();
     },
     colseDataRights(formName) {

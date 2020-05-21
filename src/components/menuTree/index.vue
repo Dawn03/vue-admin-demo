@@ -7,16 +7,16 @@
       empty-text="暂无数据"
       :highlight-current="true"
       node-key="id"
-      :check-strictly="true"
+      :check-strictly="checkStrictly"
       :default-expand-all="expandAll"
       :default-expanded-keys="defaultExpand"
       :filter-node-method="filterNode"
       :default-checked-keys="checkedArr"
       :show-checkbox="showCheckbox"
       @node-click="handleNodeClick"
-      @check-change="handleCheckChange"
       @check="clickDeal"
     ></el-tree>
+    <!-- @check-change="handleCheckChange" -->
   </div>
 </template>
 <script>
@@ -57,6 +57,11 @@ export default {
       type: String,
       default: ""
     }
+    // checkStrictly: {
+    //   // 子父级是否关联选中
+    //   type: Boolean,
+    //   default: true
+    // }
   },
   data() {
     return {
@@ -66,7 +71,8 @@ export default {
         titleNameVal: ""
       },
       clickCount: 0,
-      dbIsTrue: false
+      dbIsTrue: false,
+      checkStrictly: true
     };
   },
   watch: {
@@ -124,25 +130,38 @@ export default {
         allNodes[i].expanded = this.expandAll;
       }
     },
-    /* 当前选中节点   节点选中状态发生变化时的回调*/
-    handleCheckChange(data, checked, indeterminate) {
-      // console.log(84, data, checked, indeterminate);
-    },
-    /* 全选反选 */
-    checkAll(val) {
-      if (val) {
-        this.$refs.menuTreeNode.setCheckedNodes(this.menuData);
-      } else {
-        this.$refs.menuTreeNode.setCheckedKeys([]);
-      }
-    },
     /* 展开第一级 */
     expandFirst(data) {
       // console.log(data[0].id, 2222);
       this.$refs.menuTreeNode.store.nodesMap[data[0].id].expanded = true;
     },
+
+    /* 全选反选 */
+    checkAll(val) {
+      // console.log(133, "val", val, this.menuData);
+      if (val) {
+        this.checkStrictly = false;
+        this.$nextTick(() => {
+          this.$refs.menuTreeNode.setCheckedNodes(this.menuData);
+          const checkedVal = this.$refs.menuTreeNode
+            .getCheckedKeys()
+            .concat(this.$refs.menuTreeNode.getHalfCheckedKeys());
+          this.$emit("passCheckedNode", checkedVal);
+        });
+      } else {
+        this.checkStrictly = true;
+        this.$refs.menuTreeNode.setCheckedKeys([]);
+      }
+    },
+    /* 获取当前选中节点   节点选中状态发生变化时的回调*/
+    // handleCheckChange(data, checked, indeterminate) {
+    //   const checkedNode = this.$refs.menuTreeNode.getCheckedNodes();
+    //   this.$emit("passCheckedNode", checkedNode);
+    // },
     /* 当复选框被点击的时候触发*/
     clickDeal(currentObj, treeStatus) {
+      this.checkStrictly = true;
+      console.log(153, "currentObj, treeStatus", currentObj, treeStatus);
       // 用于：父子节点严格互不关联时，父节点勾选变化时通知子节点同步变化，实现单向关联。
       const selected = treeStatus.checkedKeys.indexOf(currentObj.id); // -1未选中
       // 选中
@@ -152,30 +171,85 @@ export default {
         // 统一处理子节点为相同的勾选状态
         this.uniteChildSame(currentObj, true);
       } else {
+        if (currentObj.parentId !== -1) {
+          this.removeParent(currentObj, this.$refs.menuTreeNode);
+        }
         // 未选中 处理子节点全部未选中
-        if (currentObj.childs.length !== 0) {
+        if (currentObj.children.length !== 0) {
           this.uniteChildSame(currentObj, false);
         }
       }
+      const checkedVal = this.$refs.menuTreeNode
+        .getCheckedKeys()
+        .concat(this.$refs.menuTreeNode.getHalfCheckedKeys());
+      this.$emit("passCheckedNode", checkedVal);
     },
     // 统一处理子节点为相同的勾选状态
     uniteChildSame(treeList, isSelected) {
+      // console.log(171, "treeList, isSelected", treeList, isSelected);
       this.$refs.menuTreeNode.setChecked(treeList.id, isSelected);
-      for (let i = 0; i < treeList.childs.length; i++) {
-        this.uniteChildSame(treeList.childs[i], isSelected);
+      for (let i = 0; i < treeList.children.length; i++) {
+        this.uniteChildSame(treeList.children[i], isSelected);
       }
     },
-    // 统一处理父节点为选中
+    // 统一处理父节点为选中  或不选
     selectedParent(currentObj) {
+      console.log(179, "currentOb", currentObj);
       const currentNode = this.$refs.menuTreeNode.getNode(currentObj);
       if (currentNode.parent.key !== undefined) {
         this.$refs.menuTreeNode.setChecked(currentNode.parent, true);
         this.selectedParent(currentNode.parent);
+      } else {
+        this.$refs.menuTreeNode.setChecked(currentNode.parent, false);
       }
     },
     /* 清空所有节点选中状态 */
     resetChecked() {
       this.$refs.menuTreeNode.setCheckedKeys([]);
+    },
+    /**    子节点全没选中取消父级的选中状态   **/
+    removeParent(currentObj, ref) {
+      let a = 0;
+      let b = 0;
+      const currentNode = ref.getNode(currentObj);
+      if (currentNode.parent !== null) {
+        if (currentNode.parent.key !== undefined) {
+          ref.setChecked(currentNode.parent, true); // 根节点
+          this.removeParent(currentNode.parent, ref); // 递归判断子节点
+        }
+      }
+
+      // 不为0表示为父节点
+      if (currentNode.childNodes.length !== 0) {
+        // 循环判断父节点下的子节点
+        for (let i = 0; i < currentNode.childNodes.length; i++) {
+          // 判断父节点下的子节点是否全为false
+          if (currentNode.childNodes[i].checked === false) {
+            ++a;
+
+            // a === currentNode.childNodes.length 表明子节点全为false
+            if (a === currentNode.childNodes.length) {
+              // 等于 undefined 跳过,不等于继续执行
+              if (currentNode.childNodes[i].parent.key !== undefined) {
+                ref.setChecked(currentNode.childNodes[i].parent, false); // 父元素设置为false
+                // 循环上级父节点下的子节点
+                for (let i = 0; i < currentNode.parent.childNodes.length; i++) {
+                  // 判断父节点下的子节点是否全为false
+                  if (currentNode.parent.childNodes[i].checked === false) {
+                    ++b;
+
+                    // b === currentNode.parent.childNodes.length 表明子节点全为false
+                    if (b === currentNode.parent.childNodes.length) {
+                      ref.setChecked(currentNode.parent.key, false); // 父元素设置为false
+                      return this.removeParent(currentNode.parent, ref); // 继续递归循环判断
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 };

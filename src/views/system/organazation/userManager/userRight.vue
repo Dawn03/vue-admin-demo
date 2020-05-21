@@ -541,7 +541,7 @@ export default {
           userCode: row.userCode
         })
         .then(res => {
-          // console.log(527, res);
+          console.log(527, res);
           this.$refs.dataRightsPanel.init(res);
         });
     },
