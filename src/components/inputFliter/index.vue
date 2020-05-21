@@ -75,7 +75,6 @@ export default {
   },
   watch: {
     formItem(newVal, val) {
-      console.log(78, newVal, val);
       this.selectOptions = newVal;
     }
   },

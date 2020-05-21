@@ -26,7 +26,7 @@ const axiosInstance = axios.create({
   timeout: DEFAULT_TIME_OUT,
   headers: {
     '__sid': getToken(),
-    withCredentials: true,
+    withCredentials: true
   }
 });
 axiosInstance.interceptors.response.use(handleResponseSuccess, handleResponseFail);
@@ -283,15 +283,15 @@ function handleResponseSuccess(response) {
   // console.log("请求成功", response.data)
   // console.log("请求成功", getToken(), response)
   const result = response.data;
-  if (response.data.result === "login") {
-    Message({
-      message: response.data.message,
-      type: 'warning'
-    });
-    store.dispatch('user/resetToken').then(() => {
-      location.reload()
-    })
-  }
+  // if (response.data.result === "login") {
+  //   Message({
+  //     message: response.data.message,
+  //     type: 'warning'
+  //   });
+  //   store.dispatch('user/resetToken').then(() => {
+  //     location.reload()
+  //   })
+  // }
   return result;
   // }
   return handleError(response.config, result);

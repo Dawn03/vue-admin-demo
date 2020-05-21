@@ -68,19 +68,10 @@ export default {
   },
   mounted() {},
   methods: {
-    // 多选回显
+    // 多选回显 有值设置默认选中 无值清空
     showHadCheckedRow(rows) {
-      console.log(105, rows);
-      if (rows.length > 0) {
-        //  toggleSelection
-        this.$refs.table.toggleSelection(rows);
-        // rows.forEach(row => {
-
-        // });
-      } else {
-        /* 无值清空 */
-        // this.toggleSelection();
-      }
+      // console.log(105, rows);
+      this.$refs.table.toggleSelection(rows);
     },
     // 多选操作
     tableCheckBox(row) {
@@ -88,7 +79,6 @@ export default {
     },
     // 清除checkedBox多选操作
     toggleSelection() {
-      console.log(999);
       this.$refs.table.toggleSelection();
     }
   }

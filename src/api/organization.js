@@ -15,19 +15,16 @@ export const orgApi = {
       Message.error(err)
     })
   },
-  //  获取机构选择
   getInstitutionMenuTree: (param) => {
     return httpRequestor.get('a/sys/office/treeData', param).catch(err => {
       Message.error(err)
     })
   },
-  //   获取公司选择
   getCompanyMenuTree: (param) => {
     return httpRequestor.get('a/sys/company/treeData', param).catch(err => {
       Message.error(err)
     })
   },
-  // 获取岗位类型 a/sys/post/treeData
   getEmployeePosts: (param) => {
     return httpRequestor.get('a/sys/post/treeData', param).catch(err => {
       Message.error(err)
@@ -41,23 +38,37 @@ export const orgApi = {
       Message.error(err)
     })
   },
-
-  // 获取用户状态 转汉字 0 2 3
-  getUserStaus(param) {
-    return httpRequestor.get('/a/sys/dictData/listData', param).catch(err => {
-      Message.error(err)
-    })
-  },
   // 获取用户编辑详情
   getUserDetail: (param) => {
     return httpRequestor.get('/a/sys/empUser/form.json', param).catch(err => {
       Message.error(err)
     })
   },
-  // 停用启用用户
+  // 获取数据权限详情 userCode
+  getDataRightDetail: (param) => {
+    return httpRequestor.get(`/a/sys/empUser/formAuthDataScope.form.json?userCode=${param.userCode}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  // 保存数据权限 http://demo.jeesite.com/js/a/sys/empUser/saveAuthDataScope
+  saveDataRightDetail: (param) => {
+    // userCode: user8_6s3j
+    // loginCode: user8
+    // userName: 用户08
+    // userDataScopeListJson: [
+    //   { "ctrlType": "Office", "ctrlData": "SD" },
+    //   { "ctrlType": "Office", "ctrlData": "SDJN" },
+    //   { "ctrlType": "Office", "ctrlData": "SDJN01" }
+    // ]
+    return httpRequestor.postFormData(`/a/sys/empUser/saveAuthDataScope.form.json?userCode=${param.userCode}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  // 停用启用用户  js/a/sys/empUser/disable?userCode=user19_92w0
   stopUseOrStart: (param) => {
-    return httpRequestor.post(`/a/sys/empUser${param.stopOrStart}`, {
-      userCode: param.useparam
+    console.log('param', param)
+    return httpRequestor.post(`/a/sys/empUser/${param.stopOrStart}?userCode=${param.userCode}`, {
+      userCode: param.userCode
     }).catch(err => {
       Message.error(err)
     })
@@ -68,11 +79,22 @@ export const orgApi = {
       Message.error(err)
     })
   },
-
-  /*保存用户角色 */
+  /* 保存用户角色 */
   saveUserRole: (param) => {
     return httpRequestor.postFormData(`/a/sys/empUser/save`, param).catch(err => {
       Message.error(err)
     })
   },
+  /* 获取全部需要映射的字段 */
+  getMapFieldList: (param) => {
+    return httpRequestor.postFormData(`/a/sys/dictData/treeData`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 重置密码到初始状态  userCode=user18_rcn8*/
+  resetPw: (param) => {
+    return httpRequestor.postFormData(`/a/sys/empUser/resetpwd?userCode=${param.userCode}`).catch(err => {
+      Message.error(err)
+    })
+  }
 };

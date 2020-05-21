@@ -31,11 +31,11 @@
             </el-row>
           </el-form>
           <AssignRoleDetail
+            ref="tableCheckRef"
             :table-head="tableHead"
             :table-data="tableData"
             :table-check-box-value="tableCheckBoxValue"
             @tableCheckBoxVal="tableCheckBoxVal"
-            ref="tableCheckRef"
           ></AssignRoleDetail>
         </div>
       </template>
@@ -109,14 +109,14 @@ export default {
           op: "auth"
         })
         .then(res => {
-          let temp = JSON.parse(JSON.stringify(res.roleList));
+          const temp = JSON.parse(JSON.stringify(res.roleList));
           if (res.result === "false" || res.result === "login") {
             this.$message.warning(res.message);
           } else {
             this.showAssginRole = true;
             /* 控制表格回显 有显示 无清空*/
             this.$nextTick(() => {
-              let tempArr = [];
+              const tempArr = [];
               for (let i = 0, len = temp.length; i < len; i++) {
                 tempArr.push({
                   id: temp[i].roleCode,
@@ -134,7 +134,7 @@ export default {
     },
     /* 保存 */
     saveAssignRole() {
-      let obj = {
+      const obj = {
         op: "auth",
         userType: this.roleForm.userType,
         userCode: this.roleForm.userCode,

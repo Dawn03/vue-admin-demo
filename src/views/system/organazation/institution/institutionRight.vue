@@ -86,7 +86,7 @@
               size="small"
               @click="institutionEdit(scope.row, '编辑机构')"
             >
-              <i class="el-icon-edit"></i>
+              <i class="el-icon-edit" title="编辑"></i>
             </el-button>
             <el-button type="text" size="small" @click="stopUse(scope.row)">
               <i class="el-icon-video-pause"></i>
@@ -96,14 +96,14 @@
               size="small"
               @click="deleteHandleClick(scope.row)"
             >
-              <i class="el-icon-delete"></i>
+              <i class="el-icon-delete" title="删除"></i>
             </el-button>
             <el-button
               type="text"
               size="small"
               @click="institutionEdit(scope.row, '新增下级机构')"
             >
-              <i class="el-icon-plus"></i>
+              <i class="el-icon-plus" title="新增下级机构"></i>
             </el-button>
           </template>
         </el-table-column>

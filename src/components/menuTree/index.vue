@@ -10,6 +10,7 @@
       :default-expand-all="expandAll"
       :default-expanded-keys="defaultExpand"
       :filter-node-method="filterNode"
+      :default-checked-keys="checkedArr"
       :show-checkbox="showCheckbox"
       @node-click="handleNodeClick"
       @check-change="handleCheckChange"
@@ -37,7 +38,10 @@ export default {
       type: Boolean,
       default: false
     },
-
+    checkedArr: {
+      type: Array,
+      default: () => []
+    },
     titleName: {
       // 主要用来区分同个页面多个弹窗选择
       type: String,
