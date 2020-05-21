@@ -103,7 +103,6 @@
               <i class="el-icon-edit" title="编辑"></i>
             </el-button>
             <el-button type="text" size="small" @click="stopUse(scope.row)">
-              <<<<<<< HEAD
               <i
                 :class="[
                   scope.row.status === '0'
@@ -112,9 +111,6 @@
                 ]"
                 :title="scope.row.statusText"
               ></i>
-              =======
-              <i class="el-icon-video-pause" :title="stopOrStartText"></i>
-              >>>>>>> 2db3765d70e55be70bb11ec264868063393e8a1b
             </el-button>
             <el-button
               type="text"

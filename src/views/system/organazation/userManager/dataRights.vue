@@ -193,7 +193,8 @@ export default {
     colseDataRights(formName) {
       this.showDataRights = false;
       this.tableCheckBoxValue = [];
-      console.log(196, this.tableCheckBoxValue);
+      this.$refs.menuTreeDom1.resetChecked();
+      this.$refs.menuTreeDom2.resetChecked();
     },
     /* 设置全选反选 */
     handleCheckAllChange1(val) {

@@ -92,9 +92,8 @@ export default {
     /* 当前点击的节点 */
     handleNodeClick(data) {
       // 发送双击事件
-      console.log("this.dbIsTrue", this.dbIsTrue);
+      // console.log("this.dbIsTrue", this.dbIsTrue);
       if (this.dbIsTrue) {
-        // console.log("sssss", data);
         const _this = this;
         this.clickCount++;
         const fnEmitDblClick = debounce(() => {
@@ -106,7 +105,6 @@ export default {
         }, 500);
         fnEmitDblClick();
       } else {
-        // console.log("vvvvv", data);
         this.$emit("clickNodeReslut", data);
       }
     },
@@ -128,7 +126,7 @@ export default {
     },
     /* 当前选中节点   节点选中状态发生变化时的回调*/
     handleCheckChange(data, checked, indeterminate) {
-      console.log(84, data, checked, indeterminate);
+      // console.log(84, data, checked, indeterminate);
     },
     /* 全选反选 */
     checkAll(val) {
@@ -140,7 +138,7 @@ export default {
     },
     /* 展开第一级 */
     expandFirst(data) {
-      console.log(data[0].id, 2222);
+      // console.log(data[0].id, 2222);
       this.$refs.menuTreeNode.store.nodesMap[data[0].id].expanded = true;
     },
     /* 当复选框被点击的时候触发*/
@@ -174,6 +172,10 @@ export default {
         this.$refs.menuTreeNode.setChecked(currentNode.parent, true);
         this.selectedParent(currentNode.parent);
       }
+    },
+    /* 清空所有节点选中状态 */
+    resetChecked() {
+      this.$refs.menuTreeNode.setCheckedKeys([]);
     }
   }
 };
