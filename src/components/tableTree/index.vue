@@ -81,29 +81,22 @@ export default {
   },
   data() {
     return {
-      tablHeight: 500
+      tablHeight: 500,
+      tableDataMap: []
     };
   },
-  // watch: {
-  //   tablHeight: function() {
-  //     this.changeFixed(this.tablHeight);
-  //   }
-  // },
-
-  mounted() {
-    // const that = this;
-    // console.log(1213, document.body.clientHeight, window.screen.height);
-    // window.onresize = () => {
-    //   return (() => {
-    //     const heightStyle = window.screen.height - 250;
-    //     that.tablHeight = heightStyle;
-    //   })();
-    // };
+  watch: {
+    tableData: {
+      handler(newVal, val) {
+        this.tableDataMap = newVal;
+      },
+      immediate: true
+    }
   },
+  mounted() {},
   methods: {
     changeFixed(clientHeight) {
       // 动态修改样式
-      console.log(clientHeight);
       this.$refs.tableDom.style.height = clientHeight + "px";
     },
     handleSelectionChange(val) {
@@ -112,17 +105,23 @@ export default {
     },
     /* 回显或清除掉所有选中状态 */
     toggleSelection(rows) {
-      if (rows) {
-        rows.forEach(row => {
-          console.log("回显checkedbox", rows);
-          rows.forEach(row => {
-            console.log(123, row);
-            this.$refs.tableDom.toggleRowSelection(row);
+      // console.log(345, rows);
+      /* 已经选择的数据 数据原来的数据数组 */
+      if (rows.length) {
+        const idArr = [];
+        for (let i = 0, len = rows.length; i < len; i++) {
+          idArr.push(rows[i].id);
+        }
+        this.$nextTick(() => {
+          this.tableDataMap.forEach(row => {
+            if (idArr.indexOf(row.id) !== -1) {
+              this.$refs.tableDom.toggleRowSelection(row, true);
+            }
           });
         });
       } else {
-        console.log("清空checkedbox", rows);
         this.$refs.tableDom.clearSelection(); // 清空选项，项目中：请求接口后，重新请求数据渲染页面的时候，使用此方式，清空选中勾选状态。
+        // console.log("清空checkedbox", rows);
       }
     },
     expandFolodTable(arr, isExpand) {

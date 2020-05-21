@@ -443,43 +443,26 @@ export default {
     /* 触发选择归属机构 */
     institutionChoose(typeText) {
       this.menuTreeTitle = "机构选择";
-      this.getInstitutionMenuList();
+      this.getOfficeMenuTree();
     },
     /*  触发选择附属公司选择*/
     attchEmployeeChoose(row) {
-      this.getInstitutionMenuList();
+      this.getOfficeMenuTree();
       this.menuTreeTitle = "附属机构选择";
       this.attchCurrentRow = row;
       // 选择之后值的归属问题
     },
-    /* 获取归属公司列表 */
-    getInstitutionMenuList() {
-      orgApi.getInstitutionMenuTree().then(res => {
-        const attributes = {
-          id: "id",
-          parentId: "pId",
-          label: "name",
-          rootId: "0"
-        };
-        this.menuData = toTreeData(res, attributes);
-        this.innerDialogVisible = true;
-      });
+    /* 获取归属公机构列表 */
+    getOfficeMenuTree() {
+      this.menuData = this.$store.state.publicData.officeList;
+      this.innerDialogVisible = true;
     },
     /*  触发选择归属公司*/
     companyChoose() {
       this.menuTreeTitle = "归属公司选择";
-      orgApi.getCompanyMenuTree().then(res => {
-        const attributes = {
-          id: "id",
-          parentId: "pId",
-          label: "name",
-          rootId: "0"
-        };
-        this.menuData = toTreeData(res, attributes);
-        this.innerDialogVisible = true;
-      });
+      this.menuData = this.$store.state.publicData.companyList;
+      this.innerDialogVisible = true;
     },
-
     /* 关闭选择归属机构或者归属公司 */
     closeMuneTreeChoose() {
       this.innerDialogVisible = false;
@@ -491,7 +474,6 @@ export default {
     },
     /* 菜单树中当前点击的树节点*/
     clickNodeReslut(data) {
-      console.log(384, data);
       if (this.menuTreeTitle === "机构选择") {
         this.userForm.officeName = data.label;
         this.officeCodeClick = data;

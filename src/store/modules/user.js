@@ -1,7 +1,9 @@
 import {
   loginApi
 } from "@/api/login"
-
+import {
+  pubApi
+} from "@/api/public_request";
 import {
   getToken,
   setToken,
@@ -15,7 +17,8 @@ const getDefaultState = () => {
   return {
     __sid: getToken(),
     username: '',
-    avatar: ''
+    avatar: '',
+    userMap: []
   }
 }
 const state = getDefaultState()
@@ -34,6 +37,10 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  USER_MAP_LIST(state, data) {
+    // console.log(42, data);
+    state.userMap = data
   }
 }
 const actions = {
@@ -109,6 +116,17 @@ const actions = {
       commit('RESET_STATE')
       resolve()
     })
+  },
+  getUserMapFeild({
+    commit
+  }, type) {
+    pubApi
+      .getMapFieldList({
+        dictType: type // "sys_user_status"
+      })
+      .then(res => {
+        commit("USER_MAP_LIST", res)
+      });
   }
 }
 export default {

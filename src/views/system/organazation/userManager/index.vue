@@ -41,6 +41,8 @@ export default {
   mounted() {
     this.init();
     this.getInsMenuTree();
+    this.$store.dispatch("publicData/getOfficeMenuTree");
+    this.$store.dispatch("publicData/getCompanyMenuTree");
   },
   methods: {
     init() {

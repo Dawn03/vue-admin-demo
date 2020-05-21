@@ -17,17 +17,14 @@
           >
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="登录账号：" prop="loginAccount">
-                  <el-input
-                    v-model="dataRightsForm.loginAccount"
-                    :disabled="true"
-                  >
+                <el-form-item label="登录账号：" prop="loginCode">
+                  <el-input v-model="dataRightsForm.loginCode" :disabled="true">
                   </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="用户昵称：" prop="userAlias">
-                  <el-input v-model="dataRightsForm.userAlias" :disabled="true">
+                <el-form-item label="用户昵称：" prop="userName">
+                  <el-input v-model="dataRightsForm.userName" :disabled="true">
                   </el-input>
                 </el-form-item>
               </el-col>
@@ -55,10 +52,11 @@
                 <el-col :span="24">
                   <MenuTree
                     ref="menuTreeDom1"
-                    :menu-data="menuData"
+                    :menu-data="officeMenuData"
                     :default-expand="defaultExpand1"
                     :expand-all="expandAll1"
                     :show-checkbox="true"
+                    :checked-arr="officeCheckedArr"
                   ></MenuTree>
                 </el-col>
               </el-row>
@@ -83,10 +81,11 @@
                 <el-col :span="24">
                   <MenuTree
                     ref="menuTreeDom2"
-                    :menu-data="menuData"
+                    :menu-data="companyMenuData"
                     :default-expand="defaultExpand2"
                     :expand-all="expandAll2"
                     :show-checkbox="true"
+                    :checked-arr="companyCheckedArr"
                   ></MenuTree>
                 </el-col>
               </el-row>
@@ -118,7 +117,6 @@
   </div>
 </template>
 <script>
-// import { } from "module";
 import ColumnBar from "@/components/commonColumn";
 import DailogFrame from "@/components/dailogPanel/frame";
 import MenuTree from "@/components/menuTree";
@@ -133,53 +131,24 @@ export default {
     return {
       showDataRights: false,
       checked: true,
+      formDetail: null,
       dataRightsForm: {
-        loginAccount: "",
-        userAlias: ""
+        loginCode: "",
+        userName: ""
       },
       rules: {
-        loginAccount: [{ required: true }],
-        userAlias: [{ required: true }]
+        loginCode: [{ required: true }],
+        userName: [{ required: true }]
       },
+      officeMenuData: [],
+      officeCheckedArr: [],
+      companyMenuData: [],
+      companyCheckedArr: [],
       menuData: [
-        {
-          label: "苑东生物",
-          id: "1",
-          children: [
-            {
-              id: "1-1",
-              label: "成都硕德",
-              children: [
-                {
-                  id: "1-1-1",
-                  label: "质量保证部"
-                },
-                {
-                  id: "1-1-2",
-                  label: "财务部"
-                }
-              ]
-            },
-            {
-              id: "2-1",
-              label: "成都优洛生物",
-              children: [
-                {
-                  id: "2-1-1",
-                  label: "质量保证部"
-                },
-                {
-                  id: "2-1-2",
-                  label: "财务部"
-                },
-                {
-                  id: "2-1-3",
-                  label: "生产技术部"
-                }
-              ]
-            }
-          ]
-        }
+        // {
+        //   label: "苑东生物",
+        //   id: "1",
+        // }
       ],
       checkAll1: false,
       checkAll2: false,
@@ -190,9 +159,21 @@ export default {
     };
   },
   methods: {
-    init(row) {
-      //   console.log(99, row);
-      this.dataRightsForm = JSON.parse(JSON.stringify(row));
+    init(res) {
+      this.formDetail = JSON.parse(JSON.stringify(res));
+      this.dataRightsForm.loginCode = this.formDetail.empUser.loginCode;
+      this.dataRightsForm.userName = this.formDetail.empUser.userName;
+      this.officeMenuData = this.$store.state.publicData.officeList;
+      this.companyMenuData = this.$store.state.publicData.companyList;
+      // 已经选择的 默认的
+      const temp = this.formDetail.userDataScopeList;
+      for (let i = 0, len = temp.length; i < len; i++) {
+        if (temp[i]["ctrlType"] === "Company") {
+          this.companyCheckedArr.push(temp[i].ctrlData);
+        } else if (temp[i]["ctrlType"] === "Office") {
+          this.officeCheckedArr.push(temp[i].ctrlData);
+        }
+      }
       this.showDataRights = true;
     },
     /* 展开或收起选项 */
@@ -212,6 +193,7 @@ export default {
     colseDataRights(formName) {
       this.showDataRights = false;
       this.tableCheckBoxValue = [];
+      console.log(196, this.tableCheckBoxValue);
     },
     /* 设置全选反选 */
     handleCheckAllChange1(val) {

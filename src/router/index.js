@@ -64,7 +64,7 @@ export const constantRoutes = [{
     name: 'system',
     meta: {
       title: '系统管理',
-      icon: 'nested'
+      icon: 'dashboard'
     },
     children: [{
         path: 'organazation',

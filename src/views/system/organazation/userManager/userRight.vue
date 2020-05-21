@@ -100,17 +100,24 @@
               size="small"
               @click="editHandleClick(scope.row, '编辑')"
             >
-              <i class="el-icon-edit"></i>
+              <i class="el-icon-edit" title="编辑"></i>
             </el-button>
             <el-button type="text" size="small" @click="stopUse(scope.row)">
-              <i class="el-icon-video-pause"></i>
+              <i
+                :class="[
+                  scope.row.status === '0'
+                    ? 'el-icon-circle-check'
+                    : ' el-icon-video-pause'
+                ]"
+                :title="scope.row.statusText"
+              ></i>
             </el-button>
             <el-button
               type="text"
               size="small"
               @click="deleteHandleClick(scope.row)"
             >
-              <i class="el-icon-delete"></i>
+              <i class="el-icon-delete" title="删除"></i>
             </el-button>
 
             <el-popover
@@ -190,6 +197,7 @@ import InAndCompany from "./insAndcompanyPanel";
 // import { returnReg } from "@/utils/validate"; /* 表单正则验证 */
 import { clearFilterVal, getInputVal, toTreeData } from "@/utils/pubFunc";
 import { orgApi } from "@/api/organization";
+
 import { statusMap } from "@/utils/pubFunc";
 export default {
   name: "UserRight",
@@ -216,7 +224,9 @@ export default {
       sys_user_status: [], // 用户状态键值存储
       changeArrowDirection: false,
       currentId: null,
+      stopOrStart: null,
       titleName: "",
+      stopOrStartText: "", // 停用或者启用
       formInline: [
         {
           type: "input",
@@ -362,8 +372,9 @@ export default {
   },
   mounted() {
     const obj = {
-      pageSize: this.searchVal.pageSize,
-      pageNo: this.searchVal.pageNo
+      pageSize: this.pageNation.pageSize,
+      pageNo: this.pageNation.pageNo,
+      status: ""
     };
     this.init(obj);
     // 获取用户角色
@@ -371,24 +382,18 @@ export default {
     // console.log(397, '刚刚启动时进入页面')
   },
   methods: {
-    init(obj) {
+    async init(param) {
+      await this.$store.dispatch("user/getUserMapFeild", "sys_user_status");
       orgApi
-        .getUserList(obj)
+        .getUserList(param)
         .then(response => {
           const obj = {};
-          /* 获取用户状态 匹配显示汉字*/
-          orgApi
-            .getUserStaus({
-              dictType: "sys_user_status"
-            })
-            .then(res => {
-              this.sys_user_status = res;
-              for (let i = 0, len = res.length; i < len; i++) {
-                obj[res[i]["dictValue"]] = res[i]["dictLabel"];
-              }
-              this.pageNation.total = response.count;
-              this.tableData = statusMap(response.list, obj);
-            });
+          const res = this.$store.state.user.userMap;
+          for (let i = 0, len = res.length; i < len; i++) {
+            obj[res[i]["value"]] = res[i]["name"];
+          }
+          this.pageNation.total = response.count;
+          this.tableData = statusMap(response.list, obj);
         })
         .catch(function(error) {
           console.log(error);
@@ -429,7 +434,8 @@ export default {
       this.searchVal = {};
       const obj = {
         pageSize: this.pageNation.pageSize,
-        pageNo: 1
+        pageNo: 1,
+        status: null
       };
       this.init(obj);
       console.log(this.searchVal);
@@ -478,14 +484,14 @@ export default {
     },
     /* 禁用启用 */
     stopUse(row) {
-      console.log(472, row);
       if (row.status === "0") {
         this.stopOrStart = "disable";
+        this.stopOrStartText = "停用";
       } else {
         this.stopOrStart = "enable";
+        this.stopOrStartText = "起用";
       }
-      this.stopOrStart = row.status;
-      this.$alertMsgBox("确认要停用该用户吗", "信息")
+      this.$alertMsgBox(`确定要${this.stopOrStartText}该用户吗`, "信息")
         .then(() => {
           orgApi
             .stopUseOrStart({
@@ -493,7 +499,17 @@ export default {
               userCode: row.userCode
             })
             .then(res => {
-              this.$message.success(res, "成功");
+              if (res.result === "true") {
+                const obj = {
+                  pageSize: this.searchVal.pageSize,
+                  pageNo: this.searchVal.pageNo,
+                  status: ""
+                };
+                this.init(obj);
+                this.$message.success(res.message);
+              } else {
+                this.$message.warning(res.message);
+              }
             });
         })
         .catch(() => {
@@ -518,13 +534,30 @@ export default {
     assignRole(row) {
       this.$refs.assignRolePanel.init(row);
     },
+    /* 数据权限 */
     dataRights(row) {
-      this.$refs.dataRightsPanel.init(row);
+      orgApi
+        .getDataRightDetail({
+          userCode: row.userCode
+        })
+        .then(res => {
+          // console.log(527, res);
+          this.$refs.dataRightsPanel.init(res);
+        });
     },
     resetPassword(row) {
-      this.$alertMsgBox("确认要将该用户密码重置到初始状态吗", "信息")
+      this.$alertMsgBox(
+        `确认要将 ${row.userCode} 用户密码重置到初始状态吗`,
+        "信息"
+      )
         .then(() => {
-          this.$message.success("成功");
+          orgApi.resetPw({ userCode: row.userCode }).then(res => {
+            if (res.result === "true") {
+              this.$message.success(res.message);
+            } else {
+              this.$message.warning(res.message);
+            }
+          });
         })
         .catch(() => {
           this.$message.info("取消");
@@ -536,7 +569,6 @@ export default {
     },
     currentChange(val) {
       this.searchVal.pageNo = val;
-      console.log(23323, val);
       const obj = {
         pageSize: this.pageNation.pageSize,
         pageNo: this.pageNation.pageNo
