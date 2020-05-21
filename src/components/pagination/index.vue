@@ -48,8 +48,8 @@ export default {
 </script>
 <style lang="scss">
 .page-box {
-  height: 40px;
-  line-height: 40px;
-  margin: 20px 0;
+  height: 30px;
+  line-height: 30px;
+  margin: 10px 0;
 }
 </style>

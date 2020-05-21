@@ -2,10 +2,11 @@
   <div>
     <el-table
       ref="tableDom"
+      v-adaptive="{ bottomOffset: 50 }"
       :data="tableData"
       border
       stripe
-      :height="defaultHeight"
+      height="200"
       :fit="tableFit"
       style="width: 100%"
       row-key="id"
@@ -69,10 +70,6 @@ export default {
     showOverflow: {
       type: Boolean,
       default: true
-    },
-    defaultHeight: {
-      type: Number,
-      default: 500
     },
     selectOnIndeterminate: {
       type: Boolean,

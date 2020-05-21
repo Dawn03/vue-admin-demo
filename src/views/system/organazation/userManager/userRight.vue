@@ -88,7 +88,12 @@
         </span>
       </template>
       <template slot="statusText" slot-scope="scope">
-        <el-button round type="success" size="mini">
+        <!-- <el-button round type="success" size="mini"> -->
+        <el-button
+          round
+          :type="scope.row.status === '0' ? 'success' : 'danger'"
+          size="mini"
+        >
           {{ scope.row.statusText }}
         </el-button>
       </template>

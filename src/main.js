@@ -21,6 +21,8 @@ import 'default-passive-events'
 import '@/components/messageBox'
 import baseUrl_ from '@/api/config'
 Vue.prototype.GLOBAL = baseUrl_;
+import adaptive from "@/directive/el-table"
+Vue.use(adaptive)
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
