@@ -35,12 +35,12 @@ export default {
 .el-form-item__error:after {
   display: block;
   content: "";
-  border-width: 8px 8px 8px 8px;
+  border-width: 7px 7px 7px 7px;
   border-style: solid;
   border-color: transparent transparent #f56c6c transparent;
   position: absolute;
   left: 14px;
-  top: -20px;
+  top: -19px;
   color: #f56c6c;
   font-size: 12px;
   line-height: 1;
