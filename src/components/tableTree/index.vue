@@ -7,6 +7,8 @@
       border
       stripe
       height="200"
+      lazy
+      :load="load"
       :fit="tableFit"
       style="width: 100%"
       row-key="id"
@@ -92,9 +94,9 @@ export default {
   },
   mounted() {},
   methods: {
-    changeFixed(clientHeight) {
-      // 动态修改样式
-      this.$refs.tableDom.style.height = clientHeight + "px";
+    load(tree, treeNode, resolve) {
+      console.log(tree, treeNode);
+      this.$emit("requstLazyLoad", { tree, resolve });
     },
     handleSelectionChange(val) {
       console.log("tableCheckBox", val);

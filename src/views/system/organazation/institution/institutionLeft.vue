@@ -1,6 +1,11 @@
 <template>
   <div class="user-head ">
-    <LeftTree :title-name="'组织机构'" :menu-data="menuData"></LeftTree>
+    <LeftTree
+      :title-name="'组织机构'"
+      :menu-data="instMenuData"
+      v-bind="$attrs"
+      v-on="$listeners"
+    ></LeftTree>
   </div>
 </template>
 <script>
@@ -9,48 +14,17 @@ export default {
   components: {
     LeftTree
   },
+  props: {
+    instMenuData: {
+      type: Array,
+      default: () => {
+        return [];
+      }
+    }
+  },
   data() {
     return {
-      menuData: [
-        {
-          label: "苑东生物",
-          id: "1",
-          children: [
-            {
-              id: "1-1",
-              label: "成都硕德",
-              children: [
-                {
-                  id: "1-1-1",
-                  label: "质量保证部"
-                },
-                {
-                  id: "1-1-2",
-                  label: "财务部"
-                }
-              ]
-            },
-            {
-              id: "2-1",
-              label: "成都优洛生物",
-              children: [
-                {
-                  id: "2-1-1",
-                  label: "质量保证部"
-                },
-                {
-                  id: "2-1-2",
-                  label: "财务部"
-                },
-                {
-                  id: "2-1-3",
-                  label: "生产技术部"
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      menuData: []
     };
   }
 };

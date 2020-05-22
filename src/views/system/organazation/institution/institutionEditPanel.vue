@@ -18,9 +18,9 @@
           >
             <el-row :gutter="gutterVal">
               <el-col :span="12">
-                <el-form-item label="上级机构：" prop="heightInstitution">
+                <el-form-item label="上级机构：" prop="parent.officeName">
                   <el-input
-                    v-model="institutionForm.heightInstitution"
+                    v-model="institutionForm.parent.officeName"
                     @focus="institutionChoose"
                   >
                     <el-button slot="append" icon="el-icon-search"></el-button>
@@ -30,36 +30,42 @@
             </el-row>
             <el-row :gutter="gutterVal">
               <el-col :span="12">
-                <el-form-item label="机构名称：" prop="inName">
-                  <el-input v-model="institutionForm.inName"></el-input>
+                <el-form-item label="机构名称：" prop="officeName">
+                  <el-input v-model="institutionForm.officeName"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="机构代码：" prop="inCode">
-                  <el-input v-model="institutionForm.inCode"></el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="gutterVal">
-              <el-col :span="12">
-                <el-form-item label="机构全称：" prop="institutionFullName">
-                  <el-input v-model="institutionForm.institutionFullName">
-                    <el-button slot="append" icon="el-icon-message"></el-button>
-                  </el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="排序号：" prop="rank">
-                  <el-input v-model="institutionForm.rank"> </el-input>
+                <el-form-item label="机构代码：" prop="viewCode">
+                  <el-input v-model="institutionForm.viewCode"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="gutterVal">
               <el-col :span="12">
-                <el-form-item label="机构类型：" prop="inType">
-                  <el-input v-model="institutionForm.inType">
-                    <el-button slot="append" icon="el-icon-phone"></el-button>
-                  </el-input>
+                <el-form-item label="机构全称：" prop="fullName">
+                  <el-input v-model="institutionForm.fullName"> </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="排序号：" prop="treeSort">
+                  <el-input v-model="institutionForm.treeSort"> </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="gutterVal">
+              <el-col :span="12">
+                <el-form-item label="机构类型：" prop="officeType">
+                  <el-select
+                    v-model="institutionForm.officeType"
+                    style="width:100%;"
+                  >
+                    <el-option
+                      v-for="item in officeOptions"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id"
+                    />
+                  </el-select>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -74,8 +80,8 @@
               </el-col>
 
               <el-col :span="12">
-                <el-form-item label="办公电话：" prop="telNunmber">
-                  <el-input v-model="institutionForm.telNunmber"></el-input>
+                <el-form-item label="办公电话：" prop="phone">
+                  <el-input v-model="institutionForm.phone"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -86,8 +92,8 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="邮政编码：" prop="postcode">
-                  <el-input v-model="institutionForm.postcode"> </el-input>
+                <el-form-item label="邮政编码：" prop="zipCode">
+                  <el-input v-model="institutionForm.zipCode"> </el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -100,9 +106,9 @@
             </el-row>
             <el-col>
               <el-row :span="24" style="margin-top: 20px;" :rows="4">
-                <el-form-item label="备注信息：" prop="remark">
+                <el-form-item label="备注信息：" prop="remarks">
                   <el-input
-                    v-model="institutionForm.remark"
+                    v-model="institutionForm.remarks"
                     type="textarea"
                   ></el-input>
                 </el-form-item>
@@ -117,7 +123,7 @@
               ref="extentionDom"
               :style="{ height: exHeight }"
               style="overflow: hidden;"
-              :extention-form="institutionForm.extentionForm"
+              :extention-form="institutionForm.extentionForm.extend"
               @extentionFormVal="extentionFormVal"
             ></ExtentionFeild>
           </el-form>
@@ -133,7 +139,6 @@
           ></ChooseMenuTree>
         </div>
       </template>
-
       <template slot="footer">
         <div style="text-indent: 100px;">
           <el-button
@@ -164,7 +169,8 @@ import TableTree from "@/components/tableTree";
 import ExtentionFeild from "@/components/extentionFeild";
 import ChooseMenuTree from "@/components/chooseMenuTree";
 import { returnReg } from "@/utils/validate";
-import { createKey } from "@/utils/pubFunc";
+import { orgApi } from "../../../../api/organization";
+// import {  } from "@/utils/pubFunc";
 export default {
   name: "UserEdit",
   components: {
@@ -174,7 +180,39 @@ export default {
     ExtentionFeild,
     ChooseMenuTree
   },
+  props: {
+    officeOptions: {
+      type: Array,
+      default: () => {
+        [];
+      }
+    }
+  },
   data() {
+    const treeSortValidator = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("必填信息"));
+      } else if (!returnReg("positiveInteger").test(value)) {
+        callback(new Error("请输入一个正整数!"));
+      } else {
+        callback();
+      }
+    };
+    const phoneValidator = (rule, value, callback) => {
+      if (
+        value !== "" &&
+        !returnReg("mobile").test(value) &&
+        !returnReg("phone").test(value)
+      ) {
+        callback(
+          new Error(
+            "请正确填写您的电话号码，固话为区号(3-4位)号码(7-9位),手机为13,14,15,16,17,18,19号段"
+          )
+        );
+      } else {
+        callback();
+      }
+    };
     return {
       titleType: "",
       exHeight: "0px",
@@ -186,28 +224,48 @@ export default {
       menuData: [],
       gutterVal: 100,
       institutionForm: {
-        heightInstitution: "",
-        inName: "",
-        inCode: "",
-        institutionFullName: "",
-        rank: "",
-        inType: "",
-        dutyPerson: "",
-        telNunmber: "",
-        address: "",
-        postcode: "",
-        email: "",
-        remark: "",
-        extentionForm: [
-          {
-            lable: "String1",
-            value: "",
-            type: "input"
+        parent: {
+          id: "id", // 上级机构
+          officeName: ""
+        },
+        officeName: "", // 机构名称
+        fullName: "", // 机构全称
+        treeSort: "", // 排序号  字母 数字  下划线
+        officeType: "", // 机构类型
+        viewCode: "", // 机构代码
+        leader: "", // 负责人
+        phone: "", // 办公电话
+        address: "", // 联系地址
+        zipCode: "", // 邮政编码
+        email: "", // 电子邮箱
+        remarks: "", // 备注信息
+        extentionForm: {
+          extend: {
+            extendS1: "",
+            extendS2: "",
+            extendS3: "",
+            extendS4: "",
+            extendS5: "",
+            extendS6: "",
+            extendS7: "",
+            extendS8: "",
+            extendI1: "",
+            extendI2: "",
+            extendI3: "",
+            extendI4: "",
+            extendF1: "",
+            extendF2: "",
+            extendF3: "",
+            extendF4: "",
+            extendD1: "",
+            extendD2: "",
+            extendD3: "",
+            extendD4: ""
           }
-        ]
+        }
       },
       rules: {
-        institution: [
+        "parent.officeName": [
           { required: true, message: "必填信息", trigger: "change" },
           {
             // pattern: returnReg("otaGrade"),
@@ -215,11 +273,12 @@ export default {
             trigger: "blur"
           }
         ],
-        account: [
-          { required: true, message: "请输入活动名称", trigger: "blur" },
-          { min: 4, max: 20, message: "长度在 4 到 20 个字符", trigger: "blur" }
+        officeName: [{ required: true, message: "必填信息", trigger: "blur" }],
+        viewCode: [{ required: true, message: "必填信息", trigger: "blur" }],
+        fullName: [{ required: true, message: "必填信息", trigger: "blur" }],
+        treeSort: [
+          { required: true, validator: treeSortValidator, trigger: "blur" }
         ],
-        alias: [{ required: true, message: "请选择活动区域", trigger: "blur" }],
         email: [
           {
             pattern: returnReg("email"),
@@ -229,8 +288,7 @@ export default {
         ],
         phone: [
           {
-            pattern: returnReg("phone"),
-            message: "输入正确的手机号",
+            validator: phoneValidator,
             trigger: "blur"
           }
         ],
@@ -250,122 +308,32 @@ export default {
         ],
         weight: [{ message: "请选择活动资源", trigger: "change" }],
         desc: [{ message: "请填写活动形式", trigger: "blur" }]
-      },
-      slotColumns: ["affiation", "jobs"],
-      tableHead: {
-        affiation: "附属机构",
-        jobs: "所属岗位"
-      },
-      // tableData: [],
-      addCountIndex: 0
+      }
     };
   },
-  mounted() {
-    this.initExtention();
-  },
+  mounted() {},
   methods: {
-    /* 初始化扩展字段 */
-    initExtention() {
-      const concatArr = createKey("String", 8, "input").concat(
-        createKey("Integer", 4, "input"),
-        createKey("Float", 4, "input"),
-        createKey("Date", 4, "date")
-      );
-      this.institutionForm.extentionForm = concatArr;
-    },
     /* 显示对话框 */
     show(row, type) {
+      // console.log(311, row);
       // 编辑机构  新增下级机构  新增机构
       this.titleType = type;
       this.showEditDailog = true;
-      this.institutionForm = row;
-      console.log(row);
+      this.institutionForm = Object.assign(row, this.institutionForm);
     },
     /* 关闭编辑对话框 */
     closeEditDialog() {
       this.showEditDailog = false;
     },
-    /* 触发选择归属机构 */
+    /* 触发选择上级机构 */
     institutionChoose() {
-      this.menuTreeTitle = "上级机构";
-      console.log(323);
-      this.menuData = [
-        {
-          label: "苑东生物",
-          id: "1",
-          children: [
-            {
-              id: "1-1",
-              label: "成都硕德",
-              children: [
-                {
-                  id: "1-1-1",
-                  label: "质量保证部"
-                },
-                {
-                  id: "1-1-2",
-                  label: "财务部"
-                }
-              ]
-            },
-            {
-              id: "2-1",
-              label: "成都优洛生物",
-              children: [
-                {
-                  id: "2-1-1",
-                  label: "质量保证部"
-                },
-                {
-                  id: "2-1-2",
-                  label: "财务部"
-                },
-                {
-                  id: "2-1-3",
-                  label: "生产技术部"
-                }
-              ]
-            }
-          ]
-        }
-      ];
-      this.innerDialogVisible = true;
-      // console.log(531);
+      this.$nextTick(() => {
+        console.log(335, this.menuData);
+        this.menuData = this.$store.state.publicData.officeList;
+        this.innerDialogVisible = true;
+      });
     },
-    /*  触发选择归属公司*/
-    companyChoose() {
-      this.menuTreeTitle = "公司选择";
-      this.innerDialogVisible = true;
-      this.menuData = [
-        {
-          label: "苑东生物",
-          id: "1",
-          children: [
-            {
-              id: "1-1",
-              label: "四川阳光润禾"
-            },
-            {
-              id: "1-2",
-              label: "四川青木制药"
-            },
-            {
-              id: "1-3",
-              label: "西藏润禾"
-            },
-            {
-              id: "1-4",
-              label: "成都硕德"
-            },
-            {
-              id: "1-5",
-              label: "成都优诺生物"
-            }
-          ]
-        }
-      ];
-    },
-    /* 关闭选择归属机构或者归属公司 */
+    /* 关闭上级机构选择 */
     closeMuneTreeChoose() {
       this.innerDialogVisible = false;
     },
@@ -376,12 +344,9 @@ export default {
     },
     /* 菜单树中当前点击的树节点*/
     clickNodeReslut(data) {
-      // console.log(384, data);
-      if (this.menuTreeTitle === "机构选择") {
-        this.institutionForm.institution = data.label;
-      } else {
-        this.institutionForm.company = data.label;
-      }
+      console.log(384, data);
+      this.institutionForm.parent.id = data.id;
+      this.institutionForm.parent.officeName = data.label;
       this.closeMuneTreeChoose();
       this.keyVal = "";
     },
@@ -396,23 +361,6 @@ export default {
       this.addCountIndex++;
       // console.log(this.institutionForm.tableData);
     },
-    /* 删除新增 */
-    deleteAdd(row) {
-      // console.log(row);
-      for (
-        let i = 0, len = this.institutionForm.tableData.length;
-        i < len;
-        i++
-      ) {
-        if (row.id === this.institutionForm.tableData[i].id) {
-          this.institutionForm.tableData.splice(
-            this.institutionForm.tableData[i],
-            1
-          );
-          return;
-        }
-      }
-    },
     /* 显示扩展字段 */
     showExtentionDom() {
       this.exHeight = this.exHeight == "0px" ? "480px" : "0px";
@@ -423,9 +371,13 @@ export default {
     },
     /* 提交 */
     submitForm(formName) {
-      // console.log(467, this.institutionForm);
+      // parent  officeName id
+      this.institutionForm.leader = this.institutionForm.dutyPerson;
       this.$refs[formName].validate(valid => {
         if (valid) {
+          orgApi.saveOfficeAdd(this.institutionForm).then(res => {
+            console.log(res);
+          });
           console.log("submit!");
         } else {
           console.log("error submit!!");

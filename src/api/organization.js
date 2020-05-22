@@ -88,5 +88,26 @@ export const orgApi = {
     return httpRequestor.postFormData(`/a/sys/empUser/resetpwd?userCode=${param.userCode}`).catch(err => {
       Message.error(err)
     })
+  },
+  /**
+   * 机构管理
+   * **/
+  //  获取机构列表
+  getOfficeList: (param) => {
+    return httpRequestor.get(`/a/sys/office/listData`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 懒加载表格中的子菜单 */
+  getChildList: (param) => {
+    return httpRequestor.get(`/a/sys/office/listData`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 保存机构管理  sys/office/save*/
+  saveOfficeAdd: (param) => {
+    return httpRequestor.postFormData(`/a/sys/office/save`, param).catch(err => {
+      Message.error(err)
+    })
   }
 };

@@ -37,28 +37,6 @@ export default {
   data() {
     return {
       gutterVal: 100
-      // extentionForm: {
-      //   String11: "",
-      //   String12: "",
-      //   String13: "",
-      //   String14: "",
-      //   String15: "",
-      //   String16: "",
-      //   String17: "",
-      //   String18: "",
-      //   Integer1: "",
-      //   Integer2: "",
-      //   Integer3: "",
-      //   Integer4: "",
-      //   Float1: "",
-      //   Float2: "",
-      //   Float3: "",
-      //   Float4: "",
-      //   Date1: "",
-      //   Date2: "",
-      //   Date3: "",
-      //   Date4: ""
-      // }
     };
   },
   computed: {

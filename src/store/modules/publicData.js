@@ -28,6 +28,7 @@ const actions = {
     commit
   }) {
     pubApi.getOfficeMenuTree().then(res => {
+      // console.log(res);
       const attributes = {
         id: "id",
         parentId: "pId",

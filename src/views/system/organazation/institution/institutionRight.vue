@@ -66,17 +66,12 @@
       :slot-columns="slotColumns"
       :table-fit="tableFit"
       style="margin-top: 10px;"
+      @requstLazyLoad="requstLazyLoad"
     >
-      <template slot="institutionName" slot-scope="scope">
+      <template slot="officeName" slot-scope="scope">
         <span class="td-color" @click="institutionEdit(scope.row, '编辑机构')">
-          {{ scope.row.institutionName }}
+          {{ scope.row.officeName }}
         </span>
-      </template>
-      <template slot="userAlias" slot-scope="scope">
-        <span class="td-color">{{ scope.row.userAlias }}</span>
-      </template>
-      <template slot="vehicle_license" slot-scope="scope">
-        <span class="td-color">{{ scope.row.vehicle_license }}</span>
       </template>
       <template slot="operate">
         <el-table-column fixed="right" label="操作" width="120" align="center">
@@ -116,56 +111,59 @@
       @closeDialog="closeDialog"
     ></DailogFrame>
     <!-- table行点击对话框 -->
-    <InstitutionEditPanel ref="institutionEditPanel"></InstitutionEditPanel>
+    <InstitutionEditPanel
+      ref="institutionEditPanel"
+      :office-options="officeOptions"
+    ></InstitutionEditPanel>
   </div>
 </template>
 <script>
 import TableTree from "@/components/tableTree";
-import ChooseTreePanel from "@/components/pageParts/chooseTreePanel";
 import InputFilter from "@/components/inputFliter";
 import DailogFrame from "@/components/dailogPanel/frame";
 import InstitutionEditPanel from "./institutionEditPanel";
 // import { returnReg } from "@/utils/validate"; /* 表单正则验证 */
 import { clearFilterVal, getInputVal } from "@/utils/pubFunc";
+import { orgApi } from "../../../../api/organization";
+import { pubApi } from "@/api/public_request";
 export default {
   name: "UserRight",
   components: {
     TableTree,
     InputFilter,
     DailogFrame,
-    ChooseTreePanel,
     InstitutionEditPanel
   },
   data() {
     return {
       btnText: "查询",
       showDailog: false,
-
       titleName: "",
+      officeOptions: [], // 机构类型
       formInline: [
         {
           type: "input",
           label: "机构代码",
-          key: "acount",
+          key: "viewCode",
           value: ""
         },
         {
           type: "input",
           label: "机构名称",
-          key: "alias",
+          key: "officeName",
           value: ""
         },
         {
           type: "input",
           label: "机构全称",
-          key: "name",
+          key: "fullName",
           value: ""
         },
         {
-          type: "input",
+          type: "select",
           label: "机构类型",
-          key: "phone",
-
+          key: "officeType",
+          options: [],
           value: ""
         },
         {
@@ -173,12 +171,12 @@ export default {
           label: "状态",
           options: [
             {
-              label: "测试1",
-              value: "test1"
+              label: "正常",
+              value: "0"
             },
             {
-              label: "测试2",
-              value: "test2"
+              label: "停用",
+              value: "2"
             }
           ],
           key: "status",
@@ -188,101 +186,68 @@ export default {
       showMore: false,
       tableFit: true,
       columnWidths: {
-        institutionName: 130,
-        number: 130,
-        format: 130
+        officeName: 130
       },
-      slotColumns: ["institutionName"],
+      slotColumns: ["officeName"],
       tableHead: {
-        institutionName: "机构名称",
-        institutionFullName: "机构全称",
-        orderNumber: "排序号",
-        institutionType: "机构类型",
-        updateTime: "更新时间",
-        remarkMessage: "备注信息",
+        officeName: "机构名称",
+        fullName: "机构全称",
+        treeSort: "排序号",
+        // institutionType: "机构类型",
+        updateDate: "更新时间",
+        // remarkMessage: "备注信息",
         status: "状态"
       },
-      tableData: [
-        {
-          id: 1,
-          institutionName: "机构名称",
-          institutionFullName: "机构全称1",
-          orderNumber: "10",
-          institutionType: "机构类型",
-          updateTime: "更新时间",
-          remarkMessage: "备注信息",
-          status: "状态",
-          children: [
-            {
-              id: 11,
-              institutionName: "机构名称",
-              institutionFullName: "机构全称2",
-              orderNumber: "10",
-              institutionType: "机构类型",
-              updateTime: "更新时间",
-              remarkMessage: "备注信息",
-              status: "状态",
-              children: [
-                {
-                  id: 111,
-                  institutionName: "机构名称",
-                  institutionFullName: "机构全称2",
-                  orderNumber: "10",
-                  institutionType: "机构类型",
-                  updateTime: "更新时间",
-                  remarkMessage: "备注信息",
-                  status: "状态"
-                },
-                {
-                  id: 112,
-                  institutionName: "机构名称",
-                  institutionFullName: "机构全称2",
-                  orderNumber: "10",
-                  institutionType: "机构类型",
-                  updateTime: "更新时间",
-                  remarkMessage: "备注信息",
-                  status: "状态"
-                }
-              ]
-            },
-            {
-              id: 12,
-              institutionName: "机构名称",
-              institutionFullName: "机构全称3",
-              orderNumber: "10",
-              institutionType: "机构类型",
-              updateTime: "更新时间",
-              remarkMessage: "备注信息",
-              status: "状态"
-            }
-          ]
-        },
-        {
-          id: 2,
-          institutionName: "机构名称",
-          institutionFullName: "机构全称",
-          orderNumber: "10",
-          institutionType: "机构类型",
-          updateTime: "更新时间",
-          remarkMessage: "备注信息",
-          status: "状态"
-        }
-      ]
+      tableData: []
     };
   },
+  mounted() {
+    this.$nextTick(() => {
+      this.getOfficeType("sys_office_type");
+      this.init({
+        status: "",
+        ctrlPermi: 2
+      });
+    });
+  },
   methods: {
+    init(param) {
+      orgApi.getOfficeList(param).then(res => {
+        if (res.length) {
+          res[0].hasChildren = true;
+        }
+        this.tableData = res;
+      });
+    },
+    /* 获取机构类型 */
+    getOfficeType(dictType) {
+      pubApi
+        .getMapFieldList({
+          dictType
+        })
+        .then(res => {
+          for (let i = 0, len = res.length; i < len; i++) {
+            res[i].label = res[i].name;
+          }
+          this.formInline[3].options = res;
+          this.officeOptions = res;
+        });
+    },
     showOrHidden() {
       this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
     },
     /* 获取填入输入框的值  */
     searchBtn() {
-      // const temp = this.formInline.concat(this.moreFormItem);
       const valObj = getInputVal(this.formInline);
-      console.log(valObj);
+      this.init(valObj);
     },
     /* 清除输入框内的值 */
     resetForm() {
       clearFilterVal(this.formInline);
+      this.init({
+        status: "",
+        ctrlPermi: 2
+      });
     },
     refreshPage() {
       this.$refs.theTable.expandFolodTable(this.tableData, false);
@@ -295,7 +260,6 @@ export default {
     },
     forArr(arr, isExpand) {
       arr.forEach(i => {
-        console.log(this.$refs.theTable);
         this.$refs.theTable.toggleRowExpansion(i, isExpand);
         if (i.children) {
           this.forArr(i.children, isExpand);
@@ -303,7 +267,6 @@ export default {
       });
     },
     addNew(row, type) {
-      console.log(row, type);
       this.$refs.institutionEditPanel.show(row, type);
     },
     // 显示对话框选择
@@ -317,10 +280,8 @@ export default {
     },
     /* 编辑表格 */
     institutionEdit(row, type) {
-      console.log(321, row, type);
       this.$refs.institutionEditPanel.show(row, type);
     },
-
     stopUse() {
       this.$alertMsgBox("确认要停用该用户吗?", "信息")
         .then(() => {
@@ -338,6 +299,24 @@ export default {
         .catch(() => {
           this.$message.info("取消");
         });
+    },
+    // tree 懒加载
+    requstLazyLoad(param) {
+      const obj = {
+        ctrlPermi: 2,
+        nodeid: param.tree.parentCode,
+        parentCode: param.tree.id,
+        parentid: param.tree.id,
+        _search: false
+      };
+      orgApi.getOfficeList(obj).then(res => {
+        for (let i = 0, len = res.length; i < len; i++) {
+          if (!res[i].isTreeLeaf) {
+            res[i].hasChildren = true;
+          }
+        }
+        param.resolve(res);
+      });
     }
   }
 };
