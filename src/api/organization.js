@@ -33,7 +33,7 @@ export const orgApi = {
   //   新增用户
   addNewUser: (param) => {
     // postFormData
-    return httpRequestor.post('/a/sys/empUser/save?__ajax=json', param).catch(err => {
+    return httpRequestor.post(`/a/sys/empUser/save?op=${param.op}`, param).catch(err => {
       // return httpRequestor.postByFormStr('/a/sys/empUser/save', param).catch(err => {
       Message.error(err)
     })
