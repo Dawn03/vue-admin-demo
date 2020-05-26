@@ -40,7 +40,7 @@ export default {
   border-color: transparent transparent #f56c6c transparent;
   position: absolute;
   left: 14px;
-  top: -19px;
+  top: -18px;
   color: #f56c6c;
   font-size: 12px;
   line-height: 1;

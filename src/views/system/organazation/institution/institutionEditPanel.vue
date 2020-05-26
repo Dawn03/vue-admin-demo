@@ -63,19 +63,17 @@
                       v-for="item in officeOptions"
                       :key="item.id"
                       :label="item.name"
-                      :value="item.id"
+                      :value="item.value"
                     />
                   </el-select>
                 </el-form-item>
               </el-col>
             </el-row>
-
             <ColumnBar :column-text="'详细信息'"></ColumnBar>
-
             <el-row :gutter="gutterVal">
               <el-col :span="12">
-                <el-form-item label="负责人：" prop="dutyPerson">
-                  <el-input v-model="institutionForm.dutyPerson"> </el-input>
+                <el-form-item label="负责人：" prop="leader">
+                  <el-input v-model="institutionForm.leader"> </el-input>
                 </el-form-item>
               </el-col>
 
@@ -123,7 +121,7 @@
               ref="extentionDom"
               :style="{ height: exHeight }"
               style="overflow: hidden;"
-              :extention-form="institutionForm.extentionForm.extend"
+              :extention-form="institutionForm.extend"
               @extentionFormVal="extentionFormVal"
             ></ExtentionFeild>
           </el-form>
@@ -165,7 +163,6 @@
 <script>
 import ColumnBar from "@/components/commonColumn";
 import DailogFrame from "@/components/dailogPanel/frame";
-import TableTree from "@/components/tableTree";
 import ExtentionFeild from "@/components/extentionFeild";
 import ChooseMenuTree from "@/components/chooseMenuTree";
 import { returnReg } from "@/utils/validate";
@@ -176,7 +173,6 @@ export default {
   components: {
     DailogFrame,
     ColumnBar,
-    TableTree,
     ExtentionFeild,
     ChooseMenuTree
   },
@@ -239,29 +235,28 @@ export default {
         zipCode: "", // 邮政编码
         email: "", // 电子邮箱
         remarks: "", // 备注信息
-        extentionForm: {
-          extend: {
-            extendS1: "",
-            extendS2: "",
-            extendS3: "",
-            extendS4: "",
-            extendS5: "",
-            extendS6: "",
-            extendS7: "",
-            extendS8: "",
-            extendI1: "",
-            extendI2: "",
-            extendI3: "",
-            extendI4: "",
-            extendF1: "",
-            extendF2: "",
-            extendF3: "",
-            extendF4: "",
-            extendD1: "",
-            extendD2: "",
-            extendD3: "",
-            extendD4: ""
-          }
+        officeCode: "",
+        extend: {
+          extendS1: "",
+          extendS2: "",
+          extendS3: "",
+          extendS4: "",
+          extendS5: "",
+          extendS6: "",
+          extendS7: "",
+          extendS8: "",
+          extendI1: "",
+          extendI2: "",
+          extendI3: "",
+          extendI4: "",
+          extendF1: "",
+          extendF2: "",
+          extendF3: "",
+          extendF4: "",
+          extendD1: "",
+          extendD2: "",
+          extendD3: "",
+          extendD4: ""
         }
       },
       rules: {
@@ -273,8 +268,9 @@ export default {
             trigger: "blur"
           }
         ],
-        officeName: [{ required: true, message: "必填信息", trigger: "blur" }],
         viewCode: [{ required: true, message: "必填信息", trigger: "blur" }],
+        officeName: [{ required: true, message: "必填信息", trigger: "blur" }],
+        officeType: [{ required: true, message: "请选择", trigger: "change" }],
         fullName: [{ required: true, message: "必填信息", trigger: "blur" }],
         treeSort: [
           { required: true, validator: treeSortValidator, trigger: "blur" }
@@ -292,20 +288,7 @@ export default {
             trigger: "blur"
           }
         ],
-        telNumber: [
-          {
-            pattern: returnReg("phone"),
-            message:
-              "请正确填写您的电话号码，固话为区号(3-4位)号码(7-9位),手机为13,14,15,16,17,18,19号段",
-            trigger: "blur"
-          },
-          {
-            pattern: returnReg("telNumber"),
-            message:
-              "请正确填写您的电话号码，固话为区号(3-4位)号码(7-9位),手机为13,14,15,16,17,18,19号段",
-            trigger: "blur"
-          }
-        ],
+
         weight: [{ message: "请选择活动资源", trigger: "change" }],
         desc: [{ message: "请填写活动形式", trigger: "blur" }]
       }
@@ -315,11 +298,43 @@ export default {
   methods: {
     /* 显示对话框 */
     show(row, type) {
-      // console.log(311, row);
+      console.log(311, row, type);
       // 编辑机构  新增下级机构  新增机构
       this.titleType = type;
-      this.showEditDailog = true;
-      this.institutionForm = Object.assign(row, this.institutionForm);
+      if (type === "新增机构") {
+        this.showEditDailog = true;
+      }
+      if (type === "编辑机构") {
+        /* 获取机构详情 */
+        orgApi
+          .getOfficeDetail({
+            officeCode: row.officeCode
+          })
+          .then(res => {
+            console.log("res", res);
+            const result = JSON.parse(JSON.stringify(res.office));
+            for (const key in res.office.extend) {
+              result.extend[key] = res.office.extend[key];
+            }
+            const tempOfficeListSource = this.$store.state.publicData
+              .officeListSource;
+            console.log("this.menuData", this.$store.state);
+            const tempOffice = tempOfficeListSource.map(item => {
+              if (item.id === res.office.parentCode) {
+                return item;
+              }
+            });
+            console.log("tempOffice", tempOffice);
+            result.parent = {
+              id: res.office.parentCode,
+              officeName: tempOffice
+            };
+
+            // this.institutionForm = result;
+            // console.log(308, this.institutionForm);
+            this.showEditDailog = true;
+          });
+      }
     },
     /* 关闭编辑对话框 */
     closeEditDialog() {
@@ -328,7 +343,6 @@ export default {
     /* 触发选择上级机构 */
     institutionChoose() {
       this.$nextTick(() => {
-        console.log(335, this.menuData);
         this.menuData = this.$store.state.publicData.officeList;
         this.innerDialogVisible = true;
       });
@@ -344,7 +358,6 @@ export default {
     },
     /* 菜单树中当前点击的树节点*/
     clickNodeReslut(data) {
-      console.log(384, data);
       this.institutionForm.parent.id = data.id;
       this.institutionForm.parent.officeName = data.label;
       this.closeMuneTreeChoose();
@@ -363,22 +376,37 @@ export default {
     },
     /* 显示扩展字段 */
     showExtentionDom() {
-      this.exHeight = this.exHeight == "0px" ? "480px" : "0px";
+      this.exHeight = this.exHeight === "0px" ? "480px" : "0px";
     },
     /* 扩展字段值 */
     extentionFormVal(val) {
-      this.institutionForm.extentionForm = val;
+      this.institutionForm.extend = val;
     },
     /* 提交 */
     submitForm(formName) {
       // parent  officeName id
-      this.institutionForm.leader = this.institutionForm.dutyPerson;
+      // this.institutionForm.leader = this.institutionForm.leader;
+      console.log(374, this.institutionForm);
+      // return;
       this.$refs[formName].validate(valid => {
         if (valid) {
+          if (this.titleType === "新增机构") {
+            this.institutionForm.isNewRecord = true;
+          } else {
+            this.institutionForm.isNewRecord = false;
+          }
           orgApi.saveOfficeAdd(this.institutionForm).then(res => {
-            console.log(res);
+            if (res.result === "true") {
+              this.$message.success(res.message);
+              this.$emit("initPage", {
+                status: "",
+                ctrlPermi: 2
+              });
+              this.showEditDailog = false;
+            } else {
+              this.$message.warning(res.message);
+            }
           });
-          console.log("submit!");
         } else {
           console.log("error submit!!");
           return false;

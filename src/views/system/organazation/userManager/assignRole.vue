@@ -53,7 +53,7 @@
             type="primary"
             icon="el-icon-close"
             size="mini"
-            @click="colseAssignRole('userForm')"
+            @click="colseAssignRole('roleForm')"
           >
             关闭
           </el-button>
@@ -90,12 +90,7 @@ export default {
         name: "角色名称",
         id: "角色编码"
       },
-      tableData: [
-        // {
-        //   name: "系统管理员",
-        //   id: "corpAdmin"
-        // }
-      ]
+      tableData: []
     };
   },
   mounted() {},
@@ -154,7 +149,9 @@ export default {
     },
     colseAssignRole(formName) {
       this.showAssginRole = false;
+      this.$refs.roleForm.resetFields();
       this.tableCheckBoxValue = [];
+      this.$refs.tableCheckRef.showHadCheckedRow([]);
     }
   }
 };

@@ -15,6 +15,12 @@ export const pubApi = {
       Message.error(err)
     })
   },
+  /*  根据 dicType 类型查询各种状态  */
+  dictTypeFunc: (param) => {
+    return httpRequestor.postFormData(`/a/sys/dictData/listData`, param).catch(err => {
+      Message.error(err)
+    })
+  },
   //  获取机构选择全部数据
   getOfficeMenuTree: (param) => {
     return httpRequestor.get('a/sys/office/treeData', param).catch(err => {

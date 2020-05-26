@@ -53,9 +53,9 @@
           {{ scope.row.systemRole == "1" ? "是" : "否" }}
         </span>
       </template>
-      <template slot="status" slot-scope="scope">
+      <template slot="statusText" slot-scope="scope">
         <el-button size="mini" type="success" round>
-          {{ scope.row.status }}
+          {{ scope.row.statusText }}
         </el-button>
       </template>
 
@@ -67,17 +67,17 @@
               size="small"
               @click="roleEdit(scope.row, '编辑角色')"
             >
-              <i class="el-icon-edit"></i>
+              <i class="el-icon-edit" title="编辑"></i>
             </el-button>
             <el-button type="text" size="small" @click="stopUse(scope.row)">
-              <i class="el-icon-video-pause"></i>
+              <i class="el-icon-video-pause" title="停用启用"></i>
             </el-button>
             <el-button
               type="text"
               size="small"
               @click="deleteHandleClick(scope.row)"
             >
-              <i class="el-icon-delete"></i>
+              <i class="el-icon-delete" title="删除"></i>
             </el-button>
             <el-popover
               placement="right"
@@ -128,14 +128,17 @@
         </el-table-column>
       </template>
     </TableTree>
-    <!-- 筛选搜索对话框 -->
-    <DailogFrame
-      :dialog-visible="showDailog"
-      :title-name="titleName"
-      @closeDialog="closeDialog"
-    ></DailogFrame>
+    <Pagination
+      :total="pageNation.total"
+      :page-size="pageNation.pageSize"
+      @currentChange="currentChange"
+    ></Pagination>
     <!-- table行点击对话框 -->
-    <RoleEditPanel ref="RoleEditPanel"></RoleEditPanel>
+    <RoleEditPanel
+      ref="RoleEditPanel"
+      :user-status-options="formInline[2].options"
+      :role-type="roleType"
+    ></RoleEditPanel>
     <AccreditMenu ref="accreditMenuPanel"></AccreditMenu>
     <DataRights ref="dataRightsPanel"></DataRights>
     <AllotUser ref="allotUserPanel"></AllotUser>
@@ -143,22 +146,23 @@
 </template>
 <script>
 import TableTree from "@/components/tableTree";
-import ChooseTreePanel from "@/components/pageParts/chooseTreePanel";
+import Pagination from "@/components/pagination";
 import InputFilter from "@/components/inputFliter";
-import DailogFrame from "@/components/dailogPanel/frame";
 import RoleEditPanel from "./roleEditPanel";
 import AccreditMenu from "./accreditMune";
 import DataRights from "./dataRights";
 import AllotUser from "./allotUser";
 // import { returnReg } from "@/utils/validate"; /* 表单正则验证 */
 import { clearFilterVal, getInputVal } from "@/utils/pubFunc";
+import { roleApi } from "@/api/role";
+import { pubApi } from "@/api/public_request";
+import { statusMap } from "@/utils/pubFunc";
 export default {
   name: "RoleTable",
   components: {
     TableTree,
     InputFilter,
-    DailogFrame,
-    ChooseTreePanel,
+    Pagination,
     RoleEditPanel,
     AccreditMenu,
     DataRights,
@@ -169,70 +173,47 @@ export default {
       changeArrowDirection: false,
       currentId: null,
       btnText: "查询",
-      showDailog: false,
-      titleName: "",
+      total: "",
+      pageNation: {
+        total: null,
+        pageNo: 1,
+        pageSize: 2
+      },
       formInline: [
         {
           type: "input",
           label: "角色名称",
-          key: "acount",
+          key: "roleName_like",
           value: "",
           width: 120
         },
         {
           type: "input",
           label: "角色编码",
-          key: "alias",
+          key: "roleCode_like",
           value: "",
           width: 120
         },
         {
           type: "select",
           label: "用户类型",
-          options: [
-            {
-              label: "测试1",
-              value: "test1"
-            },
-            {
-              label: "测试2",
-              value: "test2"
-            }
-          ],
-          key: "status",
+          options: [],
+          key: "userType",
           width: 120,
           value: ""
         },
         {
           type: "select",
           label: "系统角色",
-          options: [
-            {
-              label: "测试1",
-              value: "test1"
-            },
-            {
-              label: "测试2",
-              value: "test2"
-            }
-          ],
-          key: "status",
+          options: [],
+          key: "isSys",
           value: "",
           width: 120
         },
         {
           type: "select",
           label: "状态",
-          options: [
-            {
-              label: "测试1",
-              value: "test1"
-            },
-            {
-              label: "测试2",
-              value: "test2"
-            }
-          ],
+          options: [],
           key: "status",
           width: 120,
           value: ""
@@ -245,73 +226,123 @@ export default {
         number: 130,
         format: 130
       },
-      slotColumns: ["roleName", "systemRole", "status"],
+      slotColumns: ["roleName", "systemRole", "statusText"],
       tableHead: {
         roleName: "角色名称",
         roleCode: "角色编码",
-        orderNumber: "排序号",
-        systemRole: "系统角色",
-        userType: "用户类型",
-        dataRange: "数据范围",
-        bussinessRange: "业务范围",
-        updataTime: "更新时间",
-        remarkMessage: "备注信息",
-        status: "状态"
+        roleSort: "排序号",
+        systemRole: "系统角色", // 暂无字段
+        userType: "用户类型", // 暂无字段
+        dataRange: "数据范围", // 暂无字段
+        bussinessRange: "业务范围", // 暂无字段
+        updateDate: "更新时间",
+        remarks: "备注信息",
+        statusText: "状态"
       },
-      tableData: [
-        {
-          id: 1,
-          roleName: "部门经理",
-          roleCode: "dept",
-          orderNumber: "40",
-          systemRole: "1",
-          userType: "员工",
-          dataRange: "未设置",
-          bussinessRange: "未设置",
-          updataTime: "2019-07-08 ",
-          remarkMessage: "备注信息",
-          status: "正常"
-        },
-        {
-          id: 2,
-          roleName: "普通员工",
-          roleCode: "user",
-          orderNumber: "50",
-          systemRole: "2",
-          userType: "未设置",
-          dataRange: "未设置",
-          bussinessRange: "未设置",
-          updataTime: "2019-07-09 ",
-          remarkMessage: "备注信息",
-          status: "正常"
-        }
-      ]
+      tableData: [],
+      statusMapKey: [],
+      roleType: []
     };
   },
+  mounted() {
+    /* 获取用户类型 */
+    this.$nextTick(() => {
+      this.dictTypeFunc({
+        dictType: "sys_user_type",
+        status: ""
+      });
+
+      /* 获取是否是系统角色  所有涉及是或否 都用该字段查询 */
+      this.dictTypeFunc({
+        dictType: "sys_yes_no",
+        status: ""
+      });
+      /* 获取 角色分类*/
+      this.dictTypeFunc({
+        dictType: "sys_role_type",
+        status: ""
+      });
+      this.init({
+        pageSize: this.pageNation.pageSize,
+        pageNo: this.pageNation.pageNo
+      });
+    });
+  },
   methods: {
+    async init(obj) {
+      /* 获取角色状态 */
+      await this.dictTypeFunc({
+        dictType: "sys_search_status",
+        status: ""
+      });
+      roleApi.getRoleManageList(obj).then(res => {
+        const temp = JSON.parse(JSON.stringify(res.list));
+        const obj = {};
+        for (let i = 0, len = temp.length; i < len; i++) {
+          obj[temp[i].value] = temp[i].label;
+        }
+        this.tableData = statusMap(res.list, this.statusMapKey);
+        this.pageNation.total = res.count;
+      });
+    },
+    dictTypeFunc(param) {
+      pubApi.dictTypeFunc(param).then(res => {
+        const userOptions = [];
+        for (let i = 0, len = res.length; i < len; i++) {
+          if (res[i].status === "0") {
+            userOptions.push({
+              label: res[i].dictLabel,
+              value: res[i].dictValue
+            });
+          }
+        }
+        if (param.dictType === "sys_user_type") {
+          this.formInline[2].options = userOptions;
+        }
+        if (param.dictType === "sys_yes_no") {
+          this.formInline[3].options = userOptions;
+        }
+        if (param.dictType === "sys_search_status") {
+          this.formInline[4].options = userOptions;
+          const obj = {};
+          for (let i = 0, len = userOptions.length; i < len; i++) {
+            obj[userOptions[i].value] = userOptions[i].label;
+          }
+          this.statusMapKey = obj;
+          // console.log(278, this.statusMapKey);
+        }
+        if (param.dictType === "sys_role_type") {
+          this.roleType = userOptions;
+        }
+      });
+    },
     showOrHidden() {
       this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
     },
     /* 获取填入输入框的值  */
     searchBtn() {
-      // const temp = this.formInline.concat(this.moreFormItem);
-      const valObj = getInputVal(this.formInline);
-      console.log(valObj);
+      const valObj = Object.assign(getInputVal(this.formInline), {
+        pageSize: this.pageNation.pageSize,
+        pageNo: 1
+      });
+      this.init(valObj);
     },
     /* 清除输入框内的值 */
     resetForm() {
+      this.init({
+        pageSize: this.pageNation.pageSize,
+        pageNo: 1
+      });
       clearFilterVal(this.formInline);
     },
-
     addNew(row, type) {
-      console.log(row, type);
+      // console.log(row, type);
       this.$refs.RoleEditPanel.show(row, type);
     },
     moreHandleClick(row) {
       this.currentId = row.id;
       this.changeArrowDirection = !this.changeArrowDirection;
     },
-    openDetails(row) {},
     /* 授权菜单 */
     accreditMenu(row) {
       this.$refs.accreditMenuPanel.init(row);
@@ -322,18 +353,10 @@ export default {
     allotUser(row) {
       this.$refs.allotUserPanel.init(row);
     },
-    // 显示对话框选择
-    showFilterPanel(item) {
-      this.showDailog = true;
-      this.titleName = `${item.label}选择`;
-    },
-    // 关闭对话框选择
-    closeDialog() {
-      this.showDailog = false;
-    },
+
     /* 编辑表格 */
     roleEdit(row, type) {
-      console.log(321, row, type);
+      // console.log(321, row, type);
       this.$refs.RoleEditPanel.show(row, type);
     },
 
@@ -349,11 +372,25 @@ export default {
     deleteHandleClick(row) {
       this.$alertMsgBox("确认要删除该用户吗", "信息")
         .then(() => {
+          roleApi
+            .deleteRole({
+              roleCode: row.roleCode
+            })
+            .then(res => {
+              // console.log(357, res);
+            });
           this.$message.success("成功");
         })
         .catch(() => {
           this.$message.info("取消");
         });
+    },
+    currentChange(val) {
+      const obj = {
+        pageSize: this.pageNation.pageSize,
+        pageNo: val
+      };
+      this.init(obj);
     }
   }
 };

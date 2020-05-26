@@ -181,7 +181,10 @@
     ></Pagination>
 
     <!-- table行点击对话框 -->
-    <userEditPanel ref="userEditPanel"></userEditPanel>
+    <userEditPanel
+      ref="userEditPanel"
+      @initListPage="initListPage"
+    ></userEditPanel>
     <AssignRole ref="assignRolePanel"></AssignRole>
     <DataRights ref="dataRightsPanel"></DataRights>
     <InAndCompany
@@ -404,6 +407,13 @@ export default {
           console.log(error);
         });
     },
+    initListPage() {
+      this.init({
+        pageSize: this.pageNation.pageSize,
+        pageNo: this.pageNation.pageNo,
+        status: ""
+      });
+    },
     showOrHidden() {
       this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
     },
@@ -546,7 +556,6 @@ export default {
           userCode: row.userCode
         })
         .then(res => {
-          console.log(527, res);
           this.$refs.dataRightsPanel.init(res);
         });
     },

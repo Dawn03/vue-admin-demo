@@ -13,7 +13,7 @@ const name = defaultSettings.title || 'v生产批次记录电子化系统' // pa
 // For example, Mac: sudo npm run
 // You can change the port by the following methods:
 // port = 9528 npm run dev OR npm run dev --port = 9528
-const port = process.env.port || process.env.npm_config_port || 9522 // dev port
+const port = process.env.port || process.env.npm_config_port || 9527 // dev port
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
@@ -40,7 +40,7 @@ module.exports = {
     proxy: {
       '/apis': {
         // 测试环境
-        target: 'http://192.168.3.32:8980/js', // 接口域名  192.168.7.147 贺龙ip 8980一直开启  8990
+        target: 'http://192.168.3.45:8980/js', // 接口域名  192.168.7.147 贺龙ip 8980一直开启  8990
         changeOrigin: true, // 是否跨域
         pathRewrite: {
           '^/apis': '' // 需要rewrite重写的,

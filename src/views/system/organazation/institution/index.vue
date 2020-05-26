@@ -80,6 +80,7 @@ export default {
         false
       );
     },
+
     getInsMenuTree() {
       orgApi.getInstitutionMenuTree({ ctrlPermi: 2 }).then(res => {
         const attributes = {
@@ -91,13 +92,16 @@ export default {
         const treeData = toTreeData(res, attributes);
         this.instMenuData = treeData;
         this.defaultExpand = treeData[0].id;
-        console.log("treeData", this.defaultExpand, treeData);
+        console.log("treeData", treeData[0].id);
       });
     },
     // 双击树节点获取数据查询结果
     clickNodeReslut(data) {
-      this.$refs.institutionRight.searchBtn(data);
       console.log("左侧树节点双击", data);
+      this.$refs.institutionRight.searchBtn({
+        officeCode: data.id,
+        left: "left"
+      });
     }
   }
 };

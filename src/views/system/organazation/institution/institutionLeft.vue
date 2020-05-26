@@ -4,6 +4,7 @@
       :title-name="'组织机构'"
       :menu-data="instMenuData"
       v-bind="$attrs"
+      :default-expand="defaultExpand"
       v-on="$listeners"
     ></LeftTree>
   </div>
@@ -20,6 +21,10 @@ export default {
       default: () => {
         return [];
       }
+    },
+    defaultExpand: {
+      type: String,
+      default: ""
     }
   },
   data() {

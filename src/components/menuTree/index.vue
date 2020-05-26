@@ -218,7 +218,6 @@ export default {
           this.removeParent(currentNode.parent, ref); // 递归判断子节点
         }
       }
-
       // 不为0表示为父节点
       if (currentNode.childNodes.length !== 0) {
         // 循环判断父节点下的子节点

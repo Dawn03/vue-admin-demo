@@ -100,7 +100,11 @@
             <el-row :gutter="gutterVal">
               <el-col :span="12">
                 <el-form-item label="所在岗位：">
-                  <el-select v-model="employeePosts" multiple>
+                  <el-select
+                    v-model="employeePosts"
+                    multiple
+                    style="width:100%;"
+                  >
                     <el-option
                       v-for="item in employeePostsOptions"
                       :key="item.postCode"
@@ -124,7 +128,7 @@
                     :table-data="employeeOfficeList"
                     :slot-columns="slotColumns"
                     :show-overflow="false"
-                    :default-height="200"
+                    :default-height="100"
                     :show-index="false"
                   >
                     <template slot="officeName" slot-scope="scope">
@@ -139,7 +143,10 @@
                       </el-input>
                     </template>
                     <template slot="postCode" slot-scope="scope">
-                      <el-select v-model="scope.row.postName">
+                      <el-select
+                        v-model="scope.row.postCode"
+                        style="width:100%;"
+                      >
                         <el-option
                           v-for="item in employeePostsOptions"
                           :key="item.postName"
@@ -197,6 +204,7 @@
             <AssignRoleDetail
               v-if="titleName === '新增'"
               ref="roleDetail"
+              :table-data="roleChooseList"
               @tableCheckBoxVal="getCheckVal"
             ></AssignRoleDetail>
             <!-- @click="showExtentionDetail" -->
@@ -209,7 +217,7 @@
               ref="extentionDom"
               :style="{ height: exHeight }"
               style="overflow: hidden;"
-              :extention-form="extentionForm"
+              :extention-form="extend"
               @extentionFormVal="extentionFormVal"
             ></ExtentionFeild>
             <!-- :extention-form="userForm.extentionForm" -->
@@ -259,6 +267,8 @@ import ChooseMenuTree from "@/components/chooseMenuTree";
 import { returnReg } from "@/utils/validate";
 import { toTreeData, filterNokeyVal, stringVal } from "@/utils/pubFunc";
 import { orgApi } from "@/api/organization";
+import { roleApi } from "@/api/role";
+import { pubApi } from "@/api/public_request";
 import AssignRoleDetail from "./assignRoleDetail";
 
 export default {
@@ -299,33 +309,33 @@ export default {
       gutterVal: 100,
       stopOrStart: "",
       officeCodeClick: {},
-      currentRow: {},
-      extentionForm: {
-        String1: "",
-        String2: "",
-        String3: "",
-        String4: "",
-        String5: "",
-        String6: "",
-        String7: "",
-        String8: "",
-        Integer1: "",
-        Integer2: "",
-        Integer3: "",
-        Integer4: "",
-        Float1: "",
-        Float2: "",
-        Float3: "",
-        Float4: "",
-        Date1: "",
-        Date2: "",
-        Date3: "",
-        Date4: ""
+      extend: {
+        extendS1: "",
+        extendS2: "",
+        extendS3: "",
+        extendS4: "",
+        extendS5: "",
+        extendS6: "",
+        extendS7: "",
+        extendS8: "",
+        extendI1: "",
+        extendI2: "",
+        extendI3: "",
+        extendI4: "",
+        extendF1: "",
+        extendF2: "",
+        extendF3: "",
+        extendF4: "",
+        extendD1: "",
+        extendD2: "",
+        extendD3: "",
+        extendD4: ""
       },
       attchCurrentRow: {},
       attchOfficeName: "",
       employeePostsOptions: [],
       employeePosts: [], // cfo 所在岗位
+      userRoleString: "", // 新增-分配角色-保存字段
       employeeOfficeList: [], // 附属公司列表
       userForm: {
         op: "", // add  edit
@@ -345,8 +355,7 @@ export default {
         empNo: "", // 员工编号
         empName: "", // 员工姓名
         empNameEn: "", // 英文名
-        remarks: "", //
-        userRoleString: "" // 角色编码 string1,string2
+        remarks: "" //
       },
       rules: {
         officeName: [
@@ -385,22 +394,32 @@ export default {
         officeName: "附属机构",
         postCode: "附属岗位"
       },
-      addCountIndex: 0
+      addCountIndex: 0,
+      roleChooseList: []
     };
   },
   mounted() {},
   methods: {
     /* 获取编辑详情 */
-    getUserDetail(userCode, op) {},
     /* 显示对话框 */
     show(row, type) {
-      this.showEditDailog = true;
       this.titleName = type;
-      this.currentRow = row;
       if (type === "新增") {
         this.userForm.op = "add";
-        this.userForm.userType = row.userType;
-        this.userForm.userCode = row.userCode;
+        this.userForm.userType = "employee";
+        this.userForm.userCode = "";
+        pubApi.getEmployeePosts().then(res => {
+          for (let i = 0, len = res.length; i < len; i++) {
+            res[i].postName = res[i].name;
+            res[i].postCode = res[i].id;
+          }
+          this.employeePostsOptions = res;
+          this.showEditDailog = true;
+        });
+        /* 新增 分配角色 */
+        roleApi.getRoleList().then(res => {
+          this.roleChooseList = res;
+        });
       } else {
         this.userForm.op = "edit";
         const obj = {
@@ -408,10 +427,7 @@ export default {
           op: this.userForm.op
           // _layer: true
         };
-        console.log(409, obj);
         orgApi.getUserDetail(obj).then(res => {
-          // this.userDetail = res;
-          this.userForm.userType = res.empUser.userType;
           this.userForm.userCode = res.empUser.userCode;
           this.userForm.officeName = res.empUser.employee.office.officeName;
           this.userForm.officeCode = res.empUser.employee.office.officeCode;
@@ -431,15 +447,14 @@ export default {
           this.employeePostsOptions = res.postList; //  所在岗位选择
           this.employeePosts = res.empUser.employee.employeePosts; //  所在岗位回显
           this.userForm.remarks = res.empUser.remarks;
-          // this.userForm.userRoleString = res.empUser.userRoleString; // 所在岗位 select 多选
-          // this.employeeOfficeList =
-          //   row.empUser.employee.company.companyOfficeList;
-          // this.userForm = res;
-          console.log(406, res);
+          this.employeeOfficeList = res.empUser.employee.employeeOfficeList;
+          for (const key in res.empUser.extend) {
+            this.extend[key] = res.empUser.extend[key];
+          }
+          this.showEditDailog = true;
         });
       }
     },
-
     /* 触发选择归属机构 */
     institutionChoose(typeText) {
       this.menuTreeTitle = "机构选择";
@@ -452,7 +467,7 @@ export default {
       this.attchCurrentRow = row;
       // 选择之后值的归属问题
     },
-    /* 获取归属公机构列表 */
+    /* 获取归属机构列表 */
     getOfficeMenuTree() {
       this.menuData = this.$store.state.publicData.officeList;
       this.innerDialogVisible = true;
@@ -476,6 +491,7 @@ export default {
     clickNodeReslut(data) {
       if (this.menuTreeTitle === "机构选择") {
         this.userForm.officeName = data.label;
+        this.userForm.officeCode = data.id;
         this.officeCodeClick = data;
       } else if (this.menuTreeTitle === "附属机构选择") {
         for (let i = 0, len = this.employeeOfficeList.length; i < len; i++) {
@@ -521,22 +537,26 @@ export default {
     },
     /* 扩展字段值 */
     extentionFormVal(val) {
-      this.extentionForm = val;
+      this.extend = val;
     },
-    /* 获取角色checkbox */
+    /* 获取角色checkbox  userRoleString 需要字符串格式*/
     getCheckVal(checkboxVal) {
-      // this.userForm.userRoleString = stringVal(checkboxVal, "id");
-      this.employeePosts = stringVal(checkboxVal, "id");
-      // console.log(12345, this.tableChecked);
+      // this.employeePosts = checkboxVal;
+      this.userRoleString = stringVal(checkboxVal, "id");
+      // console.log(12345, this.employeePosts);
     },
     /* 提交 */
     submitForm(formName) {
       // employeePosts
-      console.log(9990, "this.employeeOfficeList ", this.officeCodeClick);
+      console.log(9990, this.officeCodeClick);
+
       this.$refs[formName].validate(valid => {
         if (valid) {
-          const obj = filterNokeyVal(this.extentionForm);
-          console.log("submit!", obj);
+          const obj = {};
+          if (this.userRoleString) {
+            obj.userRoleString = this.userRoleString;
+          }
+          obj.extend = this.extend; // :filterNokeyVal();
           obj.op = this.userForm.op;
           obj.userType = this.userForm.userType;
           obj.userCode = this.userForm.userCode;
@@ -548,7 +568,6 @@ export default {
           obj.phone = this.userForm.phone;
           obj.userWeight = this.userForm.userWeight;
           obj.remarks = this.userForm.remarks;
-          // obj.userRoleString = this.userForm.userRoleString;
           obj.employee = {
             office: {
               officeCode: this.userForm.officeCode || "",
@@ -564,27 +583,13 @@ export default {
             empNameEn: this.userForm.empNameEn || "",
             employeeOfficeList: this.employeeOfficeList || []
           };
-
-          // obj["employee.office.officeCode"] =
-          //   this.userForm.officeCode || this.officeCodeClick.id;
-          // obj["employee.office.officeName"] =
-          //   this.userForm.officeName || this.officeCodeClick.label;
-          // obj["employee.company.companyName"] =
-          //   this.userForm.companyName || this.companyClick.label;
-          // obj["employee.company.companyCode"] =
-          //   this.userForm.companyCode || this.companyClick.id;
-          // obj["employee.empNo"] = this.userForm.empNo || "";
-          // obj["employee.empName"] = this.userForm.empName || "";
-          // // obj["employee.employeePosts"] = this.employeePosts;
-          // obj["employee.employeePosts"] = ["cfo", "dept"];
-          // obj["employee.empNameEn"] = this.userForm.empNameEn || "";
-          // obj["employe.employeeOfficeList"] = this.employeeOfficeList || []; // 附属岗位
-          console.log(obj);
           orgApi.addNewUser(obj).then(res => {
             if (res.result === "false") {
               this.$message.warning(res.message);
             } else {
               this.$message.success(res.message);
+              this.closeEditDialog();
+              this.$emit("initListPage");
             }
           });
         } else {
@@ -598,16 +603,17 @@ export default {
       this.closeEditDialog();
     },
     closeEditDialog() {
-      console.log(408);
       this.showEditDailog = false;
       this.$refs["userForm"].resetFields();
       this.attchCurrentRow = {};
       this.attchOfficeName = "";
       this.employeePosts = [];
       this.employeeOfficeList = [];
-      this.$nextTick(() => {
-        this.$refs.roleDetail.toggleSelection();
-      });
+      for (const key in this.extend) {
+        this.extend[key] = "";
+      }
+      this.$emit("initListPage");
+      // this.$refs.roleDetail.toggleSelection();
     }
   }
 };

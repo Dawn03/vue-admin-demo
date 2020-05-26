@@ -12,7 +12,7 @@
           <el-date-picker
             v-else
             v-model="extentionForm[key]"
-            value-format="yyyy-MM-dd"
+            value-format="yyyy-MM-dd HH:mm:ss"
             type="date"
             placeholder="选择日期"
           >

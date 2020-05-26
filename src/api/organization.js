@@ -33,7 +33,7 @@ export const orgApi = {
   //   新增用户
   addNewUser: (param) => {
     // postFormData
-    return httpRequestor.post('/a/sys/empUser/save?__ajax=json', param).catch(err => {
+    return httpRequestor.post(`/a/sys/empUser/save?op=${param.op}`, param).catch(err => {
       // return httpRequestor.postByFormStr('/a/sys/empUser/save', param).catch(err => {
       Message.error(err)
     })
@@ -58,7 +58,6 @@ export const orgApi = {
   },
   // 停用启用用户  js/a/sys/empUser/disable?userCode=user19_92w0
   stopUseOrStart: (param) => {
-    console.log('param', param)
     return httpRequestor.post(`/a/sys/empUser/${param.stopOrStart}?userCode=${param.userCode}`, {
       userCode: param.userCode
     }).catch(err => {
@@ -74,12 +73,6 @@ export const orgApi = {
   /* 保存用户角色 */
   saveUserRole: (param) => {
     return httpRequestor.postFormData(`/a/sys/empUser/save`, param).catch(err => {
-      Message.error(err)
-    })
-  },
-  /* 获取全部需要映射的字段 */
-  getMapFieldList: (param) => {
-    return httpRequestor.postFormData(`/a/sys/dictData/treeData`, param).catch(err => {
       Message.error(err)
     })
   },
@@ -104,9 +97,27 @@ export const orgApi = {
       Message.error(err)
     })
   },
-  /* 保存机构管理  sys/office/save*/
+  /* 保存机构管理  postFormData  sys/office/save*/
   saveOfficeAdd: (param) => {
-    return httpRequestor.postFormData(`/a/sys/office/save`, param).catch(err => {
+    return httpRequestor.post(`/a/sys/office/save`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 获取机构编辑详情*/
+  getOfficeDetail: (param) => {
+    return httpRequestor.post(`/a/sys/office/form.json?officeCode=${param.officeCode}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 启用停用 */
+  stopOfficeOrStart: (param) => {
+    return httpRequestor.post(`/a/sys/office/${param.type}?officeCode=${param.officeCode}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 删除机构和子机构  formDataSt*/
+  deleteOffice: (param) => {
+    return httpRequestor.post(`/a/sys/office/delete?officeCode=${param.officeCode}`).catch(err => {
       Message.error(err)
     })
   }

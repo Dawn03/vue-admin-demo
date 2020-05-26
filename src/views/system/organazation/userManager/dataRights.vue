@@ -192,13 +192,12 @@ export default {
     saveDataRights() {
       // [{"ctrlType":"Company","ctrlData":"SD"},{"ctrlType":"Office","ctrlData":"SDJN"}]
       const temp = this.officeCheckedArrSave.concat(this.companyCheckedArrSave);
-      console.log(191, temp);
       orgApi
         .saveDataRightDetail({
           userCode: this.formDetail.empUser.userCode,
           loginCode: this.formDetail.empUser.loginCode,
           userName: this.formDetail.empUser.userName,
-          userDataScopeListJson: temp || []
+          userDataScopeListJson: JSON.stringify(temp) || "[]"
         })
         .then(res => {
           if (res.result === "true") {

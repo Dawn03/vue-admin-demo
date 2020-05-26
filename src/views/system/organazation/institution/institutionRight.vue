@@ -73,6 +73,11 @@
           {{ scope.row.officeName }}
         </span>
       </template>
+      <template slot="status" slot-scope="scope">
+        <span>
+          {{ scope.row.status === "0" ? "正常" : "停用" }}
+        </span>
+      </template>
       <template slot="operate">
         <el-table-column fixed="right" label="操作" width="120" align="center">
           <template slot-scope="scope">
@@ -83,8 +88,19 @@
             >
               <i class="el-icon-edit" title="编辑"></i>
             </el-button>
-            <el-button type="text" size="small" @click="stopUse(scope.row)">
-              <i class="el-icon-video-pause"></i>
+            <el-button
+              type="text"
+              size="small"
+              @click="stopOfficeOrStart(scope.row)"
+            >
+              <i
+                :class="[
+                  scope.row.status === '0'
+                    ? 'el-icon-circle-check'
+                    : ' el-icon-video-pause'
+                ]"
+                :title="scope.row.status === '0' ? '正常' : '停用'"
+              ></i>
             </el-button>
             <el-button
               type="text"
@@ -114,6 +130,7 @@
     <InstitutionEditPanel
       ref="institutionEditPanel"
       :office-options="officeOptions"
+      @initPage="init"
     ></InstitutionEditPanel>
   </div>
 </template>
@@ -188,7 +205,7 @@ export default {
       columnWidths: {
         officeName: 130
       },
-      slotColumns: ["officeName"],
+      slotColumns: ["officeName", "status"],
       tableHead: {
         officeName: "机构名称",
         fullName: "机构全称",
@@ -213,12 +230,16 @@ export default {
   methods: {
     init(param) {
       orgApi.getOfficeList(param).then(res => {
-        if (res.length) {
+        if (res.length && res[0].isTreeLeaf === false) {
           res[0].hasChildren = true;
         }
+        //  this.tableData = statusMap(response.list, obj);
         this.tableData = res;
       });
     },
+    // initPage() {
+    //   this.init()
+    // },
     /* 获取机构类型 */
     getOfficeType(dictType) {
       pubApi
@@ -230,15 +251,20 @@ export default {
             res[i].label = res[i].name;
           }
           this.formInline[3].options = res;
-          this.officeOptions = res;
+          this.officeOptions = res || [];
         });
     },
     showOrHidden() {
       this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
     },
     /* 获取填入输入框的值  */
-    searchBtn() {
-      const valObj = getInputVal(this.formInline);
+    searchBtn(data = {}) {
+      // console.log(214, data);
+      const obj = {};
+      if (data.left) {
+        obj.officeCode = data.officeCode;
+      }
+      const valObj = Object.assign(obj, getInputVal(this.formInline));
       this.init(valObj);
     },
     /* 清除输入框内的值 */
@@ -282,19 +308,41 @@ export default {
     institutionEdit(row, type) {
       this.$refs.institutionEditPanel.show(row, type);
     },
-    stopUse() {
-      this.$alertMsgBox("确认要停用该用户吗?", "信息")
+    stopOfficeOrStart(row) {
+      const typeText = row.status === "0" ? "停用" : "启用";
+      this.$alertMsgBox(`确认要${typeText}该用户吗?`, "信息")
         .then(() => {
-          this.$message.success("成功");
+          orgApi
+            .stopOfficeOrStart({
+              officeCode: row.officeCode,
+              type: row.status === "0" ? "disable" : "enable"
+            })
+            .then(res => {
+              if (res.result === "true") {
+                this.$message.success(res.message);
+              } else {
+                this.$message.waring(res.message);
+              }
+            });
         })
         .catch(() => {
-          this.$message.info("取消");
+          this.$message.info("取消ds");
         });
     },
     deleteHandleClick(row) {
-      this.$alertMsgBox("确认要停用该用户吗", "信息")
+      this.$alertMsgBox("确认要删除该机构及其子机构吗？", "信息")
         .then(() => {
-          this.$message.success("成功");
+          orgApi
+            .deleteOffice({
+              officeCode: row.officeCode
+            })
+            .then(res => {
+              if (res.result === "true") {
+                this.$message.success(res.message);
+              } else {
+                this.$message.waring(res.message);
+              }
+            });
         })
         .catch(() => {
           this.$message.info("取消");

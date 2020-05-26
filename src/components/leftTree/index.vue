@@ -41,12 +41,6 @@ export default {
       type: Boolean,
       default: false
     }
-    // defaultExpand: {
-    //   type: Array,
-    //   default: () => {
-    //     return [];
-    //   }
-    // }
   },
   data() {
     return {
