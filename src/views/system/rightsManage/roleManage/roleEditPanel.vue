@@ -2,7 +2,7 @@
   <div class="role-edit-panel">
     <DailogFrame
       :dialog-visible="showEditDailog"
-      :title-name="titleType"
+      :title-name="titleName"
       @closeDialog="closeEditDialog"
     >
       <template slot="content">
@@ -55,12 +55,13 @@
             <el-row :gutter="gutterVal">
               <el-col :span="12">
                 <el-form-item label="系统角色：" prop="isSys">
-                  <el-radio v-model="roleForm.isSys" label="1">
-                    是
-                  </el-radio>
-                  <el-radio v-model="roleForm.isSys" label="0">
-                    否
-                  </el-radio>
+                  <el-radio-group
+                    v-model="roleForm.isSys"
+                    @change="changeSystem"
+                  >
+                    <el-radio label="1">是</el-radio>
+                    <el-radio label="0">否</el-radio>
+                  </el-radio-group>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -103,9 +104,9 @@
               :extention-form="roleForm.extend"
               @extentionFormVal="extentionFormVal"
             ></ExtentionFeild>
-            <div v-if="titleType == '新增角色'">
+            <div v-if="titleName == '新增角色'">
               <ColumnBar :column-text="'授权功能菜单'"></ColumnBar>
-              <MenuRights></MenuRights>
+              <MenuRights @checkTree="checkTreeVal"></MenuRights>
             </div>
           </el-form>
         </div>
@@ -165,7 +166,7 @@ export default {
   },
   data() {
     return {
-      titleType: "",
+      titleName: "",
       exHeight: "0px",
       showEditDailog: false,
       menuTreeTitle: "",
@@ -221,7 +222,12 @@ export default {
             message: "请选择系统角色",
             trigger: "change"
           }
-        ]
+        ],
+        menuMapDefault: [],
+        checkTree1: [],
+        checkTree2: [],
+        checkTree3: [],
+        roleMenuListJson: []
       }
     };
   },
@@ -231,35 +237,48 @@ export default {
     show(row, type) {
       // 新增角色
 
-      this.titleType = type;
+      console.log(row, type);
+      this.titleName = type;
       this.showEditDailog = true;
-      this.roleForm = row;
+      // if(type === "编辑角色")
+      // this.roleForm = row;
       this.roleForm.isSys = "0";
-      if (type === "新增角色") {
-        this.getAuthorizeData();
-      } else {
-        this.getAuthorizeData({ roleCode: row.roleCode });
-      }
-      // console.log(row, type);
+      // if (type === "新增角色") {
+      //   this.getAuthorizeData({ roleCode: "" });
+      // } else {
+      //   this.getAuthorizeData({ roleCode: row.roleCode });
+      // }
     },
-    /* 获取授权功能菜单默认数据 */
-    getAuthorizeData() {
-      roleApi.getAuthorizeData().then(res => {
-        console.log(242, res);
-      });
-    },
+
     /* 显示扩展字段 */
     showExtentionDom() {
-      this.exHeight = this.exHeight == "0px" ? "480px" : "0px";
+      this.exHeight = this.exHeight === "0px" ? "480px" : "0px";
     },
     /* 扩展字段值 */
     extentionFormVal(val) {
       this.roleForm.extentionForm = val;
     },
+    checkTreeVal(param) {
+      console.log(259, param);
+      switch (param.current) {
+        case 1:
+          this.checkTree1 = param.val || [];
+          break;
+        case 2:
+          this.checkTree2 = param.val || [];
+          break;
+        case 3:
+          this.checkTree3 = param.val || [];
+          break;
+      }
+    },
+    changeSystem(val) {
+      this.roleForm.isSys = val;
+      console.log(272, val);
+    },
     /* 提交 */
     submitForm(formName) {
-      console.log(467, this.roleForm);
-      return;
+      console.log(467, this.titleName);
       this.$refs[formName].validate(valid => {
         if (valid) {
           const obj = {};
@@ -269,6 +288,28 @@ export default {
           } else {
             obj.op = "edit";
           }
+          obj.extend = this.roleForm.extend;
+          obj.oldRoleName = this.roleForm.oldRoleName;
+          obj.roleName = this.roleForm.roleName;
+          obj.roleCode = this.roleForm.roleCode;
+          obj.roleSort = this.roleForm.roleSort;
+          obj.userType = this.roleForm.userType;
+          obj.isSys = this.roleForm.isSys;
+          obj.roleType = this.roleForm.roleType;
+          obj.remarks = this.roleForm.remarks;
+          obj.roleMenuListJson = this.checkTree1.concat(
+            this.checkTree2,
+            this.checkTree3
+          );
+          console.log(555, obj.roleMenuListJson);
+          roleApi.addRole(obj).then(res => {
+            if (res.result === "true") {
+              this.$message.success(res.message);
+              this.$emit("initPage");
+            } else {
+              this.$message.warning(res.message);
+            }
+          });
           console.log("submit!");
         } else {
           console.log("error submit!!");

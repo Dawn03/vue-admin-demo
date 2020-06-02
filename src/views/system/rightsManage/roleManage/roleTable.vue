@@ -138,6 +138,7 @@
       ref="RoleEditPanel"
       :user-status-options="formInline[2].options"
       :role-type="roleType"
+      @initPage="initPage"
     ></RoleEditPanel>
     <AccreditMenu ref="accreditMenuPanel"></AccreditMenu>
     <DataRights ref="dataRightsPanel"></DataRights>
@@ -391,6 +392,12 @@ export default {
         pageNo: val
       };
       this.init(obj);
+    },
+    initPage() {
+      this.init({
+        pageSize: this.pageSize,
+        pageNo: this.pageNo
+      });
     }
   }
 };

@@ -8,7 +8,6 @@ import {
 
 const state = {
   officeList: [],
-  officeListSource: [],
   companyList: [],
   employeePosts: []
 }
@@ -21,7 +20,6 @@ const mutations = {
       rootId: "0"
     };
     state.officeList = toTreeData(data, attributes)
-    state.officeListSource = data
   },
   GET_COMPANY_TREE_LIST: (state, data) => {
     state.companyList = data
@@ -36,7 +34,6 @@ const actions = {
     commit
   }) {
     pubApi.getOfficeMenuTree().then(res => {
-      console.log("publicData", 'GET_OFFICE_TREE_LIST');
       commit("GET_OFFICE_TREE_LIST", res)
     });
   },

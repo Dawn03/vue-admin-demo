@@ -151,7 +151,7 @@
             type="primary"
             icon="el-icon-close"
             size="mini"
-            @click="colseUser('institutionForm')"
+            @click="colseOffice('institutionForm')"
           >
             关闭
           </el-button>
@@ -167,7 +167,7 @@ import ExtentionFeild from "@/components/extentionFeild";
 import ChooseMenuTree from "@/components/chooseMenuTree";
 import { returnReg } from "@/utils/validate";
 import { orgApi } from "../../../../api/organization";
-// import {  } from "@/utils/pubFunc";
+import { pubApi } from "@/api/public_request";
 export default {
   name: "UserEdit",
   components: {
@@ -195,14 +195,14 @@ export default {
       }
     };
     const phoneValidator = (rule, value, callback) => {
-      if (
-        value !== "" &&
-        !returnReg("mobile").test(value) &&
-        !returnReg("phone").test(value)
-      ) {
+      if (value !== "" && !returnReg("mobile").test(value)) {
+        new Error(
+          "sdsd 请正确填写您的电话号码，固话为区号(3-4位)号码(7-9位),手机为13,14,15,16,17,18,19号段"
+        );
+      } else if (value !== "" && !returnReg("phone").test(value)) {
         callback(
           new Error(
-            "请正确填写您的电话号码，固话为区号(3-4位)号码(7-9位),手机为13,14,15,16,17,18,19号段"
+            "sdsd 请正确填写您的电话号码，固话为区号(3-4位)号码(7-9位),手机为13,14,15,16,17,18,19号段"
           )
         );
       } else {
@@ -285,56 +285,64 @@ export default {
         phone: [
           {
             validator: phoneValidator,
-            trigger: "blur"
+            trigger: "change"
           }
         ],
 
         weight: [{ message: "请选择活动资源", trigger: "change" }],
         desc: [{ message: "请填写活动形式", trigger: "blur" }]
-      }
+      },
+      officeSource: []
     };
   },
-  mounted() {},
+  created() {
+    this.getOfficeMenuTree();
+  },
   methods: {
     /* 显示对话框 */
     show(row, type) {
-      console.log(311, row, type);
+      // console.log(311, row, type);
       // 编辑机构  新增下级机构  新增机构
       this.titleType = type;
       if (type === "新增机构") {
         this.showEditDailog = true;
       }
-      if (type === "编辑机构") {
+      if (type === "编辑机构" || type === "新增下级机构") {
         /* 获取机构详情 */
         orgApi
           .getOfficeDetail({
             officeCode: row.officeCode
           })
           .then(res => {
-            console.log("res", res);
             const result = JSON.parse(JSON.stringify(res.office));
             for (const key in res.office.extend) {
               result.extend[key] = res.office.extend[key];
             }
-            const tempOfficeListSource = this.$store.state.publicData
-              .officeListSource;
-            console.log("this.menuData", this.$store.state);
-            const tempOffice = tempOfficeListSource.map(item => {
-              if (item.id === res.office.parentCode) {
-                return item;
-              }
-            });
-            console.log("tempOffice", tempOffice);
-            result.parent = {
-              id: res.office.parentCode,
-              officeName: tempOffice
-            };
+            // console.log(321, res.office);
+            if (res.office.parentCode) {
+              const officeSource = this.officeSource.filter(item => {
+                return item.id === res.office.parentCode;
+              });
+              result.parent = {
+                id: officeSource[0].id,
+                officeName: officeSource[0].name
+              };
+            } else {
+              result.parent = {
+                id: "",
+                officeName: ""
+              };
+            }
 
-            // this.institutionForm = result;
-            // console.log(308, this.institutionForm);
+            this.institutionForm = result;
             this.showEditDailog = true;
           });
       }
+    },
+    getOfficeMenuTree() {
+      pubApi.getOfficeMenuTree().then(res => {
+        this.officeSource = res;
+      });
     },
     /* 关闭编辑对话框 */
     closeEditDialog() {
@@ -384,17 +392,17 @@ export default {
     },
     /* 提交 */
     submitForm(formName) {
-      // parent  officeName id
-      // this.institutionForm.leader = this.institutionForm.leader;
-      console.log(374, this.institutionForm);
-      // return;
+      console.log(374);
       this.$refs[formName].validate(valid => {
+        console.log(1);
         if (valid) {
+          console.log(2);
           if (this.titleType === "新增机构") {
             this.institutionForm.isNewRecord = true;
           } else {
             this.institutionForm.isNewRecord = false;
           }
+          console.log(400, this.titleType);
           orgApi.saveOfficeAdd(this.institutionForm).then(res => {
             if (res.result === "true") {
               this.$message.success(res.message);
@@ -412,10 +420,18 @@ export default {
           return false;
         }
       });
+      console.log(414, this.institutionForm);
     },
-    colseUser(formName) {
-      this.showEditDailog = false;
-      this.$refs[formName].resetFields();
+    colseOffice(formName) {
+      console.log(429, formName, this.$refs[formName].resetFields());
+      this.$nextTick(() => {
+        console.log(421, this.$refs[formName]);
+        this.$refs[formName].resetFields(); // 清空表单
+        this.showEditDailog = false;
+      });
+
+      // this.institutionForm.parent.id = "";
+      // this.institutionForm.parent.officeName = "";
     }
   }
 };

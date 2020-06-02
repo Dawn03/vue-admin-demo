@@ -288,6 +288,11 @@ function commonAjaxDelete(config) {
  */
 function handleResponseSuccess(response) {
   // console.log("请求成功", getToken(), response)
+  if (response.status === 200 && response.data.result === "login") {
+    store.dispatch('user/resetToken').then(() => {
+      location.reload()
+    })
+  }
   const token = getToken()
   if (token) {
     axios.defaults.headers.common['__sid'] = token;
@@ -298,9 +303,7 @@ function handleResponseSuccess(response) {
     tryHideFullScreenLoading()
     return result;
   }
-  // store.dispatch('user/resetToken').then(() => {
-  //     location.reload()
-  //   })
+
   tryHideFullScreenLoading()
   return handleError(response.config, result);
 }

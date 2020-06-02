@@ -17,10 +17,11 @@
         </el-row>
         <MenuTree
           ref="menuTreeDom1"
-          :menu-data="menuData"
+          :menu-data="menuData1"
           :default-expand="defaultExpand1"
           :expand-all="expandAll1"
           :show-checkbox="true"
+          @passCheckedNode="passCheckedNode1"
         ></MenuTree>
       </li>
       <li class="scond fl">
@@ -38,10 +39,11 @@
         </el-row>
         <MenuTree
           ref="menuTreeDom2"
-          :menu-data="menuData"
+          :menu-data="menuData2"
           :default-expand="defaultExpand2"
           :expand-all="expandAll2"
           :show-checkbox="true"
+          @passCheckedNode="passCheckedNode2"
         ></MenuTree>
       </li>
       <li class="third fl">
@@ -59,10 +61,11 @@
         </el-row>
         <MenuTree
           ref="menuTreeDom3"
-          :menu-data="menuData"
+          :menu-data="menuData3"
           :default-expand="defaultExpand3"
           :expand-all="expandAll3"
           :show-checkbox="true"
+          @passCheckedNode="passCheckedNode3"
         ></MenuTree>
       </li>
     </ul>
@@ -70,13 +73,20 @@
 </template>
 <script>
 import MenuTree from "@/components/menuTree";
+import { roleApi } from "@/api/role";
+import { toTreeData } from "@/utils/pubFunc";
+
 export default {
   name: "MenuRights",
   components: {
     MenuTree
   },
+
   data() {
     return {
+      menuData1: [],
+      menuData2: [],
+      menuData3: [],
       menuData: [
         {
           label: "苑东生物",
@@ -126,10 +136,30 @@ export default {
       defaultExpand3: [],
       expandAll1: false,
       expandAll2: false,
-      expandAll3: false
+      expandAll3: false,
+      checkTree1: [],
+      checkTree2: [],
+      checkTree3: []
     };
   },
+  created() {
+    this.init();
+  },
   methods: {
+    /* 获取授权功能菜单默认数据 */
+    init() {
+      roleApi.getAuthorizeData({ roleCode: "" }).then(res => {
+        const attributes = {
+          id: "id",
+          parentId: "pId",
+          label: "title",
+          rootId: "0"
+        };
+        this.menuData1 = toTreeData(res.menuMap.default, attributes);
+        this.menuData2 = toTreeData(res.menuMap.default1, attributes) || [];
+        this.menuData3 = toTreeData(res.menuMap.default2, attributes) || [];
+      });
+    },
     /* 展开或收起选项 */
     switchStatus1() {
       this.expandAll1 = !this.expandAll1;
@@ -148,15 +178,39 @@ export default {
 
     /* 设置全选反选 */
     handleCheckAllChange1(val) {
+      console.log(175, val);
       this.$refs.menuTreeDom1.checkAll(val);
+      this.$emit("checkTree", { val: val, current: 1 });
     },
     /* 设置全选反选 */
     handleCheckAllChange2(val) {
+      console.log(180, val);
       this.$refs.menuTreeDom2.checkAll(val);
+      this.$emit("checkTree", { val, current: 2 });
     },
     /* 设置全选反选 */
     handleCheckAllChange3(val) {
+      console.log(185, val);
       this.$refs.menuTreeDom3.checkAll(val);
+      this.$emit("checkTree", { val, current: 3 });
+    },
+    // 当前以及勾选节点
+    passCheckedNode1(val) {
+      this.$emit("checkTree", { val, current: 1 });
+      // this.checkTree = val;
+      // console.log(190, val);
+    },
+    // 当前以及勾选节点
+    passCheckedNode2(val) {
+      this.$emit("checkTree", { val, current: 2 });
+      // this.checkTree = val;
+      // console.log(190, val);
+    },
+    // 当前以及勾选节点
+    passCheckedNode3(val) {
+      this.$emit("checkTree", { val, current: 3 });
+      // this.checkTree3 = val;
+      // console.log(190, val);
     }
   }
 };

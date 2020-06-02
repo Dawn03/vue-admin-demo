@@ -41,10 +41,12 @@ export default {
       defaultExpand: ""
     };
   },
+  created() {
+    this.$store.dispatch("publicData/getOfficeMenuTree");
+  },
   mounted() {
     this.init();
     this.getInsMenuTree();
-    this.$store.dispatch("publicData/getOfficeMenuTree");
   },
   methods: {
     init() {
@@ -57,24 +59,17 @@ export default {
         "click",
         function() {
           _this.arrow = !_this.arrow;
-          // const display = bar.style.display;
-          // if (display != "none") {
-          //   bar.style.display = "none";
-          // } else {
-          //   bar.style.display = "block";
-          // }
           const elWidth = institutionLeft.style.width;
-          if (elWidth != "0px") {
+          if (elWidth !== "0px") {
             institutionLeft.style.width = "0px";
             institutionRight.style.width = "100%";
-
             setTimeout(function() {
-              bar.style.display = "none";
+              // bar.style.display = "none";
             }, 1000);
           } else {
             institutionLeft.style.width = "200px";
             institutionRight.style.width = "calc(100% - 200px)";
-            bar.style.display = "block";
+            // bar.style.display = "block";
           }
         },
         false

@@ -20,7 +20,8 @@ export const roleApi = {
   },
   /* 获取授权功能菜单数据 */
   getAuthorizeData: (param) => {
-    return httpRequestor.post(`a/sys/role/menuTreeData`, param).catch(err => {
+    console.log("param", param)
+    return httpRequestor.postFormData(`a/sys/role/menuTreeData?___t=1590552373020`, param).catch(err => {
       Message.error(err)
     })
   },

@@ -111,10 +111,9 @@
             </el-button>
             <el-button
               type="text"
-              size="small"
               @click="institutionEdit(scope.row, '新增下级机构')"
             >
-              <i class="el-icon-plus" title="新增下级机构"></i>
+              <i class="el-icon-plus" size="small" title="新增下级机构"></i>
             </el-button>
           </template>
         </el-table-column>
@@ -218,13 +217,12 @@ export default {
       tableData: []
     };
   },
-  mounted() {
-    this.$nextTick(() => {
-      this.getOfficeType("sys_office_type");
-      this.init({
-        status: "",
-        ctrlPermi: 2
-      });
+
+  created() {
+    this.getOfficeType("sys_office_type");
+    this.init({
+      status: "",
+      ctrlPermi: 2
     });
   },
   methods: {
@@ -237,9 +235,6 @@ export default {
         this.tableData = res;
       });
     },
-    // initPage() {
-    //   this.init()
-    // },
     /* 获取机构类型 */
     getOfficeType(dictType) {
       pubApi
@@ -338,6 +333,10 @@ export default {
             })
             .then(res => {
               if (res.result === "true") {
+                this.init({
+                  status: "",
+                  ctrlPermi: 2
+                });
                 this.$message.success(res.message);
               } else {
                 this.$message.waring(res.message);
