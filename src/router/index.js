@@ -35,7 +35,6 @@ export const constantRoutes = [{
     component: () => import('@/views/login/index'),
     hidden: true
   },
-
   {
     path: '/404',
     component: () => import('@/views/404'),
@@ -53,6 +52,34 @@ export const constantRoutes = [{
       component: () => import('@/views/dashboard/index'),
       meta: {
         title: '仪表盘',
+        icon: 'dashboard'
+      }
+    }]
+  },
+  {
+    path: '/test',
+    component: Layout,
+    redirect: '/test/page1',
+    name: 'Test',
+    // hidden: true,
+    meta: {
+      title: 'test',
+      icon: 'dashboard'
+    },
+    children: [{
+      path: 'page1',
+      name: 'page1',
+      component: () => import('@/views/test/page1'),
+      meta: {
+        title: 'page1',
+        icon: 'dashboard'
+      }
+    },{
+      path: 'page2',
+      name: 'page2',
+      component: () => import('@/views/test/page2'),
+      meta: {
+        title: 'page2',
         icon: 'dashboard'
       }
     }]
