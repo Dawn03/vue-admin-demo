@@ -8,90 +8,22 @@
       <template slot="content">
         <div>
           <ColumnBar :column-text="'基本信息'"></ColumnBar>
+          <!--  :model="roleForm" -->
           <el-form
             ref="roleForm"
-            :model="roleForm"
             label-width="100px"
-            class="demo-ruleForm"
+            class="demo-ruleForm small-space"
             size="mini"
             :rules="rules"
+            :model="form"
+            onsubmit="return false;"
           >
-            <el-row :gutter="gutterVal">
-              <el-col :span="12">
-                <el-form-item label="角色名称：" prop="roleName">
-                  <el-input v-model="roleForm.roleName"> </el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="角色编码：" prop="roleCode">
-                  <el-input v-model="roleForm.roleCode"></el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="gutterVal">
-              <el-col :span="12">
-                <el-form-item label="排序号：" prop="roleSort">
-                  <el-input v-model="roleForm.roleSort"></el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="用户类型：" prop="userType">
-                  <el-select
-                    v-model="roleForm.userType"
-                    style="width:100%;"
-                    placeholder="请选择用户类型"
-                  >
-                    <el-option
-                      v-for="item in userStatusOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    >
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="gutterVal">
-              <el-col :span="12">
-                <el-form-item label="系统角色：" prop="isSys">
-                  <el-radio-group
-                    v-model="roleForm.isSys"
-                    @change="changeSystem"
-                  >
-                    <el-radio label="1">是</el-radio>
-                    <el-radio label="0">否</el-radio>
-                  </el-radio-group>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="角色分类：" prop="roleType">
-                  <el-select
-                    v-model="roleForm.roleType"
-                    placeholder="请选择角色分类"
-                    style="width: 100%;"
-                  >
-                    <el-option
-                      v-for="item in roleType"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    >
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row style="margin-top: 20px;" :rows="4">
-              <el-col :span="24">
-                <el-form-item label="备注信息：" prop="remarks">
-                  <el-input
-                    v-model="roleForm.remarks"
-                    type="textarea"
-                  ></el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>
+            <dym-form
+              :edit-model="editModel"
+              :component-list="componentList"
+              :form-value.sync="form"
+            >
+            </dym-form>
             <ColumnBar
               :column-text="'扩展字段'"
               :icon-tips="true"
@@ -140,17 +72,27 @@ import DailogFrame from "@/components/dailogPanel/frame";
 import ColumnBar from "@/components/commonColumn";
 import ExtentionFeild from "@/components/extentionFeild";
 import MenuRights from "@/components/menuRights";
-// import { returnReg } from "@/utils/validate";
+
+import dymForm from "@/components/element/dymForm";
+import { returnReg } from "@/utils/validate";
 import { roleApi } from "@/api/role";
+import { pubApi } from "@/api/public_request";
 export default {
   name: "RoleEdit",
   components: {
     DailogFrame,
     ColumnBar,
     ExtentionFeild,
-    MenuRights
+    MenuRights,
+    dymForm
   },
   props: {
+    form: {
+      type: Object,
+      default: function() {
+        return {};
+      }
+    },
     userStatusOptions: {
       type: Array,
       default: () => {
@@ -166,6 +108,7 @@ export default {
   },
   data() {
     return {
+      editModel: "E",
       titleName: "",
       exHeight: "0px",
       showEditDailog: false,
@@ -203,6 +146,87 @@ export default {
           extendD4: ""
         }
       },
+      componentList: [
+        {
+          label: "角色名称：",
+          prop: "roleName", // 表单验证传入的值
+          labelWidth: "90px",
+          componentName: "el-input",
+          cols: [12, 12, 12, 12],
+          maxlength: "64",
+          placeholder: "请输入",
+          value: "roleName" // 字段显示的值
+        },
+        {
+          label: "角色编码：",
+          prop: "roleCode", // 表单验证传入的值
+          labelWidth: "90px",
+          // disabled: true,
+          componentName: "el-input", // BaseSelect
+          cols: [12, 12, 12, 12],
+          placeholder: "请输入",
+          value: "roleCode"
+        },
+        {
+          label: "排序号：",
+          prop: "roleSort",
+          labelWidth: "90px",
+          componentName: "el-input",
+          cols: [12, 12, 12, 12],
+          placeholder: "请输入",
+          value: "roleSort"
+        },
+        {
+          label: "用户类型：",
+          prop: "userType",
+          labelWidth: "90px",
+          componentName: "BaseSelect",
+          options: [], // this.roleType
+          cols: [12, 12, 12, 12],
+          placeholder: "请选择",
+          value: "userType"
+        },
+        {
+          label: "系统角色：",
+          prop: "isSys",
+          labelWidth: "90px",
+          componentName: "RadioChoose",
+          cols: [12, 12, 12, 12],
+          placeholder: "请输入",
+          value: "isSys"
+        },
+        {
+          label: "角色分类：",
+          prop: "roleType",
+          labelWidth: "90px",
+          componentName: "BaseSelect",
+          // requestFun: "pubApi.dictTypeFunc",
+          // api: "/a/sys/dictData/listData",  //dictTypeFunc
+          // api: pubApi, // dictTypeFunc
+
+          // loadList: "dictTypeFunc",
+          // selectOptions: {
+          //   dictType: "sys_user_type"
+          // },
+          options: [], // this.userStatusOptions,
+          // options: this.getthis.(),
+          //  selectedField: ['id', 'name'],
+          cols: [12, 12, 12, 12],
+          placeholder: "请选择",
+          value: "roleType"
+        },
+        {
+          label: "备注信息：",
+          prop: "remarks",
+          labelWidth: "90px",
+          componentName: "Textarea",
+          rowsSpan: 4,
+          cols: [24, 24, 24, 24],
+          placeholder: "请输入",
+          value: "remarks"
+        }
+      ],
+
       rules: {
         roleName: [
           {
@@ -215,7 +239,14 @@ export default {
         roleCode: [
           { required: true, message: "请输入活动名称", trigger: "blur" }
         ],
-        roleSort: [{ required: true, message: "必填信息", trigger: "blur" }],
+        roleSort: [
+          {
+            required: true,
+            pattern: returnReg("positiveInteger"),
+            message: "请输入一个正整数",
+            trigger: "blur"
+          }
+        ],
         isSys: [
           {
             required: true,
@@ -231,13 +262,28 @@ export default {
       }
     };
   },
+  watch: {
+    roleType: {
+      handler(val, oldVal) {
+        this.componentList[3].options = val;
+      },
+      // 监听到数据变化时立即调用
+      immediate: true
+    },
+    userStatusOptions: {
+      handler(val, oldVal) {
+        this.componentList[5].options = val;
+      },
+      // 监听到数据变化时立即调用
+      immediate: true
+    }
+  },
   mounted() {},
   methods: {
     /* 显示对话框 */
     show(row, type) {
       // 新增角色
-
-      console.log(row, type);
+      console.log("this.userStatusOptions", this.userStatusOptions);
       this.titleName = type;
       this.showEditDailog = true;
       // if(type === "编辑角色")
@@ -249,7 +295,22 @@ export default {
       //   this.getAuthorizeData({ roleCode: row.roleCode });
       // }
     },
-
+    /* 获取用户列表 */
+    getUserStatusOptions() {
+      const userOptions = [];
+      pubApi.dictTypeFunc({ dictType: "sys_user_type" }).then(res => {
+        for (let i = 0, len = res.length; i < len; i++) {
+          if (res[i].status === "0") {
+            userOptions.push({
+              label: res[i].dictLabel,
+              value: res[i].dictValue
+            });
+          }
+        }
+        console.log(3333, userOptions);
+        return userOptions;
+      });
+    },
     /* 显示扩展字段 */
     showExtentionDom() {
       this.exHeight = this.exHeight === "0px" ? "480px" : "0px";
@@ -278,7 +339,8 @@ export default {
     },
     /* 提交 */
     submitForm(formName) {
-      console.log(467, this.titleName);
+      console.log(467, this.form);
+      return;
       this.$refs[formName].validate(valid => {
         if (valid) {
           const obj = {};

@@ -17,7 +17,7 @@ const mutations = {
       id: "id",
       parentId: "pId",
       label: "name",
-      rootId: "0"
+      rootId: "YD"
     };
     state.officeList = toTreeData(data, attributes)
   },
@@ -42,12 +42,12 @@ const actions = {
     commit
   }) {
     pubApi.getCompanyMenuTree().then(res => {
-      console.log('GET_COMPANY_TREE_LIST', res);
+      // console.log('GET_COMPANY_TREE_LIST', res);
       const attributes = {
         id: "id",
         parentId: "pId",
         label: "name",
-        rootId: "0"
+        rootId: "YD"
       };
       commit("GET_COMPANY_TREE_LIST", toTreeData(res, attributes))
     });

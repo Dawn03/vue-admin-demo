@@ -195,11 +195,12 @@ export default {
       }
     };
     const phoneValidator = (rule, value, callback) => {
-      if (value !== "" && !returnReg("mobile").test(value)) {
-        new Error(
+      console.log(124, value)
+      if (value && !returnReg("mobile").test(value)) {
+        callback(new Error(
           "sdsd 请正确填写您的电话号码，固话为区号(3-4位)号码(7-9位),手机为13,14,15,16,17,18,19号段"
-        );
-      } else if (value !== "" && !returnReg("phone").test(value)) {
+        ));
+      } else if (value && !returnReg("phone").test(value)) {
         callback(
           new Error(
             "sdsd 请正确填写您的电话号码，固话为区号(3-4位)号码(7-9位),手机为13,14,15,16,17,18,19号段"
@@ -260,14 +261,9 @@ export default {
         }
       },
       rules: {
-        "parent.officeName": [
-          { required: true, message: "必填信息", trigger: "change" },
-          {
-            // pattern: returnReg("otaGrade"),
-            message: "请输入账号",
-            trigger: "blur"
-          }
-        ],
+        // "parent.officeName": [
+        //   { required: true, message: "必填信息", trigger: "change" },
+        // ],
         viewCode: [{ required: true, message: "必填信息", trigger: "blur" }],
         officeName: [{ required: true, message: "必填信息", trigger: "blur" }],
         officeType: [{ required: true, message: "请选择", trigger: "change" }],
@@ -284,6 +280,7 @@ export default {
         ],
         phone: [
           {
+            required: false,
             validator: phoneValidator,
             trigger: "change"
           }
@@ -301,7 +298,6 @@ export default {
   methods: {
     /* 显示对话框 */
     show(row, type) {
-      // console.log(311, row, type);
       // 编辑机构  新增下级机构  新增机构
       this.titleType = type;
       if (type === "新增机构") {
@@ -314,11 +310,11 @@ export default {
             officeCode: row.officeCode
           })
           .then(res => {
+            // console.log(321, res);
             const result = JSON.parse(JSON.stringify(res.office));
             for (const key in res.office.extend) {
               result.extend[key] = res.office.extend[key];
             }
-            // console.log(321, res.office);
             if (res.office.parentCode) {
               const officeSource = this.officeSource.filter(item => {
                 return item.id === res.office.parentCode;
@@ -346,6 +342,7 @@ export default {
     },
     /* 关闭编辑对话框 */
     closeEditDialog() {
+      this.colseOffice("institutionForm");
       this.showEditDailog = false;
     },
     /* 触发选择上级机构 */
@@ -392,17 +389,16 @@ export default {
     },
     /* 提交 */
     submitForm(formName) {
-      console.log(374);
+      // console.log(1, formName, this.$refs[formName]);
       this.$refs[formName].validate(valid => {
-        console.log(1);
+        // console.log(2);
         if (valid) {
-          console.log(2);
+          // console.log(3);
           if (this.titleType === "新增机构") {
             this.institutionForm.isNewRecord = true;
           } else {
             this.institutionForm.isNewRecord = false;
           }
-          console.log(400, this.titleType);
           orgApi.saveOfficeAdd(this.institutionForm).then(res => {
             if (res.result === "true") {
               this.$message.success(res.message);
@@ -414,22 +410,20 @@ export default {
             } else {
               this.$message.warning(res.message);
             }
+            this.colseOffice("institutionForm");
           });
         } else {
+          // console.log(4);
           console.log("error submit!!");
           return false;
         }
       });
-      console.log(414, this.institutionForm);
     },
     colseOffice(formName) {
-      console.log(429, formName, this.$refs[formName].resetFields());
       this.$nextTick(() => {
-        console.log(421, this.$refs[formName]);
         this.$refs[formName].resetFields(); // 清空表单
         this.showEditDailog = false;
       });
-
       // this.institutionForm.parent.id = "";
       // this.institutionForm.parent.officeName = "";
     }

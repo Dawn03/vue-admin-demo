@@ -9,6 +9,7 @@ import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
 
 import '@/styles/index.scss' // global css
 
+import '@/utils/UtilJs'
 import './directives.js'
 import App from './App'
 import store from './store'

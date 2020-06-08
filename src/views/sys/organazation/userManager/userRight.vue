@@ -470,7 +470,7 @@ export default {
             id: "id",
             parentId: "pId",
             label: "name",
-            rootId: "0"
+            rootId: "YD"
           };
           const treeData = toTreeData(res, attributes);
           this.$refs.inAndCompanyPanel.show(item, treeData);

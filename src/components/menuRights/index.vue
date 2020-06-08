@@ -166,7 +166,6 @@ export default {
       this.$refs.menuTreeDom1.showOrHiddenAllNodes();
     },
     switchStatus2() {
-      console.log(2);
       this.expandAll2 = !this.expandAll2;
       this.$refs.menuTreeDom2.showOrHiddenAllNodes();
     },

@@ -58,24 +58,24 @@ export const constantRoutes = [{
     }]
   },
   {
-    path: '/system',
+    path: '/sys',
     component: Layout,
-    redirect: '/system/organazation',
-    name: 'system',
+    redirect: '/sys/organazation',
+    name: 'sys',
     meta: {
       title: '系统管理',
       icon: 'dashboard'
     },
     children: [{
         path: 'organazation',
-        component: () => import('@/views/system/organazation/index'), // Parent router-view
+        component: () => import('@/views/sys/organazation'), // Parent router-view
         name: 'organazation',
         meta: {
           title: '组织管理'
         },
         children: [{
             path: 'userManager',
-            component: () => import('@/views/system/organazation/userManager'),
+            component: () => import('@/views/sys/organazation/userManager'),
             name: 'userManager',
             meta: {
               title: '用户管理'
@@ -83,7 +83,7 @@ export const constantRoutes = [{
           },
           {
             path: 'institution',
-            component: () => import('@/views/system/organazation/institution'),
+            component: () => import('@/views/sys/organazation/institution'),
             name: 'institution',
             meta: {
               title: '机构管理'
@@ -92,14 +92,14 @@ export const constantRoutes = [{
         ]
       },
       {
-        path: 'rightsManage',
-        component: () => import('@/views/system/rightsManage/index'),
+        path: 'role',
+        component: () => import('@/views/sys/role/index'),
         meta: {
           title: '权限管理'
         },
         children: [{
-            path: 'role',
-            component: () => import('@/views/system/rightsManage/roleManage'),
+            path: 'listData',
+            component: () => import('@/views/sys/role/role'),
             name: 'role',
             meta: {
               title: '角色管理'
@@ -107,7 +107,7 @@ export const constantRoutes = [{
           },
           {
             path: 'secondManage',
-            component: () => import('@/views/system/rightsManage/secondManage'),
+            component: () => import('@/views/sys/role/secondManage'),
             name: 'secondManage',
             meta: {
               title: '二级管理员'

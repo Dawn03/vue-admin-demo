@@ -48,9 +48,9 @@
           {{ scope.row.roleName }}
         </span>
       </template>
-      <template slot="systemRole" slot-scope="scope">
+      <template slot="isSys" slot-scope="scope">
         <span>
-          {{ scope.row.systemRole == "1" ? "是" : "否" }}
+          {{ scope.row.isSys == "1" ? "是" : "否" }}
         </span>
       </template>
       <template slot="statusText" slot-scope="scope">
@@ -227,12 +227,12 @@ export default {
         number: 130,
         format: 130
       },
-      slotColumns: ["roleName", "systemRole", "statusText"],
+      slotColumns: ["roleName", "isSys", "statusText"],
       tableHead: {
         roleName: "角色名称",
         roleCode: "角色编码",
         roleSort: "排序号",
-        systemRole: "系统角色", // 暂无字段
+        isSys: "系统角色", // 暂无字段
         userType: "用户类型", // 暂无字段
         dataRange: "数据范围", // 暂无字段
         bussinessRange: "业务范围", // 暂无字段

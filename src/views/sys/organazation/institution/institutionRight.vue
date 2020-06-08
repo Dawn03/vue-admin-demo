@@ -222,12 +222,21 @@ export default {
     this.getOfficeType("sys_office_type");
     this.init({
       status: "",
-      ctrlPermi: 2
+      ctrlPermi: 2,
+      pageNo: 1,
+      officeCode: "",
+      viewCode: "",
+      officeName: "",
+      fullName: "",
+      officeType: "",
+      pageSize: "",
+      orderBy: ""
     });
   },
   methods: {
     init(param) {
       orgApi.getOfficeList(param).then(res => {
+        // console.log(231, res);
         if (res.length && res[0].isTreeLeaf === false) {
           res[0].hasChildren = true;
         }

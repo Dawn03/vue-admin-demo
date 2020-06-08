@@ -1,14 +1,14 @@
 <template>
   <div class="role">
-    <roleTable></roleTable>
+    <ListData></ListData>
   </div>
 </template>
 <script>
-import RoleTable from "./roleTable";
+import ListData from "./ListData";
 export default {
   name: "RoleManage",
   components: {
-    RoleTable
+    ListData
   },
   data() {
     return {};
