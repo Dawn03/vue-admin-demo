@@ -2,7 +2,7 @@
   <div class="data-rights-panel">
     <DailogFrame
       :dialog-visible="showDataRights"
-      :title-name="'角色分配功能权限'"
+      :title-name="titleName"
       @closeDialog="colseDataRights"
     >
       <template slot="content">
@@ -15,23 +15,28 @@
             size="mini"
             :rules="rules"
           >
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <el-form-item label="角色名称：" prop="roleName">
-                  <el-input v-model="dataRightsForm.roleName" :disabled="true">
-                  </el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="角色编码：" prop="roleCode">
-                  <el-input v-model="dataRightsForm.roleCode" :disabled="true">
-                  </el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>
+            <dym-form
+              :edit-model="editModel"
+              :component-list="componentList"
+              :form-value.sync="dataRightsForm"
+            >
+            </dym-form>
           </el-form>
-          <ColumnBar :column-text="'授权功能菜单'"></ColumnBar>
-          <MenuRights></MenuRights>
+          <ColumnBar :column-text="columnBarName"></ColumnBar>
+          <!-- 授权一个  二级权限管理三个 -->
+          <MenuRights
+            ref="menuRights"
+            :t-name1="tName1"
+            :t-name2="tName2"
+            :t-name3="tName3"
+            :menu-tree1="menuTree1"
+            :menu-tree2="menuTree2"
+            :menu-tree3="menuTree3"
+            :checked-memu1="checkedMemu1"
+            :checked-memu2="checkedMemu2"
+            :checked-memu3="checkedMemu3"
+            v-on="$listeners"
+          ></MenuRights>
         </div>
       </template>
       <template slot="footer">
@@ -59,29 +64,112 @@
 </template>
 <script>
 // import { } from "module";
+
+import dymForm from "@/components/element/dymForm";
 import ColumnBar from "@/components/commonColumn";
 import DailogFrame from "@/components/dailogPanel/frame";
-import MenuTree from "@/components/menuTree";
 import MenuRights from "@/components/menuRights";
 export default {
   name: "DataRights",
   components: {
     DailogFrame,
     ColumnBar,
-    MenuTree,
-    MenuRights
+    MenuRights,
+    dymForm
+  },
+  props: {
+    columnBarName: {
+      type: String,
+      default: "板块标题"
+    },
+    tName1: {
+      type: String,
+      default: ""
+    },
+    tName2: {
+      type: String,
+      default: ""
+    },
+    tName3: {
+      type: String,
+      default: ""
+    },
+    titleName: {
+      type: String,
+      default: "提示"
+    },
+    menuTree1: {
+      type: [Array, Object],
+      default: () => {
+        return {};
+      }
+    },
+    menuTree2: {
+      type: [Array, Object],
+      default: () => {
+        return {};
+      }
+    },
+    menuTree3: {
+      type: [Array, Object],
+      default: () => {
+        return {};
+      }
+    },
+    checkedMemu1: {
+      type: [Array, Object],
+      default: () => {
+        return {};
+      }
+    },
+    checkedMemu2: {
+      type: [Array, Object],
+      default: () => {
+        return {};
+      }
+    },
+    checkedMemu3: {
+      type: [Array, Object],
+      default: () => {
+        return {};
+      }
+    }
   },
   data() {
     return {
+      editModel: "E",
       showDataRights: false,
       checked: true,
       dataRightsForm: {
         loginAccount: "",
         userAlias: ""
       },
+      componentList: [
+        {
+          label: "角色名称：",
+          prop: "roleName",
+          labelWidth: "90px",
+          disabled: true,
+          componentName: "el-input",
+          cols: [12, 12, 12, 12],
+          maxlength: "64",
+          placeholder: "请输入",
+          value: "roleName"
+        },
+        {
+          label: "角色编码：",
+          prop: "roleCode",
+          labelWidth: "90px",
+          disabled: true,
+          componentName: "el-input",
+          cols: [12, 12, 12, 12],
+          placeholder: "请输入",
+          value: "roleCode"
+        }
+      ],
       rules: {
-        loginAccount: [{ required: true }],
-        userAlias: [{ required: true }]
+        roleName: [{ required: true }],
+        roleCode: [{ required: true }]
       },
       menuData: [
         {
@@ -126,11 +214,24 @@ export default {
       ]
     };
   },
+  computed: {
+    // checkedMemuData: {
+    //   get() {
+    //     return this.checkedMemu1;
+    //   },
+    //   set(val) {
+    //     console.log(143, val);
+    //   }
+    // }
+  },
   methods: {
     init(row) {
-      //   console.log(99, row);
       this.dataRightsForm = JSON.parse(JSON.stringify(row));
       this.showDataRights = true;
+      this.$nextTick(() => {
+        // console.log(218, this.checkedMemu1);
+        this.$refs.menuRights.setDefaultChecked();
+      });
     },
     /* 保存 */
     saveDataRights() {

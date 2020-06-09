@@ -35,6 +35,7 @@ const axiosInstance = axios.create({
 });
 // 在发送请求之前做某件事
 axiosInstance.interceptors.request.use((config) => {
+  showFullScreenLoading()
   if (getToken()) {
     config.headers['__sid'] = getToken();
   }
@@ -297,7 +298,6 @@ function handleResponseSuccess(response) {
   if (token) {
     axios.defaults.headers.common['__sid'] = token;
   }
-  showFullScreenLoading()
   const result = response.data;
   if (response.status === 200) {
     tryHideFullScreenLoading()

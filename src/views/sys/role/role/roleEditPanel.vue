@@ -7,8 +7,6 @@
     >
       <template slot="content">
         <div>
-          <ColumnBar :column-text="'基本信息'"></ColumnBar>
-          <!--  :model="roleForm" -->
           <el-form
             ref="roleForm"
             label-width="100px"
@@ -33,7 +31,7 @@
               ref="extentionDom"
               :style="{ height: exHeight }"
               style="overflow: hidden;"
-              :extention-form="roleForm.extend"
+              :extention-form="extend"
               @extentionFormVal="extentionFormVal"
             ></ExtentionFeild>
             <div v-if="titleName == '新增角色'">
@@ -77,6 +75,7 @@ import dymForm from "@/components/element/dymForm";
 import { returnReg } from "@/utils/validate";
 import { roleApi } from "@/api/role";
 import { pubApi } from "@/api/public_request";
+import { formExtendMap, formExtendClear } from "@/utils/pubFunc";
 export default {
   name: "RoleEdit",
   components: {
@@ -87,12 +86,6 @@ export default {
     dymForm
   },
   props: {
-    form: {
-      type: Object,
-      default: function() {
-        return {};
-      }
-    },
     userStatusOptions: {
       type: Array,
       default: () => {
@@ -115,38 +108,45 @@ export default {
       menuTreeTitle: "",
       gutterVal: 100,
       options: [],
-      roleForm: {
+      form: {
         roleName: "",
+        oldRoleName: "",
         roleCode: "",
         roleSort: "",
         userType: "",
-        isSys: "0",
+        isSys: "",
         roleType: "",
-        remarks: "",
-        extend: {
-          extendS1: "",
-          extendS2: "",
-          extendS3: "",
-          extendS4: "",
-          extendS5: "",
-          extendS6: "",
-          extendS7: "",
-          extendS8: "",
-          extendI1: "",
-          extendI2: "",
-          extendI3: "",
-          extendI4: "",
-          extendF1: "",
-          extendF2: "",
-          extendF3: "",
-          extendF4: "",
-          extendD1: "",
-          extendD2: "",
-          extendD3: "",
-          extendD4: ""
-        }
+        remarks: ""
+      },
+      extend: {
+        extendS1: "",
+        extendS2: "",
+        extendS3: "",
+        extendS4: "",
+        extendS5: "",
+        extendS6: "",
+        extendS7: "",
+        extendS8: "",
+        extendI1: "",
+        extendI2: "",
+        extendI3: "",
+        extendI4: "",
+        extendF1: "",
+        extendF2: "",
+        extendF3: "",
+        extendF4: "",
+        extendD1: "",
+        extendD2: "",
+        extendD3: "",
+        extendD4: ""
       },
       componentList: [
+        {
+          label: "基本信息", // 授权功能菜单
+          lineTips: true,
+          cols: [24, 24, 24, 24],
+          showFlag: false
+        },
         {
           label: "角色名称：",
           prop: "roleName", // 表单验证传入的值
@@ -161,7 +161,7 @@ export default {
           label: "角色编码：",
           prop: "roleCode", // 表单验证传入的值
           labelWidth: "90px",
-          // disabled: true,
+          disabled: true,
           componentName: "el-input", // BaseSelect
           cols: [12, 12, 12, 12],
           placeholder: "请输入",
@@ -193,23 +193,26 @@ export default {
           componentName: "RadioChoose",
           cols: [12, 12, 12, 12],
           placeholder: "请输入",
-          value: "isSys"
+          value: "isSys", // radioVal
+          // value: "2",
+          // checkedRadio: "",
+          radios: [
+            {
+              label: "1",
+              labelName: "是"
+            },
+            {
+              label: "0",
+              labelName: "否"
+            }
+          ]
         },
         {
           label: "角色分类：",
           prop: "roleType",
           labelWidth: "90px",
           componentName: "BaseSelect",
-          // requestFun: "pubApi.dictTypeFunc",
-          // api: "/a/sys/dictData/listData",  //dictTypeFunc
-          // api: pubApi, // dictTypeFunc
-
-          // loadList: "dictTypeFunc",
-          // selectOptions: {
-          //   dictType: "sys_user_type"
-          // },
           options: [], // this.userStatusOptions,
-          // options: this.getthis.(),
           //  selectedField: ['id', 'name'],
           cols: [12, 12, 12, 12],
           placeholder: "请选择",
@@ -219,14 +222,14 @@ export default {
           label: "备注信息：",
           prop: "remarks",
           labelWidth: "90px",
-          componentName: "Textarea",
+          componentName: "el-input",
           rowsSpan: 4,
           cols: [24, 24, 24, 24],
+          type: "textarea",
           placeholder: "请输入",
           value: "remarks"
         }
       ],
-
       rules: {
         roleName: [
           {
@@ -254,46 +257,73 @@ export default {
             trigger: "change"
           }
         ],
-        menuMapDefault: [],
-        checkTree1: [],
-        checkTree2: [],
-        checkTree3: [],
-        roleMenuListJson: []
-      }
+        menuMapDefault: []
+      },
+      checkTree1: [],
+      checkTree2: [],
+      checkTree3: [],
+      roleMenuListJson: []
     };
   },
   watch: {
-    roleType: {
+    userStatusOptions: {
       handler(val, oldVal) {
-        this.componentList[3].options = val;
+        this.componentList[4].options = val;
       },
       // 监听到数据变化时立即调用
       immediate: true
     },
-    userStatusOptions: {
+    roleType: {
       handler(val, oldVal) {
-        this.componentList[5].options = val;
+        this.componentList[6].options = val;
       },
       // 监听到数据变化时立即调用
       immediate: true
     }
+    // "form.extend": {
+    //   immediate: true,
+    //   handler: function(val) {
+    //     this.init();
+    //   }
+    // }
   },
   mounted() {},
   methods: {
+    init() {
+      if (this.form.id) {
+        this.add = true;
+        this.addLineForm = this.form.extend;
+      } else {
+        this.form.id = "";
+        this.add = false;
+      }
+    },
     /* 显示对话框 */
     show(row, type) {
-      // 新增角色
-      console.log("this.userStatusOptions", this.userStatusOptions);
       this.titleName = type;
-      this.showEditDailog = true;
-      // if(type === "编辑角色")
+      if (type === "编辑角色") {
+        this.componentList[2].disabled = true;
+        roleApi.editRole({ roleCode: row.roleCode, op: "edit" }).then(res => {
+          this.form.roleName = res.role.roleName;
+          this.form.oldRoleName = res.role.roleName;
+          this.form.roleCode = res.role.roleCode;
+          this.form.roleSort = res.role.roleSort;
+          this.form.userType = res.role.userType;
+          this.form.isSys = res.role.isSys;
+          this.form.roleType = res.role.roleType;
+          this.form.remarks = res.role.remarks;
+          this.extend = formExtendMap(this.extend, res.role.extend);
+          this.showEditDailog = true;
+          console.log(345, res);
+        });
+      }
       // this.roleForm = row;
-      this.roleForm.isSys = "0";
-      // if (type === "新增角色") {
-      //   this.getAuthorizeData({ roleCode: "" });
-      // } else {
-      //   this.getAuthorizeData({ roleCode: row.roleCode });
-      // }
+      // this.form.isSys = "0";
+      if (type === "新增角色") {
+        this.componentList[2].disabled = false;
+        this.showEditDailog = true;
+        this.form.oldRoleName = "";
+      }
     },
     /* 获取用户列表 */
     getUserStatusOptions() {
@@ -307,7 +337,7 @@ export default {
             });
           }
         }
-        console.log(3333, userOptions);
+
         return userOptions;
       });
     },
@@ -333,13 +363,14 @@ export default {
           break;
       }
     },
+   
     changeSystem(val) {
-      this.roleForm.isSys = val;
+      // this.roleForm.isSys = val;
       console.log(272, val);
     },
     /* 提交 */
     submitForm(formName) {
-      console.log(467, this.form);
+      console.log(397, this.checkTree1);
       return;
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -349,21 +380,28 @@ export default {
             obj.isNewRecord = true;
           } else {
             obj.op = "edit";
+            obj.isNewRecord = false;
           }
-          obj.extend = this.roleForm.extend;
-          obj.oldRoleName = this.roleForm.oldRoleName;
-          obj.roleName = this.roleForm.roleName;
-          obj.roleCode = this.roleForm.roleCode;
-          obj.roleSort = this.roleForm.roleSort;
-          obj.userType = this.roleForm.userType;
-          obj.isSys = this.roleForm.isSys;
-          obj.roleType = this.roleForm.roleType;
-          obj.remarks = this.roleForm.remarks;
-          obj.roleMenuListJson = this.checkTree1.concat(
-            this.checkTree2,
-            this.checkTree3
-          );
+          obj.extend = this.extend;
+          obj.oldRoleName = this.form.oldRoleName;
+          obj.roleName = this.form.roleName;
+          obj.roleCode = this.form.roleCode;
+          obj.roleSort = this.form.roleSort;
+          obj.userType = this.form.userType;
+          obj.isSys = this.form.isSys;
+          obj.roleType = this.form.roleType;
+          obj.remarks = this.form.remarks;
+          /* roleMenuListJson 新增时候的授权列表["1244877435923841024","1244877436259385344"]*/
+          obj.roleMenuListJson = this.checkTree1;
+          // return;
+          if (this.checkTree2.length) {
+            obj.roleMenuListJson = this.checkTree1.concat(this.checkTree2);
+          }
+          if (this.checkTree3.length) {
+            obj.roleMenuListJson = this.checkTree1.concat(this.checkTree3);
+          }
           console.log(555, obj.roleMenuListJson);
+
           roleApi.addRole(obj).then(res => {
             if (res.result === "true") {
               this.$message.success(res.message);
@@ -372,6 +410,7 @@ export default {
               this.$message.warning(res.message);
             }
           });
+          this.closeEditDialog();
           console.log("submit!");
         } else {
           console.log("error submit!!");
@@ -394,6 +433,7 @@ export default {
     closeEditDialog() {
       this.showEditDailog = false;
       this.$refs.roleForm.resetFields();
+      this.extend = formExtendClear(this.extend);
     },
     /* 关闭按钮 */
     colseRole(formName) {

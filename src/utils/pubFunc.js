@@ -134,3 +134,28 @@ export const toTreeData = (data, attributes) => {
 
   return tree;
 }
+/**
+ * form 扩展字段编辑对应值设置
+ *
+ * ***/
+export const formExtendMap = (target, source) => {
+  // console.log(target)
+  for (const key in source) {
+    if (source[key]) {
+      target[key] = key
+    }
+  }
+  return target;
+}
+/**
+ * form 扩展字段清空
+ *
+ * ***/
+export const formExtendClear = (target) => {
+  for (const key in target) {
+    if (target[key]) {
+      target[key] = ""
+    }
+  }
+  return target;
+}

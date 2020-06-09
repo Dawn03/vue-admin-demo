@@ -12,6 +12,12 @@ export const roleApi = {
       Message.error(err)
     })
   },
+  // 编辑角色
+  editRole: (param) => {
+    return httpRequestor.get(`a/sys/role/form.json`, param).catch(err => {
+      Message.error(err)
+    })
+  },
   // 用户角色
   getRoleList: (param) => {
     return httpRequestor.get(`a/sys/role/treeData`, param).catch(err => {
@@ -34,6 +40,12 @@ export const roleApi = {
   /* 删除角色 */
   deleteRole: (param) => {
     return httpRequestor.get(`a/sys/role/delete?roleCode=${param.roleCode}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 停用或启用角色 postFormData*/
+  stopOrStartRole: (param) => {
+    return httpRequestor.post(`a/sys/role/${param.type}?roleCode=${param.roleCode}`).catch(err => {
       Message.error(err)
     })
   }

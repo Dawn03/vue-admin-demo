@@ -161,7 +161,7 @@ export default {
     /* 当复选框被点击的时候触发*/
     clickDeal(currentObj, treeStatus) {
       this.checkStrictly = true;
-      console.log(153, "currentObj, treeStatus", currentObj, treeStatus);
+      console.log(153, "tree, currentObj, treeStatus", currentObj, treeStatus);
       // 用于：父子节点严格互不关联时，父节点勾选变化时通知子节点同步变化，实现单向关联。
       const selected = treeStatus.checkedKeys.indexOf(currentObj.id); // -1未选中
       // 选中
@@ -249,6 +249,11 @@ export default {
           }
         }
       }
+    },
+    /* 设置默认选中节点 */
+    setDefaultChecked(checkedMemu) {
+      // console.log(255, checkedMemu);
+      this.$refs.menuTreeNode.setCheckedKeys(checkedMemu);
     }
   }
 };

@@ -70,7 +70,13 @@
               <i class="el-icon-edit" title="编辑"></i>
             </el-button>
             <el-button type="text" size="small" @click="stopUse(scope.row)">
-              <i class="el-icon-video-pause" title="停用启用"></i>
+              <i
+                v-if="scope.row.status === '0'"
+                class="el-icon-video-pause"
+                style="color:red;"
+                title="停用"
+              ></i>
+              <i v-else class="el-icon-circle-check" title="启用"></i>
             </el-button>
             <el-button
               type="text"
@@ -140,7 +146,15 @@
       :role-type="roleType"
       @initPage="initPage"
     ></RoleEditPanel>
-    <AccreditMenu ref="accreditMenuPanel"></AccreditMenu>
+    <AccreditMenu
+      ref="accreditMenuPanel"
+      :title-name="'角色分配功能权限'"
+      :column-bar-name="'授权功能菜单'"
+      :t-name1="'主导航菜单'"
+      :menu-tree1="menuTree1"
+      :checked-memu1="checkedMemu"
+    >
+    </AccreditMenu>
     <DataRights ref="dataRightsPanel"></DataRights>
     <AllotUser ref="allotUserPanel"></AllotUser>
   </div>
@@ -158,6 +172,7 @@ import { clearFilterVal, getInputVal } from "@/utils/pubFunc";
 import { roleApi } from "@/api/role";
 import { pubApi } from "@/api/public_request";
 import { statusMap } from "@/utils/pubFunc";
+import { toTreeData } from "@/utils/pubFunc";
 export default {
   name: "RoleTable",
   components: {
@@ -178,7 +193,9 @@ export default {
       pageNation: {
         total: null,
         pageNo: 1,
-        pageSize: 2
+        pageSize: 20,
+        ctrlPermi: 2,
+        status: ""
       },
       formInline: [
         {
@@ -242,7 +259,9 @@ export default {
       },
       tableData: [],
       statusMapKey: [],
-      roleType: []
+      roleType: [],
+      menuTree1: [], // 授权菜单
+      checkedMemu: [] // 回显用
     };
   },
   mounted() {
@@ -264,8 +283,10 @@ export default {
         status: ""
       });
       this.init({
+        status: "",
         pageSize: this.pageNation.pageSize,
-        pageNo: this.pageNation.pageNo
+        pageNo: this.pageNation.pageNo,
+        ctrlPermi: this.pageNation.ctrlPermi
       });
     });
   },
@@ -332,7 +353,8 @@ export default {
     resetForm() {
       this.init({
         pageSize: this.pageNation.pageSize,
-        pageNo: 1
+        pageNo: 1,
+        ctrlPermi: this.pageNation.ctrlPermi
       });
       clearFilterVal(this.formInline);
     },
@@ -346,7 +368,27 @@ export default {
     },
     /* 授权菜单 */
     accreditMenu(row) {
-      this.$refs.accreditMenuPanel.init(row);
+      this.checkedMemu = []; // 清空默认选中的选项
+      roleApi
+        .getAuthorizeData({ roleCode: row.roleCode, op: "auth" })
+        .then(res => {
+          const attributes = {
+            id: "id",
+            parentId: "pId",
+            label: "title",
+            rootId: "0"
+          };
+          for (let i = 0, len = res.roleMenuList.length; i < len; i++) {
+            this.checkedMemu.push(res.roleMenuList[i].id);
+          }
+          this.menuTree1 = toTreeData(res.menuMap.default, attributes);
+          this.$refs.accreditMenuPanel.init(row);
+          // console.log(396, this.checkedMemu);
+          // this.checkedMemu = res.roleMenuList
+          // this.menuData1 = toTreeData(res.menuMap.default, attributes);
+          // this.menuData2 = toTreeData(res.menuMap.default1, attributes) || [];
+          // this.menuData3 = toTreeData(res.menuMap.default2, attributes) || [];
+        });
     },
     dataRights(row) {
       this.$refs.dataRightsPanel.init(row);
@@ -361,26 +403,52 @@ export default {
       this.$refs.RoleEditPanel.show(row, type);
     },
 
-    stopUse() {
-      this.$alertMsgBox("确认要停用该用户吗", "信息")
+    stopUse(row) {
+      // disable enable
+      const obj = {
+        roleCode: row.roleCode,
+        type: ""
+      };
+      if (row.status === "0") {
+        obj.type = "disable";
+      }
+      if (row.status === "2") {
+        obj.type = "enable";
+      }
+      this.$alertMsgBox(
+        `确认要${row.status === "0" ? "停" : "启"}用该用户吗`,
+        "信息"
+      )
         .then(() => {
-          this.$message.success("成功");
+          roleApi.stopOrStartRole(obj).then(res => {
+            if (res.result === "true") {
+              this.init(this.pageNation);
+              this.$message.success(res.maessage);
+            } else {
+              this.$message.error(res.maessage);
+            }
+          });
         })
         .catch(() => {
           this.$message.info("取消");
         });
     },
     deleteHandleClick(row) {
-      this.$alertMsgBox("确认要删除该用户吗", "信息")
+      // ${row.roleName}
+      this.$alertMsgBox(`确认要删除该角色吗`, "信息")
         .then(() => {
           roleApi
             .deleteRole({
               roleCode: row.roleCode
             })
             .then(res => {
-              // console.log(357, res);
+              if (res.result === " true") {
+                this.init(this.pageNation);
+                this.$message.success(res.message);
+              } else {
+                this.$message.error(res.message);
+              }
             });
-          this.$message.success("成功");
         })
         .catch(() => {
           this.$message.info("取消");
@@ -388,15 +456,19 @@ export default {
     },
     currentChange(val) {
       const obj = {
+        ctrlPermi: this.pageNation.ctrlPermi,
         pageSize: this.pageNation.pageSize,
-        pageNo: val
+        pageNo: val,
+        status: this.pageNation.stauts
       };
       this.init(obj);
     },
     initPage() {
       this.init({
-        pageSize: this.pageSize,
-        pageNo: this.pageNo
+        pageSize: this.pageNation.pageSize,
+        pageNo: this.pageNation.pageNo,
+        ctrlPermi: this.pageNation.ctrlPermi,
+        status: this.pageNation.stauts
       });
     }
   }

@@ -6,7 +6,7 @@
         <el-row style="margin-top:20px; ">
           <el-col :span="12">
             <el-checkbox v-model="checkAll1" @change="handleCheckAllChange1">
-              主导航菜单
+              {{ tName1 }}
             </el-checkbox>
           </el-col>
           <el-col :span="12">
@@ -17,23 +17,24 @@
         </el-row>
         <MenuTree
           ref="menuTreeDom1"
-          :menu-data="menuData1"
+          :menu-data="menuTree1"
           :default-expand="defaultExpand1"
           :expand-all="expandAll1"
           :show-checkbox="true"
+          :checked-memu="checkedMemu1"
           @passCheckedNode="passCheckedNode1"
         ></MenuTree>
       </li>
-      <li class="scond fl">
+      <li v-show="tName2" class="scond fl">
         <el-row style="margin-top:20px;">
           <el-col :span="12">
             <el-checkbox v-model="checkAll2" @change="handleCheckAllChange2">
-              演示子系统01
+              {{ tName2 }}
             </el-checkbox>
           </el-col>
           <el-col :span="12">
             <div class="ctrol-btn" @click="switchStatus2">
-              展开/折叠
+              {{ tName3 }}
             </div>
           </el-col>
         </el-row>
@@ -46,7 +47,7 @@
           @passCheckedNode="passCheckedNode2"
         ></MenuTree>
       </li>
-      <li class="third fl">
+      <li v-show="tName3" class="third fl">
         <el-row style="margin-top:20px; ">
           <el-col :span="12">
             <el-checkbox v-model="checkAll3" @change="handleCheckAllChange3">
@@ -81,7 +82,44 @@ export default {
   components: {
     MenuTree
   },
-
+  props: {
+    tName1: {
+      type: String,
+      default: ""
+    },
+    tName2: {
+      type: String,
+      default: ""
+    },
+    tName3: {
+      type: String,
+      default: ""
+    },
+    menuTree1: {
+      type: [Array, Object],
+      default: () => {
+        return {};
+      }
+    },
+    menuTree2: {
+      type: [Array, Object],
+      default: () => {
+        return {};
+      }
+    },
+    menuTree3: {
+      type: [Array, Object],
+      default: () => {
+        return {};
+      }
+    },
+    checkedMemu1: {
+      type: [Array, Object],
+      default: () => {
+        return {};
+      }
+    }
+  },
   data() {
     return {
       menuData1: [],
@@ -143,7 +181,7 @@ export default {
     };
   },
   created() {
-    this.init();
+    // this.init();
   },
   methods: {
     /* 获取授权功能菜单默认数据 */
@@ -196,8 +234,9 @@ export default {
     // 当前以及勾选节点
     passCheckedNode1(val) {
       this.$emit("checkTree", { val, current: 1 });
+      // this.$emit("changeChecked", val);
       // this.checkTree = val;
-      // console.log(190, val);
+      console.log(190, val);
     },
     // 当前以及勾选节点
     passCheckedNode2(val) {
@@ -208,6 +247,13 @@ export default {
     // 当前以及勾选节点
     passCheckedNode3(val) {
       this.$emit("checkTree", { val, current: 3 });
+      // this.checkTree3 = val;
+      // console.log(190, val);
+    },
+    // 设置默认选中
+    setDefaultChecked() {
+      // console.log(254, this.checkedMemu1);
+      this.$refs.menuTreeDom1.setDefaultChecked(this.checkedMemu1);
       // this.checkTree3 = val;
       // console.log(190, val);
     }

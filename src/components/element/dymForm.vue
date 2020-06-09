@@ -9,6 +9,12 @@
         :md="it.cols[2]"
         :lg="it.cols[3]"
       >
+        <ColumnBar
+          v-show="it.lineTips"
+          :icon-tips="it.iconTips"
+          :column-text="it.label"
+          @showExtentionDetail="showExtentionDom"
+        ></ColumnBar>
         <el-form-item
           v-if="
             it.showFlag === undefined || it.showFlag === true ? true : false
@@ -59,14 +65,16 @@
             :company-id="it.companyId"
             :start-placeholder="it.startPlaceholder"
             :end-placeholder="it.endPlaceholder"
-            :rows-span="it.rowsSpan"
+            :rows="it.rowsSpan"
+            :radios="it.radios"
+            :checked-radio="it.checkedRadio"
+            v-on="$listeners"
             @selectChanged="selectChanged"
             @focus="focus"
             @otherData="otherData"
             @blur="blur"
             @change="change"
             @onbackblankaccount="onbackblankaccount"
-            :radionValue="radionValue"
           >
           </component>
         </el-form-item>
@@ -76,9 +84,9 @@
   </div>
 </template>
 <script>
+import ColumnBar from "@/components/commonColumn";
 import BaseSelect from "@/components/element/BaseSelect";
 import RadioChoose from "@/components/element/RadioChoose";
-import Textarea from "@/components/element/Textarea";
 import dict from "@/components/element/SelectDictionary.vue"; // 字典组件
 // import officeTree from '@/components/element/officeTree.vue' // 公司树
 // import orgTree from '@/components/element/orgTree.vue' // 根据公司树查询下面机构
@@ -100,7 +108,6 @@ export default {
   components: {
     BaseSelect,
     RadioChoose,
-    Textarea,
     dict,
     // officeTree,
     // orgTree,
@@ -113,7 +120,8 @@ export default {
     cascaderCompany,
     cascaderDepartment,
     cascaderOrg,
-    cascaderOrgUser
+    cascaderOrgUser,
+    ColumnBar
     // cascaderOrgDownload,
     // cascaderOrgDownloadUser,
     // btnUpload
@@ -131,23 +139,22 @@ export default {
       default: function() {
         return "";
       }
-    },
-    radionValue: {
-      type: String,
-      default: ""
     }
   },
   data() {
     return {
-      selectObj: {}
+      selectObj: {},
+      exHeight: "0px"
     };
   },
   computed: {
     newFormValue: {
       get: function() {
+        console.log("get", this.formValue);
         return this.formValue;
       },
       set: function(value) {
+        console.log("set", this.formValue);
         this.$emit("update:formValue", value);
       }
     }
@@ -160,11 +167,12 @@ export default {
       this.$emit("onbackblankaccount", value);
     },
     selectChanged(val, name, row) {
-      console.log(129, val, name, row);
+      // console.log("selectChanged", val, name, row);
       this.selectObj[name] = row;
       this.$emit("selectChanged", val, name, this.selectObj);
     },
     buildQueryParas(queryName, queryValue) {
+      // console.log("buildQueryParas", queryName);
       const obj = {};
       if (typeof queryName === "string") {
         obj[queryName] = this.formValue[queryValue];
@@ -180,6 +188,7 @@ export default {
           }
         });
       }
+      // console.log(129, "obj", obj);
       return obj;
       // if (this.UtilJs.isEmpty(queryName) || this.UtilJs.isEmpty(queryValue)) {
       //   return
@@ -198,8 +207,13 @@ export default {
       // this.$emit('blur')
     },
     change(val) {
+      console.log(201, val);
       this.selectObj[name] = val;
       this.$emit("selectChanged", val, name, this.selectObj);
+    },
+    /* 显示扩展字段 */
+    showExtentionDom() {
+      this.exHeight = this.exHeight === "0px" ? "480px" : "0px";
     }
   }
 };
