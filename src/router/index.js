@@ -88,6 +88,14 @@ export const constantRoutes = [{
             meta: {
               title: '机构管理'
             }
+          },
+          {
+            path: 'company',
+            component: () => import('@/views/sys/organazation/company'),
+            name: 'company',
+            meta: {
+              title: '公司管理'
+            }
           }
         ]
       },

@@ -9,7 +9,9 @@ import {
 const state = {
   officeList: [],
   companyList: [],
-  employeePosts: []
+  employeePosts: [],
+  allDicType: "",
+  selectDicType: ""
 }
 const mutations = {
   GET_OFFICE_TREE_LIST: (state, data) => {
@@ -26,6 +28,40 @@ const mutations = {
   },
   GET_EMPLOYEE_POSTS_LIST: (state, data) => {
     state.employeePosts = data
+  },
+  GET_ALL_DIC_TYPE: (state, res) => {
+    const obj = {}
+    const selectObj = {}
+    for (let i = 0, len = res.length; i < len; i++) {
+      if (!obj[res[i].dictType]) {
+        obj[res[i].dictType] = []
+        obj[res[i].dictType].push({
+          [res[i].dictValue]: res[i].dictLabel
+        })
+      } else {
+        obj[res[i].dictType].push({
+          [res[i].dictValue]: res[i].dictLabel
+        })
+      }
+      if (!selectObj[res[i].dictType]) {
+        selectObj[res[i].dictType] = []
+        selectObj[res[i].dictType].push({
+          value: res[i].dictValue,
+          label: res[i].dictLabel
+        })
+      } else {
+        selectObj[res[i].dictType].push({
+          value: res[i].dictValue,
+          label: res[i].dictLabel
+        })
+      }
+    }
+
+    /* 用于table表格 显示中文字符 */
+    sessionStorage.setItem('allDicType', JSON.stringify(obj))
+    /* 用于下拉选择框 数据 */
+    sessionStorage.setItem('selectDicType', JSON.stringify(selectObj))
+    // state.allDicType = data
   }
 }
 const actions = {
@@ -60,6 +96,17 @@ const actions = {
       commit("GET_EMPLOYEE_POSTS_LIST", res)
       console.log('GET_EMPLOYEE_POSTS_LIST', res);
     });
+  },
+  /* 获取字典全部数据 */
+  getAllDicType({
+    commit
+  }) {
+    pubApi.dictTypeFunc().then(res => {
+      // console.log(73, res)
+
+      commit("GET_ALL_DIC_TYPE", res)
+      console.log(82, res)
+    })
   }
 }
 export default {

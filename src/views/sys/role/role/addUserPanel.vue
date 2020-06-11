@@ -39,6 +39,11 @@
                 </el-button>
               </template>
             </TableTree>
+            <Pagination
+              :total="pageNation.total"
+              :page-size="pageNation.pageSize"
+              @currentChange="currentChange"
+            ></Pagination>
           </el-col>
           <el-col :span="6">
             <div class="choosed-data">
@@ -52,7 +57,7 @@
                 closable
                 @close="handleClose(tag)"
               >
-                {{ tag.loginAccount }}
+                {{ tag.loginCode }}
               </el-tag>
             </div>
           </el-col>
@@ -82,29 +87,41 @@
 import DailogPanel from "@/components/dailogPanel/frame";
 import InputFliter from "@/components/inputFliter";
 import TableTree from "@/components/tableTree";
+import Pagination from "@/components/pagination";
 import { clearFilterVal, getInputVal } from "@/utils/pubFunc";
+import { orgApi } from "@/api/organization";
+import { roleApi } from "@/api/role";
+
 export default {
   name: "",
   components: {
     DailogPanel,
     InputFliter,
-    TableTree
+    TableTree,
+    Pagination
   },
   data() {
     return {
       showDailog: false,
       titleName: "用户选择",
+      pageNation: {
+        total: null,
+        pageNo: 1,
+        pageSize: 20,
+        ctrlPermi: 2,
+        status: ""
+      },
       formInline: [
         {
           type: "input",
           value: "",
-          key: "acount",
+          key: "loginCode",
           label: "账号"
         },
         {
           type: "input",
           value: "",
-          key: "alias",
+          key: "userName",
           label: "昵称"
         },
         {
@@ -116,55 +133,53 @@ export default {
         {
           type: "input",
           value: "",
-          key: "phone",
+          key: "mobile",
           label: "手机"
         },
         {
           type: "input",
           value: "",
-          key: "tel",
+          key: "phone",
           label: "电话"
         }
       ],
       tableCheckBoxValue: [],
       slotColumns: ["status"],
       tableHead: {
-        loginAccount: "登录账号",
-        alias: "用户昵称",
+        loginCode: "登录账号",
+        userName: "用户昵称",
         email: "电子邮箱",
-        phome: "手机号码",
-        tel: "办公电话",
-        updataTime: "更新时间",
+        mobile: "手机号码",
+        phone: "办公电话",
+        updateDate: "更新时间",
         status: "状态"
       },
-      tableData: [
-        // {
-        //   loginAccount: "dsd",
-        //   alias: "用户昵称",
-        //   email: "电子邮箱",
-        //   phone: "手机号码",
-        //   tel: "办公电话",
-        //   updataTime: "更新时间",
-        //   status: "状态"
-        // }
-      ]
+      tableData: [],
+      currentRow: {}
     };
   },
   methods: {
-    show() {
+    show(row) {
+      this.currentRow = row;
+      this.init(this.pageNation);
       this.showDailog = true;
     },
-
+    init(param) {
+      orgApi.getUserList(param).then(res => {
+        this.pageNation.total = res.count;
+        this.tableData = res.list;
+      });
+    },
     /* 获取填入输入框的值  */
     searchBtn() {
       // const temp = this.formInline.concat(this.moreFormItem);
       const valObj = getInputVal(this.formInline);
-      console.log(valObj);
+      const searchObj = Object.assign(valObj, this.pageNation);
+      this.init(searchObj);
+      console.log(searchObj);
     },
-
     tableCheckBox(row) {
       this.tableCheckBoxValue = row;
-      // console.log("选中的row", row);
     },
     /* 取消已经选择tag */
     handleClose(tag) {
@@ -175,7 +190,36 @@ export default {
       this.$refs.tableDomTree.cancleChecked(closedTag);
     },
     saveBtn() {
+      const obj = {
+        roleCode: this.currentRow.roleCode,
+        userRoleString: []
+      };
+      const temp = this.tableCheckBoxValue;
+      if (temp.length === 1) {
+        obj.userRoleString = temp[0].id;
+      }
+      if (temp.length > 1) {
+        const idArr = [];
+        for (let i = 0, len = temp.length; i < len; i++) {
+          idArr.push(temp[i].id);
+        }
+        obj.userRoleString = idArr;
+      }
+      roleApi.saveAuthUser(obj).then(res => {
+        if (res.result === "true") {
+          this.$message.success(res.message);
+          this.closeDialog();
+          this.$emit("reloadPage");
+        } else {
+          this.$message.error(res.message);
+        }
+      });
       console.log(this.tableCheckBoxValue);
+    },
+    currentChange(val) {
+      console.log(220, this.pageNation.stauts);
+      this.pageNation.pageNo = val;
+      this.init(this.pageNation);
     },
     colseBtn() {
       this.closeDialog();
@@ -187,6 +231,8 @@ export default {
     },
     /* 清除输入框内的值 */
     resetForm() {
+      this.pageNo = 1;
+      this.init(this.pageNation);
       clearFilterVal(this.formInline);
     }
   }

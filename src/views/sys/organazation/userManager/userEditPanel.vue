@@ -422,6 +422,7 @@ export default {
         });
       } else {
         this.userForm.op = "edit";
+        this.userForm.userType = "employee";
         const obj = {
           userCode: row.userCode,
           op: this.userForm.op
@@ -549,7 +550,6 @@ export default {
     submitForm(formName) {
       // employeePosts
       console.log(9990, this.officeCodeClick);
-
       this.$refs[formName].validate(valid => {
         if (valid) {
           const obj = {};
@@ -611,6 +611,9 @@ export default {
       this.employeeOfficeList = [];
       for (const key in this.extend) {
         this.extend[key] = "";
+      }
+      for (const key in this.userForm) {
+        this.userForm[key] = "";
       }
       this.$emit("initListPage");
       // this.$refs.roleDetail.toggleSelection();

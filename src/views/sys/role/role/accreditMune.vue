@@ -35,7 +35,7 @@
             :checked-memu1="checkedMemu1"
             :checked-memu2="checkedMemu2"
             :checked-memu3="checkedMemu3"
-            v-on="$listeners"
+            @checkTree="checkTree"
           ></MenuRights>
         </div>
       </template>
@@ -69,6 +69,7 @@ import dymForm from "@/components/element/dymForm";
 import ColumnBar from "@/components/commonColumn";
 import DailogFrame from "@/components/dailogPanel/frame";
 import MenuRights from "@/components/menuRights";
+import { roleApi } from "@/api/role";
 export default {
   name: "DataRights",
   components: {
@@ -99,39 +100,39 @@ export default {
       default: "提示"
     },
     menuTree1: {
-      type: [Array, Object],
+      type: [Array],
       default: () => {
-        return {};
+        return [];
       }
     },
     menuTree2: {
-      type: [Array, Object],
+      type: [Array],
       default: () => {
-        return {};
+        return [];
       }
     },
     menuTree3: {
-      type: [Array, Object],
+      type: [Array],
       default: () => {
-        return {};
+        return [];
       }
     },
     checkedMemu1: {
-      type: [Array, Object],
+      type: [Array],
       default: () => {
-        return {};
+        return [];
       }
     },
     checkedMemu2: {
-      type: [Array, Object],
+      type: [Array],
       default: () => {
-        return {};
+        return [];
       }
     },
     checkedMemu3: {
-      type: [Array, Object],
+      type: [Array],
       default: () => {
-        return {};
+        return [];
       }
     }
   },
@@ -171,72 +172,52 @@ export default {
         roleName: [{ required: true }],
         roleCode: [{ required: true }]
       },
-      menuData: [
-        {
-          label: "苑东生物",
-          id: "1",
-          children: [
-            {
-              id: "1-1",
-              label: "成都硕德",
-              children: [
-                {
-                  id: "1-1-1",
-                  label: "质量保证部"
-                },
-                {
-                  id: "1-1-2",
-                  label:
-                    "财务部sdsw服务无法污染物让人VR分热污染无若无所我认为若无"
-                }
-              ]
-            },
-            {
-              id: "2-1",
-              label: "成都优洛生物",
-              children: [
-                {
-                  id: "2-1-1",
-                  label: "质量保证部"
-                },
-                {
-                  id: "2-1-2",
-                  label: "财务部"
-                },
-                {
-                  id: "2-1-3",
-                  label: "生产技术部"
-                }
-              ]
-            }
-          ]
-        }
-      ]
+
+      currentRow: {},
+      roleMenuListJson: []
     };
   },
   computed: {
-    // checkedMemuData: {
-    //   get() {
-    //     return this.checkedMemu1;
-    //   },
-    //   set(val) {
-    //     console.log(143, val);
-    //   }
-    // }
+    checkedVals: {
+      get() {
+        return this.checkedMemu1;
+      },
+      set(val) {
+        this.roleMenuListJson = val;
+        // console.log(143, val);
+      }
+    }
   },
   methods: {
     init(row) {
       this.dataRightsForm = JSON.parse(JSON.stringify(row));
       this.showDataRights = true;
+      this.currentRow = row;
       this.$nextTick(() => {
         // console.log(218, this.checkedMemu1);
         this.$refs.menuRights.setDefaultChecked();
       });
     },
+    checkTree(param) {
+      this.checkedVals = param.val;
+      console.log("授权功能弹窗", param);
+    },
     /* 保存 */
     saveDataRights() {
-      // this.$refs.menuTreeDom1.getCheckedKeys();
-      this.colseDataRights();
+      const obj = {
+        op: "auth",
+        oldRoleName: this.currentRow.roleName,
+        roleName: this.currentRow.roleName,
+        isNewRecord: false,
+        roleCode: this.currentRow.roleCode,
+        roleMenuListJson: JSON.stringify(this.roleMenuListJson)
+      };
+      roleApi.saveAuthorizeData(obj).then(res => {
+        if (res.result === "true") {
+          this.$message.success(res.message);
+        }
+        this.colseDataRights();
+      });
     },
     colseDataRights(formName) {
       this.showDataRights = false;

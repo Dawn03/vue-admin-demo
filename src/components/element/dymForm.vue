@@ -23,6 +23,7 @@
           :label-width="it.labelWidth"
           :prop="it.prop"
           :show-message="it.showMessage"
+          :style="{ height: it.height }"
         >
           <component
             :is="it.componentName"
@@ -70,12 +71,18 @@
             :checked-radio="it.checkedRadio"
             v-on="$listeners"
             @selectChanged="selectChanged"
-            @focus="focus"
+            @focus="focus($event, it.prop)"
             @otherData="otherData"
             @blur="blur"
             @change="change"
             @onbackblankaccount="onbackblankaccount"
           >
+            <!-- 设置带Icon 的input  tips: slot:append/prepend  icon:class类名-->
+            <el-button
+              v-show="it.addIcon"
+              :slot="it.slotPosition"
+              :icon="it.iconType"
+            ></el-button>
           </component>
         </el-form-item>
         <slot v-else name="bySelf"> </slot>
@@ -199,8 +206,10 @@ export default {
       //   return obj
       // }
     },
-    focus(event) {
+    focus(event, keyName) {
+      console.log(240, event, keyName);
       // this.$emit('focus', event)
+      this.$emit("focusIt", keyName);
     },
     blur(event) {
       // console.log('event', event)

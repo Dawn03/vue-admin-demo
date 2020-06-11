@@ -24,6 +24,15 @@ import baseUrl_ from '@/api/config'
 Vue.prototype.GLOBAL = baseUrl_;
 import adaptive from "@/directive/el-table"
 Vue.use(adaptive)
+
+import {
+  pubApi
+} from "@/api/public_request"
+// import {
+//   pubFunc
+// } from "@/utils/pubFunc"
+Vue.prototype.pubApi = pubApi
+// Vue.prototype.pubFunc = pubFunc
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

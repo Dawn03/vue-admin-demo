@@ -1,12 +1,28 @@
 <template>
   <div id="app">
-    <router-view />
+    <router-view v-if="isRouterAlive" />
   </div>
 </template>
 
 <script>
 export default {
-  name: "App"
+  name: "App",
+  provide() {
+    return {
+      reload: this.reload
+    };
+  },
+  data() {
+    return {
+      isRouterAlive: true
+    };
+  },
+  methods: {
+    reload() {
+      this.isRouterAlive = false;
+      this.$nextTick(() => (this.isRouterAlive = true));
+    }
+  }
 };
 </script>
 <style>
@@ -46,5 +62,11 @@ export default {
   line-height: 1;
   padding-top: 4px;
   position: absolute;
+}
+.wrapper_content {
+  padding: 0 10px;
+}
+.r-btn {
+  color: #f00;
 }
 </style>

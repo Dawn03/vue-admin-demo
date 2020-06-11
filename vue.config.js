@@ -40,7 +40,7 @@ module.exports = {
     proxy: {
       '/apis': {
         // 测试环境
-        target: 'http://192.168.3.45:8980/js', // 接口域名  192.168.7.147 贺龙ip 8980一直开启  8990
+        target: 'http://172.16.27.133:8990/js', // 接口域名  192.168.7.147 贺龙ip 8980一直开启  8990
         changeOrigin: true, // 是否跨域
         pathRewrite: {
           '^/apis': '' // 需要rewrite重写的,

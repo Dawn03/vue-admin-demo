@@ -48,17 +48,30 @@
           {{ scope.row.roleName }}
         </span>
       </template>
+
+      <template slot="userType" slot-scope="scope">
+        {{ swichText("sys_user_type", scope.row.userType, "未设置") }}
+      </template>
       <template slot="isSys" slot-scope="scope">
-        <span>
-          {{ scope.row.isSys == "1" ? "是" : "否" }}
-        </span>
+        {{ swichText("sys_yes_no", scope.row.isSys, "") }}
+      </template>
+      <template slot="dataScope" slot-scope="scope">
+        <!-- {{ scope.row.dataScope }} -->
+        {{ swichText("sys_role_data_scope", scope.row.dataScope, "") }}
+      </template>
+      <template slot="bizScope" slot-scope="scope">
+        <!-- {{ scope.row.bizScope }} -->
+        {{ swichText("sys_role_biz_scope", scope.row.bizScope, "") }}
       </template>
       <template slot="statusText" slot-scope="scope">
-        <el-button size="mini" type="success" round>
+        <el-button
+          size="mini"
+          :type="scope.row.statusText === '正常' ? 'success' : 'danger'"
+          round
+        >
           {{ scope.row.statusText }}
         </el-button>
       </template>
-
       <template slot="operate">
         <el-table-column fixed="right" label="操作" width="120" align="center">
           <template slot-scope="scope">
@@ -153,6 +166,7 @@
       :t-name1="'主导航菜单'"
       :menu-tree1="menuTree1"
       :checked-memu1="checkedMemu"
+      @checkTree="checkTreeVal"
     >
     </AccreditMenu>
     <DataRights ref="dataRightsPanel"></DataRights>
@@ -168,7 +182,7 @@ import AccreditMenu from "./accreditMune";
 import DataRights from "./dataRights";
 import AllotUser from "./allotUser";
 // import { returnReg } from "@/utils/validate"; /* 表单正则验证 */
-import { clearFilterVal, getInputVal } from "@/utils/pubFunc";
+import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
 import { roleApi } from "@/api/role";
 import { pubApi } from "@/api/public_request";
 import { statusMap } from "@/utils/pubFunc";
@@ -244,15 +258,22 @@ export default {
         number: 130,
         format: 130
       },
-      slotColumns: ["roleName", "isSys", "statusText"],
+      slotColumns: [
+        "roleName",
+        "userType",
+        "isSys",
+        "dataScope",
+        "bizScope",
+        "statusText"
+      ],
       tableHead: {
         roleName: "角色名称",
         roleCode: "角色编码",
         roleSort: "排序号",
         isSys: "系统角色", // 暂无字段
         userType: "用户类型", // 暂无字段
-        dataRange: "数据范围", // 暂无字段
-        bussinessRange: "业务范围", // 暂无字段
+        dataScope: "数据范围", // 暂无字段
+        bizScope: "业务范围", // 没有显示未设置
         updateDate: "更新时间",
         remarks: "备注信息",
         statusText: "状态"
@@ -265,13 +286,18 @@ export default {
     };
   },
   mounted() {
+    console.log(168, JSON.parse(sessionStorage.getItem("allDicType")));
     /* 获取用户类型 */
+    //  this.dictTypeFunc({
+    //     dictType: "sys_user_type",
+    //     status: ""
+    //   });
     this.$nextTick(() => {
+      // console.log(777, dictTypeMap('sys_office_type', '1'));
       this.dictTypeFunc({
         dictType: "sys_user_type",
         status: ""
       });
-
       /* 获取是否是系统角色  所有涉及是或否 都用该字段查询 */
       this.dictTypeFunc({
         dictType: "sys_yes_no",
@@ -338,6 +364,11 @@ export default {
         }
       });
     },
+    /* 列表文本转义 */
+    swichText(type, val, other) {
+      return dictTypeMap(type, val, other);
+      // console.log(99, dictTypeMap(type, val, other));
+    },
     showOrHidden() {
       this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
     },
@@ -383,11 +414,6 @@ export default {
           }
           this.menuTree1 = toTreeData(res.menuMap.default, attributes);
           this.$refs.accreditMenuPanel.init(row);
-          // console.log(396, this.checkedMemu);
-          // this.checkedMemu = res.roleMenuList
-          // this.menuData1 = toTreeData(res.menuMap.default, attributes);
-          // this.menuData2 = toTreeData(res.menuMap.default1, attributes) || [];
-          // this.menuData3 = toTreeData(res.menuMap.default2, attributes) || [];
         });
     },
     dataRights(row) {
@@ -402,7 +428,6 @@ export default {
       // console.log(321, row, type);
       this.$refs.RoleEditPanel.show(row, type);
     },
-
     stopUse(row) {
       // disable enable
       const obj = {
@@ -470,6 +495,10 @@ export default {
         ctrlPermi: this.pageNation.ctrlPermi,
         status: this.pageNation.stauts
       });
+    },
+    checkTreeVal(param) {
+      this.checkedMemu = param.val;
+      console.log(476, this.checkedMemu);
     }
   }
 };

@@ -34,13 +34,13 @@
           </el-col>
           <el-col :span="12">
             <div class="ctrol-btn" @click="switchStatus2">
-              {{ tName3 }}
+              展开/折叠
             </div>
           </el-col>
         </el-row>
         <MenuTree
           ref="menuTreeDom2"
-          :menu-data="menuData2"
+          :menu-data="menuTree2"
           :default-expand="defaultExpand2"
           :expand-all="expandAll2"
           :show-checkbox="true"
@@ -51,7 +51,7 @@
         <el-row style="margin-top:20px; ">
           <el-col :span="12">
             <el-checkbox v-model="checkAll3" @change="handleCheckAllChange3">
-              演示子系统02
+              {{ tName3 }}
             </el-checkbox>
           </el-col>
           <el-col :span="12">
@@ -62,7 +62,7 @@
         </el-row>
         <MenuTree
           ref="menuTreeDom3"
-          :menu-data="menuData3"
+          :menu-data="menuTree3"
           :default-expand="defaultExpand3"
           :expand-all="expandAll3"
           :show-checkbox="true"
@@ -102,21 +102,21 @@ export default {
       }
     },
     menuTree2: {
-      type: [Array, Object],
+      type: [Array],
       default: () => {
-        return {};
+        return [];
       }
     },
     menuTree3: {
-      type: [Array, Object],
+      type: [Array],
       default: () => {
-        return {};
+        return [];
       }
     },
     checkedMemu1: {
-      type: [Array, Object],
+      type: [Array],
       default: () => {
-        return {};
+        return [];
       }
     }
   },
@@ -231,31 +231,43 @@ export default {
       this.$refs.menuTreeDom3.checkAll(val);
       this.$emit("checkTree", { val, current: 3 });
     },
-    // 当前以及勾选节点
+    // 当前已经勾选节点
     passCheckedNode1(val) {
       this.$emit("checkTree", { val, current: 1 });
       // this.$emit("changeChecked", val);
       // this.checkTree = val;
       console.log(190, val);
     },
-    // 当前以及勾选节点
+    // 当前已经勾选节点
     passCheckedNode2(val) {
       this.$emit("checkTree", { val, current: 2 });
       // this.checkTree = val;
       // console.log(190, val);
     },
-    // 当前以及勾选节点
+    // 当前已经勾选节点
     passCheckedNode3(val) {
       this.$emit("checkTree", { val, current: 3 });
       // this.checkTree3 = val;
       // console.log(190, val);
     },
     // 设置默认选中
-    setDefaultChecked() {
+    setDefaultChecked(tree) {
       // console.log(254, this.checkedMemu1);
       this.$refs.menuTreeDom1.setDefaultChecked(this.checkedMemu1);
       // this.checkTree3 = val;
-      // console.log(190, val);
+    },
+    // 设置默认选中
+    setDefaultChecked1(tree) {
+      // this.$refs.menuTreeDom1.setDefaultChecked(this.checkedMemu1);
+      this.$refs.menuTreeDom1.setDefaultChecked(tree);
+    },
+    // 设置默认选中
+    setDefaultChecked2(tree) {
+      this.$refs.menuTreeDom2.setDefaultChecked(tree);
+    },
+    // 设置默认选中
+    setDefaultChecked3(tree) {
+      this.$refs.menuTreeDom3.setDefaultChecked(tree);
     }
   }
 };

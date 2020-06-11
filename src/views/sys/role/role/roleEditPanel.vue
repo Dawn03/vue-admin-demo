@@ -36,7 +36,11 @@
             ></ExtentionFeild>
             <div v-if="titleName == '新增角色'">
               <ColumnBar :column-text="'授权功能菜单'"></ColumnBar>
-              <MenuRights @checkTree="checkTreeVal"></MenuRights>
+              <MenuRights
+                :menu-tree1="menuTree1"
+                :t-name1="'主导航菜单'"
+                @checkTree="checkTreeVal"
+              ></MenuRights>
             </div>
           </el-form>
         </div>
@@ -75,7 +79,7 @@ import dymForm from "@/components/element/dymForm";
 import { returnReg } from "@/utils/validate";
 import { roleApi } from "@/api/role";
 import { pubApi } from "@/api/public_request";
-import { formExtendMap, formExtendClear } from "@/utils/pubFunc";
+import { formExtendMap, formExtendClear, toTreeData } from "@/utils/pubFunc";
 export default {
   name: "RoleEdit",
   components: {
@@ -259,6 +263,7 @@ export default {
         ],
         menuMapDefault: []
       },
+      menuTree1: [],
       checkTree1: [],
       checkTree2: [],
       checkTree3: [],
@@ -320,6 +325,7 @@ export default {
       // this.roleForm = row;
       // this.form.isSys = "0";
       if (type === "新增角色") {
+        this.getAuthorizeData();
         this.componentList[2].disabled = false;
         this.showEditDailog = true;
         this.form.oldRoleName = "";
@@ -349,6 +355,19 @@ export default {
     extentionFormVal(val) {
       this.roleForm.extentionForm = val;
     },
+    /* 获取授权菜单 */
+    getAuthorizeData() {
+      roleApi.getAuthorizeData({ roleCode: "" }).then(res => {
+        console.log(359, res);
+        const attributes = {
+          id: "id",
+          parentId: "pId",
+          label: "title",
+          rootId: "0"
+        };
+        this.menuTree1 = toTreeData(res.menuMap.default, attributes);
+      });
+    },
     checkTreeVal(param) {
       console.log(259, param);
       switch (param.current) {
@@ -363,7 +382,7 @@ export default {
           break;
       }
     },
-   
+
     changeSystem(val) {
       // this.roleForm.isSys = val;
       console.log(272, val);
@@ -371,7 +390,7 @@ export default {
     /* 提交 */
     submitForm(formName) {
       console.log(397, this.checkTree1);
-      return;
+      // return;
       this.$refs[formName].validate(valid => {
         if (valid) {
           const obj = {};
@@ -392,15 +411,15 @@ export default {
           obj.roleType = this.form.roleType;
           obj.remarks = this.form.remarks;
           /* roleMenuListJson 新增时候的授权列表["1244877435923841024","1244877436259385344"]*/
+          // obj.roleMenuListJson = JSON.stringify(this.checkTree1);
           obj.roleMenuListJson = this.checkTree1;
           // return;
-          if (this.checkTree2.length) {
-            obj.roleMenuListJson = this.checkTree1.concat(this.checkTree2);
-          }
-          if (this.checkTree3.length) {
-            obj.roleMenuListJson = this.checkTree1.concat(this.checkTree3);
-          }
-          console.log(555, obj.roleMenuListJson);
+          // if (this.checkTree2.length) {
+          //   obj.roleMenuListJson = this.checkTree1.concat(this.checkTree2);
+          // }
+          // if (this.checkTree3.length) {
+          //   obj.roleMenuListJson = this.checkTree1.concat(this.checkTree3);
+          // }
 
           roleApi.addRole(obj).then(res => {
             if (res.result === "true") {

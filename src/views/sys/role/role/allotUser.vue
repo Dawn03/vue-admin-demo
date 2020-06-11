@@ -73,13 +73,21 @@
                     size="small"
                     @click="singleCancel(scope.row)"
                   >
-                    <i class="el-icon-circle-close"></i>
+                    <i title="取消授权" class="el-icon-circle-close"></i>
                   </el-button>
                 </template>
               </el-table-column>
             </template>
+            <Pagination
+              :total="pageNation.total"
+              :page-size="pageNation.pageSize"
+              @currentChange="currentChange"
+            ></Pagination>
           </TableTree>
-          <AddUserPanel ref="showAddUserPanel"></AddUserPanel>
+          <AddUserPanel
+            ref="showAddUserPanel"
+            @reloadPage="reloadPage"
+          ></AddUserPanel>
         </div>
       </template>
     </DailogFrame>
@@ -91,17 +99,26 @@ import TableTree from "@/components/tableTree";
 import InputFliter from "@/components/inputFliter";
 import AddUserPanel from "./addUserPanel";
 import { clearFilterVal, getInputVal } from "@/utils/pubFunc";
-
+import Pagination from "@/components/pagination";
+import { roleApi } from "@/api/role";
 export default {
   name: "AssignRole",
   components: {
     DailogFrame,
     TableTree,
     InputFliter,
-    AddUserPanel
+    AddUserPanel,
+    Pagination
   },
   data() {
     return {
+      pageNation: {
+        total: null,
+        pageNo: 1,
+        pageSize: 20,
+        ctrlPermi: 2,
+        status: ""
+      },
       showAssginRole: false,
       roleForm: {
         roleName: "",
@@ -114,13 +131,13 @@ export default {
         {
           type: "input",
           value: "",
-          key: "acount",
+          key: "loginCode",
           label: "账号"
         },
         {
           type: "input",
           value: "",
-          key: "alias",
+          key: "userName",
           label: "昵称"
         },
         {
@@ -132,70 +149,50 @@ export default {
         {
           type: "input",
           value: "",
-          key: "phone",
+          key: "mobile",
           label: "手机"
         },
         {
           type: "input",
           value: "",
-          key: "tel",
+          key: "phone",
           label: "电话"
         }
       ],
       tableHead: {
-        loginAccount: "登录账号",
-        alias: "用户昵称",
+        loginCode: "登录账号",
+        userName: "用户昵称",
         email: "电子邮箱",
-        phome: "手机号码",
-        tel: "办公电话",
-        updataTime: "更新时间",
+        mobile: "手机号码",
+        phone: "办公电话",
+        updateDate: "更新时间",
         status: "状态"
       },
-      tableData: [
-        {
-          loginAccount: "登录账号",
-          alias: "用户昵称",
-          email: "电子邮箱",
-          phome: "手机号码",
-          tel: "办公电话",
-          updataTime: "更新时间",
-          status: "状态"
-        },
-        {
-          loginAccount: "登录账号",
-          alias: "用户昵称",
-          email: "电子邮箱",
-          phome: "手机号码",
-          tel: "办公电话",
-          updataTime: "更新时间",
-          status: "状态"
-        },
-        {
-          loginAccount: "登录账号",
-          alias: "用户昵称",
-          email: "电子邮箱",
-          phome: "手机号码",
-          tel: "办公电话",
-          updataTime: "更新时间",
-          status: "状态"
-        },
-        {
-          loginAccount: "登录账号",
-          alias: "用户昵称",
-          email: "电子邮箱",
-          phome: "手机号码",
-          tel: "办公电话",
-          updataTime: "更新时间",
-          status: "状态"
-        }
-      ]
+      tableData: [],
+      currentRow: {}
     };
   },
   mounted() {},
   methods: {
     init(row) {
+      this.currentRow = row;
       this.roleForm = JSON.parse(JSON.stringify(row));
       this.showAssginRole = true;
+      this.getFormAuthUser({});
+    },
+    getFormAuthUser(param) {
+      const searchObj = {
+        roleCode: this.currentRow.roleCode,
+        userType: this.currentRow.userType,
+        pageNo: this.pageNation.pageNo,
+        pageSize: this.pageNation.pageSize,
+        ctrlPermi: this.pageNation.ctrlPermi,
+        status: this.pageNation.status
+      };
+      const obj = Object.assign(param, searchObj);
+      roleApi.getFormAuthUser(obj).then(res => {
+        this.tableData = res.list;
+      });
     },
     // 多选操作
     tableCheckBox(row) {
@@ -204,7 +201,7 @@ export default {
     },
     /* 添加用户 */
     addUser() {
-      this.$refs.showAddUserPanel.show();
+      this.$refs.showAddUserPanel.show(this.roleForm);
     },
     /* 批量取消*/
     multipleCancel() {
@@ -214,24 +211,53 @@ export default {
           type: "warning"
         });
       } else {
-        // console.log(this.tableCheckBoxValue);
+        const arrId = [];
+        for (let i = 0, len = this.tableCheckBoxValue.length; i < len; i++) {
+          arrId.push(this.tableCheckBoxValue[i].id);
+        }
+        const obj = {
+          roleCode: this.currentRow.roleCode,
+          userRoleString: arrId
+        };
+        roleApi.deleteAuthUsers(obj).then(res => {
+          if (res.result === "true") {
+            this.$message.success(res.message);
+            this.getFormAuthUser({});
+          } else {
+            this.$message.error(res.message);
+          }
+        });
+        console.log(11, this.tableCheckBoxValue);
       }
     },
     /* 获取填入输入框的值  */
     searchBtn() {
-      // const temp = this.formInline.concat(this.moreFormItem);
+      // console.log(valObj);
       const valObj = getInputVal(this.formInline);
-      console.log(valObj);
+      this.getFormAuthUser(valObj);
     },
     /* 清除输入框内的值 */
     resetForm() {
+      this.getFormAuthUser({});
       clearFilterVal(this.formInline);
     },
     /* 单个取消 */
     singleCancel(row) {
+      // console.log(33, row);
       this.$alertMsgBox("确认要取消该用户角色吗？", "信息")
         .then(() => {
-          this.$message.success("成功");
+          const obj = {
+            roleCode: this.currentRow.roleCode,
+            userRoleString: row.id
+          };
+          roleApi.deleteAuthUser(obj).then(res => {
+            if (res.result === "true") {
+              this.$message.success(res.message);
+              this.getFormAuthUser({});
+            } else {
+              this.$message.error(res.message);
+            }
+          });
         })
         .catch(() => {
           this.$message.info("取消");
@@ -247,6 +273,18 @@ export default {
       this.showAssginRole = false;
       this.resetForm();
       this.tableCheckBoxValue = [];
+    },
+    currentChange(val) {
+      const obj = {
+        ctrlPermi: this.pageNation.ctrlPermi,
+        pageSize: this.pageNation.pageSize,
+        pageNo: val,
+        status: this.pageNation.stauts
+      };
+      this.init(obj);
+    },
+    reloadPage() {
+      this.getFormAuthUser({});
     }
   }
 };

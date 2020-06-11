@@ -11,7 +11,6 @@
       <div class="title-container">
         <h3 class="title">Login Form</h3>
       </div>
-
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -26,7 +25,6 @@
           auto-complete="on"
         />
       </el-form-item>
-
       <el-form-item prop="password" style="margin-top:20px;">
         <span class="svg-container">
           <svg-icon icon-class="password" />
@@ -48,7 +46,6 @@
           />
         </span>
       </el-form-item>
-
       <el-button
         :loading="loading"
         type="primary"
@@ -68,7 +65,8 @@
 
 <script>
 import { validUsername } from "@/utils/validate";
-
+import { sysApi } from "@/api/systemSet";
+// import { pubApi } from "@/api/public_request"
 export default {
   name: "Login",
   data() {
@@ -131,10 +129,26 @@ export default {
           this.$store
             .dispatch("user/login", this.loginForm)
             .then(() => {
-              this.$router.push({ path: this.redirect || "/" });
-              this.loading = false;
+              this.$store
+                .dispatch("publicData/getAllDicType", this.loginForm)
+                .then(() => {
+                  this.loading = false;
+                  this.$router.push({ path: this.redirect || "/" });
+                });
+              // sysApi
+              //   .dictType({
+              //     pageNo: 1,
+              //     pageSize : 20000
+              //   })
+              //   .then(response => {
+              //     const obj = {};
+              //     const res = response.list;
+              //     for (let i = 0, len = res.length; i < len; i++) {
+              //       obj[res[i].dictType] = res[i].dictName;
+              //     }
+              //     console.log(obj);
+              //   });
             })
-
             .catch(() => {
               this.loading = false;
             });

@@ -120,5 +120,48 @@ export const orgApi = {
     return httpRequestor.post(`/a/sys/office/delete?officeCode=${param.officeCode}`).catch(err => {
       Message.error(err)
     })
+  },
+  /* 公司管理*/
+  /* 获取公司管理列表*/
+  getCompanyList: (param) => {
+    return httpRequestor.postFormData(`/a/sys/company/listData`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 停用或启用公司管理列表*/
+  setCompanyStart: (param) => {
+    return httpRequestor.post(`/a/sys/company/${param.type}?companyCode=${param.companyCode}`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 删除公司管理列表*/
+  deleteCompany: (param) => {
+    return httpRequestor.post(`/a/sys/company/delete`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 新增公司管理列表*/
+  addCompany: (param) => {
+    return httpRequestor.postFormData(`/a/sys/company/save`, param).catch(err => {
+      Message.error(err)
+    })
+    // parent.companyName: 四川青木制药
+    // parent.id: SCQM
+    // companyName: 公司名称
+    // isNewRecord: true
+    // companyCode:
+    //   viewCode: companyCode
+    // fullName: 公司全称
+    // treeSort: 1
+    // area.areaName: 四川省 / 眉山市 / 仁寿县
+    // area.areaCode: 511421
+    // companyOfficeListJson: [""]
+    // remarks: 备注信息
   }
+  // /* 公司管理列表*/
+  // deleteCompany: (param) => {
+  //   return httpRequestor.post(`/a/sys/company/delete`, param).catch(err => {
+  //     Message.error(err)
+  //   })
+  // }
 };
