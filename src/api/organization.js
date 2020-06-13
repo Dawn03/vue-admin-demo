@@ -109,6 +109,7 @@ export const orgApi = {
       Message.error(err)
     })
   },
+
   /* 启用停用 */
   stopOfficeOrStart: (param) => {
     return httpRequestor.post(`/a/sys/office/${param.type}?officeCode=${param.officeCode}`).catch(err => {
@@ -140,28 +141,47 @@ export const orgApi = {
       Message.error(err)
     })
   },
+
   /* 新增公司管理列表*/
   addCompany: (param) => {
     return httpRequestor.postFormData(`/a/sys/company/save`, param).catch(err => {
       Message.error(err)
     })
-    // parent.companyName: 四川青木制药
-    // parent.id: SCQM
-    // companyName: 公司名称
-    // isNewRecord: true
-    // companyCode:
-    //   viewCode: companyCode
-    // fullName: 公司全称
-    // treeSort: 1
-    // area.areaName: 四川省 / 眉山市 / 仁寿县
-    // area.areaCode: 511421
-    // companyOfficeListJson: [""]
-    // remarks: 备注信息
+  },
+  /* top 初始化公司新增*/
+  addInit: (param) => {
+    return httpRequestor.get(`/a/sys/company/form.json`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 编辑/新增  当前/下级公司 获取初始化数据*/
+  addEditInit: (param) => {
+    return httpRequestor.get(`/a/sys/company/form.json?${param.key}=${param.val}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 初始化岗位管理*/
+  getPostList: (param) => {
+    return httpRequestor.postFormData(`/a/sys/post/listData`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 初始化岗位管理编辑*/
+  getPostEdit: (param) => {
+    return httpRequestor.get(`/a/sys/post/form.json?${param.key}=${param.val}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 初始化新增岗位管*/
+  getPostAdd: (param) => {
+    return httpRequestor.get(`/a/sys/post/form.json`).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 保存编辑结果*/
+  saveEdit: (param) => {
+    return httpRequestor.postFormData(`/a/sys/post/save`, param).catch(err => {
+      Message.error(err)
+    })
   }
-  // /* 公司管理列表*/
-  // deleteCompany: (param) => {
-  //   return httpRequestor.post(`/a/sys/company/delete`, param).catch(err => {
-  //     Message.error(err)
-  //   })
-  // }
 };

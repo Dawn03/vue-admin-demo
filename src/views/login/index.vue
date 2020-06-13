@@ -66,6 +66,8 @@
 <script>
 import { validUsername } from "@/utils/validate";
 import { sysApi } from "@/api/systemSet";
+import { pubApi } from "@/api/public_request";
+
 // import { pubApi } from "@/api/public_request"
 export default {
   name: "Login",
@@ -129,12 +131,9 @@ export default {
           this.$store
             .dispatch("user/login", this.loginForm)
             .then(() => {
-              this.$store
-                .dispatch("publicData/getAllDicType", this.loginForm)
-                .then(() => {
-                  this.loading = false;
-                  this.$router.push({ path: this.redirect || "/" });
-                });
+              this.afterRun();
+              this.loading = false;
+
               // sysApi
               //   .dictType({
               //     pageNo: 1,
@@ -157,11 +156,49 @@ export default {
           return false;
         }
       });
+    },
+    /* 调用 需要在登录完成后 页面跳转前 获取的数据 */
+    afterRun() {
+      // console.log("run");
+      Promise.all([
+        this.getCompany(),
+        this.getOffice(),
+        this.getAllDicType()
+      ]).then(res => {
+        /* 你的逻辑代码 */
+        this.$router.push({ path: this.redirect || "/" });
+      });
+    },
+    /* 获取公司 */
+    getOffice() {
+      return new Promise((resolve, reject) => {
+        /* 你的逻辑代码 */
+        this.$store.dispatch("publicData/getOfficeMenuTree").then(res => {
+          resolve(res);
+        });
+      });
+    },
+    /* 获取机构 */
+    getCompany() {
+      return new Promise((resolve, reject) => {
+        /* 你的逻辑代码 */
+        this.$store.dispatch("publicData/getCompanyMenuTree").then(res => {
+          resolve(res);
+        });
+      });
+    },
+    /* 获取所有字典类型 */
+    getAllDicType() {
+      return new Promise((resolve, reject) => {
+        /* 你的逻辑代码 */
+        this.$store.dispatch("publicData/getAllDicType").then(res => {
+          resolve(res);
+        });
+      });
     }
   }
 };
 </script>
-
 <style lang="scss">
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */

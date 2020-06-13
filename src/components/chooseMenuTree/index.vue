@@ -37,6 +37,9 @@
             :default-expand="defaultExpand"
             :expand-all="expandAll"
             :click-type="true"
+            :parent-node="parentNode"
+            :show-checkbox="showCheckbox"
+            :checked-memu="checkedMemu"
             v-on="$listeners"
           ></MenuTree>
         </el-col>
@@ -44,6 +47,24 @@
           <span class="ctrol-btn" @click="switchStatus"> 展开 / 折叠 </span>
         </el-col>
       </el-row>
+      <div class="btn-box">
+        <el-button
+          size="mini"
+          type="primary"
+          icon="el-icon-check"
+          @click="sureAndCloseBtn"
+        >
+          确定
+        </el-button>
+        <el-button
+          size="mini"
+          type="primary"
+          icon="el-icon-close"
+          @click="sureAndCloseBtn"
+        >
+          关闭
+        </el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -73,11 +94,25 @@ export default {
         return [];
       }
     },
+    checkedMemu: {
+      type: Array,
+      default: () => {
+        return [];
+      }
+    },
     defaultExpand: {
       type: Array,
       default: () => {
         return [];
       }
+    },
+    parentNode: {
+      type: Boolean,
+      default: false
+    },
+    showCheckbox: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -124,10 +159,21 @@ export default {
     searchKey() {
       console.log("搜索关键字");
       // this.$refs.menuTreeDom.executeFilter(this.keyVal);
+    },
+    /* 选择的节点的值已经传到组件 所以不需要任何传值 只需关闭弹窗即可  */
+    sureAndCloseBtn(val) {
+      this.$emit("closeInnerDialog");
+      //  this.passCheckedNode(this.)
+    },
+    // 设置默认选中
+    setDefaultChecked(tree) {
+      console.log(170, tree, this.checkedMemu);
+      this.$refs.menuTreeDom.setDefaultChecked(this.checkedMemu);
     }
   }
 };
 </script>
+
 <style lang="scss" scoped>
 .inner-dailog-box {
   .el-dialog__header {
@@ -138,9 +184,15 @@ export default {
     background: #f4f6f8;
     padding: 5px 20px;
     height: 300px;
+    // position: relative;
   }
 }
 .ctrol-btn {
   cursor: pointer;
+}
+.btn-box {
+  width: 100%;
+  text-align: right;
+  padding: 20px 10px;
 }
 </style>

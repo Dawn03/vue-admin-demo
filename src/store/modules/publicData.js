@@ -8,23 +8,36 @@ import {
 
 const state = {
   officeList: [],
+  officeListOrg: [],
   companyList: [],
+  companyListOrg: [],
   employeePosts: [],
   allDicType: "",
   selectDicType: ""
 }
 const mutations = {
   GET_OFFICE_TREE_LIST: (state, data) => {
+    // state.officeList = data
     const attributes = {
       id: "id",
       parentId: "pId",
       label: "name",
       rootId: "YD"
     };
-    state.officeList = toTreeData(data, attributes)
+    const officeList = toTreeData(data, attributes)
+    sessionStorage.setItem('officeList', JSON.stringify(officeList))
   },
   GET_COMPANY_TREE_LIST: (state, data) => {
-    state.companyList = data
+    // state.companyList = data
+    const attributes = {
+      id: "id",
+      parentId: "pId",
+      label: "name",
+      rootId: "YD"
+    };
+    const companyList = toTreeData(data, attributes)
+    sessionStorage.setItem('companyList', JSON.stringify(companyList))
+    sessionStorage.setItem('companyListOrg', JSON.stringify(data))
   },
   GET_EMPLOYEE_POSTS_LIST: (state, data) => {
     state.employeePosts = data
@@ -56,7 +69,6 @@ const mutations = {
         })
       }
     }
-
     /* 用于table表格 显示中文字符 */
     sessionStorage.setItem('allDicType', JSON.stringify(obj))
     /* 用于下拉选择框 数据 */
@@ -79,13 +91,8 @@ const actions = {
   }) {
     pubApi.getCompanyMenuTree().then(res => {
       // console.log('GET_COMPANY_TREE_LIST', res);
-      const attributes = {
-        id: "id",
-        parentId: "pId",
-        label: "name",
-        rootId: "YD"
-      };
-      commit("GET_COMPANY_TREE_LIST", toTreeData(res, attributes))
+
+      commit("GET_COMPANY_TREE_LIST", res)
     });
   },
   /* 获取岗位全部数据 */

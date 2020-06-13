@@ -38,5 +38,11 @@ export const pubApi = {
     return httpRequestor.get('a/sys/post/treeData', param).catch(err => {
       Message.error(err)
     })
+  },
+  /* 获取区域*/
+  getAreaMenuTree: (param) => {
+    return httpRequestor.post(`/a/sys/area/treeData`, param).catch(err => {
+      Message.error(err)
+    })
   }
 };

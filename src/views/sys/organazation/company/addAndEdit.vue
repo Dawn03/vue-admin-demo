@@ -7,7 +7,7 @@
     >
       <template slot="content">
         <el-form
-          ref="institutionForm"
+          ref="companyForm"
           :model="companyForm"
           label-width="100px"
           class="demo-ruleForm"
@@ -19,18 +19,30 @@
             :component-list="componentList"
             :form-value.sync="companyForm"
             @focusIt="focusIt"
+            @showExtentionDom="showExtentionDom"
           >
           </DymForm>
+          <ExtentionFeild
+            ref="extentionDom"
+            :style="{ height: exHeight }"
+            style="overflow: hidden;"
+            :extention-form="extend"
+          ></ExtentionFeild>
         </el-form>
         <ChooseMenuTree
+          ref="chooseMenuTree"
           :inner-dialog-visible="innerDialogVisible"
           :title-name="menuTreeTitle"
           :menu-data="menuData"
           :key-val="keyVal"
           :default-expand="defaultExpand"
+          :parent-node="true"
+          :show-checkbox="showCheckbox"
+          :checked-memu="checkedMemu"
           @closeInnerDialog="closeMuneTreeChoose"
           @on-change-keyVal="changeKeyVal"
           @clickNodeReslut="clickNodeReslut"
+          @passCheckedNode="passCheckedNode"
         ></ChooseMenuTree>
       </template>
       <template slot="footer">
@@ -39,7 +51,7 @@
             type="primary"
             icon="el-icon-check"
             size="mini"
-            @click="submitForm('institutionForm')"
+            @click="submitForm('companyForm')"
           >
             保存
           </el-button>
@@ -47,7 +59,7 @@
             type="primary"
             icon="el-icon-close"
             size="mini"
-            @click="colseOffice('institutionForm')"
+            @click="colseOffice('companyForm')"
           >
             关闭
           </el-button>
@@ -65,6 +77,7 @@ import ExtentionFeild from "@/components/extentionFeild";
 import { returnReg } from "@/utils/validate";
 import { orgApi } from "../../../../api/organization";
 import { pubApi } from "@/api/public_request";
+import { toTreeData, filterNokeyVal, stringVal } from "@/utils/pubFunc";
 export default {
   name: "UserEdit",
   components: {
@@ -92,53 +105,46 @@ export default {
         callback();
       }
     };
-    const phoneValidator = (rule, value, callback) => {
-      console.log(124, value);
-      if (value && !returnReg("mobile").test(value)) {
-        callback(
-          new Error(
-            "sdsd 请正确填写您的电话号码，固话为区号(3-4位)号码(7-9位),手机为13,14,15,16,17,18,19号段"
-          )
-        );
-      } else if (value && !returnReg("phone").test(value)) {
-        callback(
-          new Error(
-            "sdsd 请正确填写您的电话号码，固话为区号(3-4位)号码(7-9位),手机为13,14,15,16,17,18,19号段"
-          )
-        );
-      } else {
-        callback();
-      }
-    };
     return {
       showEditDailog: false,
       innerDialogVisible: false,
-      menuTreeTitle: "",
+      menuTreeTitle: "上级公司",
       menuData: [],
       keyVal: "",
       defaultExpand: ["1"],
+      showCheckbox: false,
+      checkedMemu: [],
       editModel: "E",
       companyForm: {
+        superCompanyName: "",
+        isNewRecord: false,
         // 必填 名称 编码 全称 排序号
         parent: {
           id: "id", // 上级机构
-          officeName: ""
+          companyName: ""
         },
+        companyOfficeListJson: "",
+        companyOfficeListJsonId: "",
+        areaName: "",
+        area: {
+          areaName: "",
+          areaCode: ""
+        },
+        viewCode: "",
         companyName: "",
         fullName: "",
         treeSort: "",
-        area: "",
         updateDate: ""
       },
       componentList: [
         {
           label: "上级公司：",
-          prop: "companyName",
+          prop: "superCompanyName",
           labelWidth: "90px",
           componentName: "el-input",
           cols: [12, 12, 12, 12],
           placeholder: "请输入",
-          value: "companyName",
+          value: "superCompanyName",
           addIcon: true,
           slotPosition: "append",
           iconType: "el-icon-search"
@@ -164,71 +170,77 @@ export default {
         },
         {
           label: "公司编码：",
-          prop: "roleCode",
+          prop: "viewCode",
           labelWidth: "90px",
           componentName: "el-input",
           cols: [12, 12, 12, 12],
           placeholder: "请输入",
-          value: "roleCode"
+          value: "viewCode"
         },
         {
           label: "公司全称：",
-          prop: "fullname",
+          prop: "fullName",
           labelWidth: "90px",
           componentName: "el-input",
           cols: [12, 12, 12, 12],
           placeholder: "请输入",
-          value: "fullname"
+          value: "fullName"
         },
         {
           label: "排序号：",
-          prop: "roleCode",
+          prop: "treeSort",
           labelWidth: "90px",
           componentName: "el-input",
           cols: [12, 12, 12, 12],
           placeholder: "请输入",
-          value: "roleCode"
+          value: "treeSort"
         },
         {
           label: "归属区域：",
-          prop: "roleCode",
+          prop: "areaName",
           labelWidth: "90px",
           componentName: "el-input",
           cols: [12, 12, 12, 12],
           placeholder: "请输入",
-          value: "roleCode",
+          value: "areaName",
           addIcon: true,
           slotPosition: "append",
           iconType: "el-icon-search"
         },
         {
           label: "包含机构：",
-          prop: "include",
+          prop: "companyOfficeListJson", // companyOfficeListJson
           labelWidth: "90px",
           componentName: "el-input",
           cols: [12, 12, 12, 12],
           placeholder: "请输入",
-          value: "include",
+          value: "companyOfficeListJson",
           addIcon: true,
           slotPosition: "append",
           iconType: "el-icon-search"
         },
         {
           label: "备注信息：",
-          prop: "roleCode",
+          prop: "remarks",
           labelWidth: "90px",
           componentName: "el-input",
           rowsSpan: 4,
           type: "textarea",
           cols: [24, 24, 24, 24],
           placeholder: "请输入",
-          value: "roleCode"
+          value: "remarks"
+        },
+        {
+          label: "扩展字段", // 授权功能菜单
+          lineTips: true,
+          cols: [24, 24, 24, 24],
+          showFlag: false,
+          iconTips: true
         }
       ],
       titleType: "",
       exHeight: "0px",
       defaultExpand: ["1"],
-      gutterVal: 100,
       extend: {
         extendS1: "",
         extendS2: "",
@@ -255,81 +267,205 @@ export default {
         companyName: [{ required: true, message: "必填信息", trigger: "blur" }],
         include: [{ required: true, message: "必填信息", trigger: "blur" }],
         fullName: [{ required: true, message: "必填信息", trigger: "blur" }],
-        companyCode: [{ required: true, message: "请选择", trigger: "change" }],
+        viewCode: [{ required: true, message: "必填信息", trigger: "blur" }],
         treeSort: [
           { required: true, validator: treeSortValidator, trigger: "blur" }
         ]
-      }
+      },
+      chooseTypePanel: ""
     };
   },
   created() {
-    this.getOfficeMenuTree();
+    this.getCompanyMenuTree();
   },
   methods: {
-    /* 显示对话框 */
+    /* 显示对话框  编辑机构  新增下级机构  新增机构*/
     show(row, type) {
-      console.log(303);
+      console.log(285, row);
       this.showEditDailog = true;
-      // 编辑机构  新增下级机构  新增机构
       this.titleType = type;
-      if (type === "新增机构") {
-        this.showEditDailog = true;
+      if (type === "新增公司") {
+        orgApi.addInit().then(res => {
+          this.companyForm.viewCode = res.company.viewCode;
+          this.companyForm.treeSort = res.company.treeSort;
+        });
       }
-      if (type === "编辑机构" || type === "新增下级机构") {
-        /* 获取机构详情 */
+      const companyListOrg = JSON.parse(
+        sessionStorage.getItem("companyListOrg")
+      );
+      if (type === "新增下级公司") {
         orgApi
-          .getOfficeDetail({
-            officeCode: row.officeCode
+          .addEditInit({
+            key: "parentCode",
+            val: row.companyCode
           })
           .then(res => {
-            // console.log(321, res);
-            const result = JSON.parse(JSON.stringify(res.office));
-            for (const key in res.office.extend) {
-              result.extend[key] = res.office.extend[key];
+            for (let i = 0, len = companyListOrg.length; i < len; i++) {
+              if (companyListOrg[i].id === res.company.parentCode) {
+                this.companyForm.superCompanyName = companyListOrg[i].name;
+              }
             }
-            if (res.office.parentCode) {
-              const officeSource = this.officeSource.filter(item => {
-                return item.id === res.office.parentCode;
-              });
-              result.parent = {
-                id: officeSource[0].id,
-                officeName: officeSource[0].name
-              };
-            } else {
-              result.parent = {
-                id: "",
-                officeName: ""
-              };
+            // this.companyForm.superCompanyName = res.company.parentCode;
+            this.companyForm.viewCode = res.company.viewCode;
+            this.companyForm.treeSort = res.company.treeSort;
+          });
+      }
+      if (type === "编辑公司") {
+        console.log(321, row);
+        /* 获取机构详情 */
+        orgApi
+          .addEditInit({
+            key: "companyCode",
+            val: row.viewCode
+          })
+          .then(res => {
+            // console.log(319, res);
+            const result = JSON.parse(JSON.stringify(res.company));
+            // console.log(321, result); officeList officeName officeCode  extend
+            const includName = [];
+            const includCode = [];
+            for (let i = 0, len = companyListOrg.length; i < len; i++) {
+              if (companyListOrg[i].id === res.company.parentCode) {
+                this.companyForm.superCompanyName = companyListOrg[i].name;
+              }
             }
-
-            // this.institutionForm = result;
-            this.showEditDailog = true;
+            for (const key in result.extend) {
+              if (result.extend[key]) {
+                this.extend[key] = key;
+              }
+            }
+            for (let i = 0, len = res.officeList.length; i < len; i++) {
+              includName.push(res.officeList[i].officeName);
+              includCode.push(res.officeList[i].officeCode);
+            }
+            // this.companyForm.superCompanyName = result.parentCode || "";
+            this.companyForm.companyName = result.companyName;
+            this.companyForm.viewCode = result.viewCode;
+            this.companyForm.fullName = result.fullName;
+            this.companyForm.treeSort = result.treeSort;
+            this.companyForm.areaName = result.area.treeNames;
+            this.companyForm.area.areaName = result.area.areaName;
+            this.companyForm.area.areaCode = result.area.areaCode;
+            this.companyForm.companyOfficeListJson = includName.join(",");
+            this.companyForm.companyOfficeListJsonId = includCode;
+            this.checkedMemu = includCode;
+            this.companyForm.remarks = result.remarks;
+            this.$refs.chooseMenuTree.setDefaultChecked(includCode);
+            /* 区域 机构 备注 */
+            // for (const key in res.company.extend) {
+            //   result.extend[key] = res.company.extend[key];
+            // }
+            // if (res.company.parentCode) {
+            //   const officeSource = this.officeSource.filter(item => {
+            //     return item.id === res.company.parentCode;
+            //   });
+            //   result.parent = {
+            //     id: officeSource[0].id,
+            //     officeName: officeSource[0].name
+            //   };
+            // } else {
+            //   result.parent = {
+            //     id: "",
+            //     officeName: ""
+            //   };
+            // }
+            // this.companyForm = result;
+            // this.showEditDailog = true;
           });
       }
     },
-    focusIt(keyNaame) {
+    focusIt(keyName) {
+      // console.log(23, keyName);
       this.$nextTick(() => {
-        this.innerDialogVisible = true;
-        // this.menuData = this.$store.state.publicData.officeList;
+        if (keyName === "superCompanyName") {
+          this.innerDialogVisible = true;
+          this.showCheckbox = false;
+          this.getCompanyMenuTree();
+          this.chooseTypePanel = "superCompanyName";
+        } else if (keyName === "areaName") {
+          this.innerDialogVisible = true;
+          this.showCheckbox = false;
+          this.getAreaMenuTree();
+          this.chooseTypePanel = "areaName";
+        } else if (keyName === "companyOfficeListJson") {
+          this.innerDialogVisible = true;
+          this.showCheckbox = true;
+          this.getOfficeMenuTree();
+          this.chooseTypePanel = "companyOfficeListJson";
+        }
       });
-      console.log(300, keyNaame);
+    },
+    getCompanyMenuTree() {
+      const attributes = {
+        id: "id",
+        parentId: "pId",
+        label: "name",
+        rootId: "0"
+      };
+      // { ctrlPermi: 2, excludeCode: "" }
+      pubApi.getCompanyMenuTree().then(res => {
+        this.menuData = toTreeData(res, attributes);
+      });
+    },
+    getAreaMenuTree() {
+      const attributes = {
+        id: "id",
+        parentId: "pId",
+        label: "name",
+        rootId: "0"
+      };
+      pubApi.getAreaMenuTree().then(res => {
+        this.menuData = toTreeData(res, attributes);
+      });
     },
     getOfficeMenuTree() {
-      pubApi.getOfficeMenuTree().then(res => {
-        this.officeSource = res;
+      const attributes = {
+        id: "id",
+        parentId: "pId",
+        label: "name",
+        rootId: "YD"
+      };
+      pubApi.getOfficeMenuTree({ ctrlPermi: 2, excludeCode: "" }).then(res => {
+        this.menuData = toTreeData(res, attributes);
       });
+    },
+    /* 复选框中的值 */
+    passCheckedNode(val) {
+      const idArr = [];
+      const labelArr = [];
+      if (val.length > 0) {
+        for (let i = 0, len = val.length; i < len; i++) {
+          if (val[i].children.length === 0) {
+            idArr.push(val[i].id);
+            labelArr.push(val[i].label);
+          }
+        }
+      }
+      this.companyForm.companyOfficeListJson = labelArr.join(",");
+      this.companyForm.companyOfficeListJsonId = idArr.join(",");
+      console.log("复选框中的值", val);
+    },
+    /* 菜单树中当前点击的树节点*/
+    clickNodeReslut(data) {
+      // console.log(555, data);
+      if (this.chooseTypePanel === "superCompanyName") {
+        this.companyForm.superCompanyName = data.data.label;
+        this.companyForm.parent.id = data.data.id;
+        this.companyForm.parent.companyName = data.data.label;
+      } else if (this.chooseTypePanel === "areaName") {
+        this.companyForm.areaName = data.parent;
+        this.companyForm.area.areaName = data.parent;
+        this.companyForm.area.areaCode = data.data.id;
+      } else if (this.chooseTypePanel === "includeOffice") {
+        this.companyForm.area.areaCode = data.data.id;
+      }
+      this.closeMuneTreeChoose();
+      this.keyVal = "";
     },
     /* 关闭编辑对话框 */
     closeEditDialog() {
-      this.colseOffice("institutionForm");
+      this.colseOffice("companyForm");
       this.showEditDailog = false;
-    },
-    /* 触发选择上级机构 */
-    institutionChoose() {
-      this.$nextTick(() => {
-        this.menuData = this.$store.state.publicData.officeList;
-        this.innerDialogVisible = true;
-      });
     },
     /* 关闭上级机构选择 */
     closeMuneTreeChoose() {
@@ -337,60 +473,67 @@ export default {
     },
     /* changeKeyVal */
     changeKeyVal(val) {
-      // console.log(379, val);
       this.keyVal = val;
-    },
-    /* 菜单树中当前点击的树节点*/
-    clickNodeReslut(data) {
-      // this.institutionForm.parent.id = data.id;
-      // this.institutionForm.parent.officeName = data.label;
-      this.closeMuneTreeChoose();
-      this.keyVal = "";
-    },
-    /* 新增 */
-    addNew() {
-      const obj = {
-        affiation: "",
-        jobs: "",
-        id: this.addCountIndex
-      };
-      // this.institutionForm.tableData.push(obj);
-      this.addCountIndex++;
-      // console.log(this.institutionForm.tableData);
     },
     /* 显示扩展字段 */
     showExtentionDom() {
       this.exHeight = this.exHeight === "0px" ? "480px" : "0px";
     },
-    /* 扩展字段值 */
-    extentionFormVal(val) {
-      // this.institutionForm.extend = val;
-    },
     /* 提交 */
     submitForm(formName) {
-      // console.log(1, formName, this.$refs[formName]);
+      // console.log(3, this.companyForm);
       this.$refs[formName].validate(valid => {
-        // console.log(2);
         if (valid) {
-          // console.log(3);
-          if (this.titleType === "新增机构") {
-            // this.institutionForm.isNewRecord = true;
+          const obj = {};
+          obj.companyName = this.companyForm.companyName;
+          obj["parent.companyName"] = this.companyForm.parent.companyName;
+          obj["parent.id"] = this.companyForm.parent.id;
+          obj["area.areaName"] = this.companyForm.area.areaName;
+          obj["area.areaCode"] = this.companyForm.area.areaCode;
+          obj.viewCode = this.companyForm.viewCode;
+          obj.fullName = this.companyForm.fullName;
+          obj.treeSort = this.companyForm.treeSort;
+          obj.remarks = this.companyForm.remarks;
+          obj.companyOfficeListJson = this.companyForm.companyOfficeListJsonId;
+          obj["extend.extendS1"] = this.extend.extendS1;
+          obj["extend.extendS2"] = this.extend.extendS2;
+          obj["extend.extendS3"] = this.extend.extendS3;
+          obj["extend.extendS4"] = this.extend.extendS4;
+          obj["extend.extendS5"] = this.extend.extendS5;
+          obj["extend.extendS6"] = this.extend.extendS6;
+          obj["extend.extendS7"] = this.extend.extendS7;
+          obj["extend.extendS8"] = this.extend.extendS8;
+          obj["extend.extendI1"] = this.extend.extendI1;
+          obj["extend.extendI2"] = this.extend.extendI2;
+          obj["extend.extendI3"] = this.extend.extendI3;
+          obj["extend.extendI4"] = this.extend.extendI4;
+          obj["extend.extendF1"] = this.extend.extendF1;
+          obj["extend.extendF2"] = this.extend.extendF2;
+          obj["extend.extendF3"] = this.extend.extendF3;
+          obj["extend.extendF4"] = this.extend.extendF4;
+          obj["extend.extendD1"] = this.extend.extendD1;
+          obj["extend.extendD2"] = this.extend.extendD2;
+          obj["extend.extendD3"] = this.extend.extendD3;
+          obj["extend.extendD4"] = this.extend.extendD4;
+          if (this.titleType === "新增公司") {
+            obj.isNewRecord = true;
           } else {
-            // this.institutionForm.isNewRecord = false;
+            obj.isNewRecord = false;
           }
-          // orgApi.saveOfficeAdd(this.institutionForm).then(res => {
-          //   if (res.result === "true") {
-          //     this.$message.success(res.message);
-          //     this.$emit("initPage", {
-          //       status: "",
-          //       ctrlPermi: 2
-          //     });
-          //     this.showEditDailog = false;
-          //   } else {
-          //     this.$message.warning(res.message);
-          //   }
-          //   this.colseOffice("institutionForm");
-          // });
+          console.log(440, obj);
+          orgApi.addCompany(obj).then(res => {
+            if (res.result === "true") {
+              this.$message.success(res.message);
+              this.$emit("initPage", {
+                status: "",
+                ctrlPermi: 2
+              });
+              this.showEditDailog = false;
+            } else {
+              this.$message.warning(res.message);
+            }
+            this.colseOffice("companyForm");
+          });
         } else {
           // console.log(4);
           console.log("error submit!!");
@@ -403,8 +546,8 @@ export default {
         this.$refs[formName].resetFields(); // 清空表单
         this.showEditDailog = false;
       });
-      // this.institutionForm.parent.id = "";
-      // this.institutionForm.parent.officeName = "";
+      // this.companyForm.parent.id = "";
+      // this.companyForm.parent.officeName = "";
     }
   }
 };

@@ -67,7 +67,7 @@
       @requstLazyLoad="requstLazyLoad"
     >
       <template slot="companyName" slot-scope="scope">
-        <span class="td-color" @click="institutionEdit(scope.row, '编辑机构')">
+        <span class="td-color" @click="companyEdit(scope.row, '编辑公司')">
           {{ scope.row.companyName }}
         </span>
       </template>
@@ -85,7 +85,7 @@
             <el-button
               type="text"
               size="small"
-              @click="institutionEdit(scope.row, '编辑机构')"
+              @click="companyEdit(scope.row, '公司机构')"
             >
               <i class="el-icon-edit" title="编辑"></i>
             </el-button>
@@ -115,15 +115,15 @@
             </el-button>
             <el-button
               type="text"
-              @click="institutionEdit(scope.row, '新增下级机构')"
+              @click="companyEdit(scope.row, '新增下级公司')"
             >
-              <i class="el-icon-plus" size="small" title="新增下级机构"></i>
+              <i class="el-icon-plus" size="small" title="新增下级公司"></i>
             </el-button>
           </template>
         </el-table-column>
       </template>
     </TableTree>
-    <AddAndEdit ref="companyEditPanel"></AddAndEdit>
+    <AddAndEdit ref="companyEditPanel" @initPage="initPage"></AddAndEdit>
   </div>
 </template>
 <script>
@@ -192,11 +192,15 @@ export default {
     this.init({});
   },
   methods: {
+    initPage() {
+      this.reload();
+    },
     init(param) {
       orgApi.getCompanyList(param).then(res => {
-        console.log(231, res);
-        if (res.length && res[0].isTreeLeaf === false) {
-          res[0].hasChildren = true;
+        for (let i = 0, len = res.length; i < len; i++) {
+          if (res.length && res[i].isTreeLeaf === false) {
+            res[i].hasChildren = true;
+          }
         }
         this.tableData = res;
       });
@@ -254,7 +258,8 @@ export default {
       this.reload();
     },
     refreshPage() {
-      this.$refs.theTable.expandFolodTable(this.tableData, false);
+      this.reload();
+      // this.$refs.theTable.expandFolodTable(this.tableData, false);
     },
     expandTable() {
       this.$refs.theTable.expandFolodTable(this.tableData, true);
@@ -273,10 +278,9 @@ export default {
     addNew(row, type) {
       this.$refs.companyEditPanel.show(row, type);
     },
-
     /* 编辑表格 */
-    institutionEdit(row, type) {
-      // this.$refs.institutionEditPanel.show(row, type);
+    companyEdit(row, type) {
+      this.$refs.companyEditPanel.show(row, type);
     },
     stopCompanyOrStart(row) {
       const typeText = row.status === "0" ? "停用" : "启用";

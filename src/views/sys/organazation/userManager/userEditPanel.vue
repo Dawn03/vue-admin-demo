@@ -485,7 +485,7 @@ export default {
     },
     /* changeKeyVal */
     changeKeyVal(val) {
-      // console.log(379, val);
+      console.log(379, val);
       this.keyVal = val;
     },
     /* 菜单树中当前点击的树节点*/

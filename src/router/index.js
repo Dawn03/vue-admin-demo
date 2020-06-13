@@ -96,6 +96,14 @@ export const constantRoutes = [{
             meta: {
               title: '公司管理'
             }
+          },
+          {
+            path: 'post',
+            component: () => import('@/views/sys/organazation/post'),
+            name: 'post',
+            meta: {
+              title: '岗位管理'
+            }
           }
         ]
       },

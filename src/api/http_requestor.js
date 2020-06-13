@@ -42,6 +42,7 @@ axiosInstance.interceptors.request.use((config) => {
   return config
 }, error => {
   console.log("error", error)
+  tryHideFullScreenLoading()
   return Promise.reject(error)
 })
 axiosInstance.interceptors.response.use(handleResponseSuccess, handleResponseFail);
@@ -313,11 +314,12 @@ function handleResponseSuccess(response) {
  * @returns {Promise}
  */
 function handleResponseFail(error) {
+  tryHideFullScreenLoading()
   // console.log('token验证失效', error.response)
   let result
   if (error.response.status === 400) {
     Message({
-      message: error.data.message,
+      message: error.response.data.message,
       type: 'warning'
     });
     // 跳转到默认页

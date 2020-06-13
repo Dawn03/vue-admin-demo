@@ -150,8 +150,7 @@ export default {
   },
   data() {
     return {
-      selectObj: {},
-      exHeight: "0px"
+      selectObj: {}
     };
   },
   computed: {
@@ -208,7 +207,7 @@ export default {
     },
     focus(event, keyName) {
       console.log(240, event, keyName);
-      // this.$emit('focus', event)
+      // this.$emit('focus', keyName)
       this.$emit("focusIt", keyName);
     },
     blur(event) {
@@ -222,7 +221,7 @@ export default {
     },
     /* 显示扩展字段 */
     showExtentionDom() {
-      this.exHeight = this.exHeight === "0px" ? "480px" : "0px";
+      this.$emit("showExtentionDom");
     }
   }
 };

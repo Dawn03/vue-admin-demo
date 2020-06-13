@@ -24,6 +24,7 @@ import debounce from "lodash/debounce";
 export default {
   name: "MenuTree",
   props: {
+    /* 树节点的值 */
     menuData: {
       type: Array,
       default: () => []
@@ -36,6 +37,7 @@ export default {
       type: Array,
       default: () => []
     },
+    /* 显示复选框 */
     showCheckbox: {
       type: Boolean,
       default: false
@@ -56,6 +58,11 @@ export default {
     clickResource: {
       type: String,
       default: ""
+    },
+    /* 需要获取全部祖父级节点事添加的属性 */
+    parentNode: {
+      type: Boolean,
+      default: false
     }
     // checkStrictly: {
     //   // 子父级是否关联选中
@@ -98,21 +105,52 @@ export default {
     /* 当前点击的节点 */
     handleNodeClick(data) {
       // 发送双击事件
-      // console.log("this.dbIsTrue", this.dbIsTrue);
       if (this.dbIsTrue) {
         const _this = this;
         this.clickCount++;
         const fnEmitDblClick = debounce(() => {
           if (this.clickCount > 1) {
-            _this.$emit("clickNodeReslut", data);
-            // console.log("dbclick", data);
+            if (this.parentNode) {
+              const selectNode = this.$refs.menuTreeNode.getNode(data.id);
+              const selectedLabelArray = [];
+              const recursionParent = function(node) {
+                if (!node.parent) {
+                  return;
+                }
+                selectedLabelArray.push(node.label);
+                recursionParent(node.parent);
+              };
+              recursionParent(selectNode);
+              const param = {
+                data,
+                parent: selectedLabelArray.join("/")
+              };
+              _this.$emit("clickNodeReslut", param);
+              // console.log("selectedLabelArray", selectedLabelArray);
+            } else {
+              _this.$emit("clickNodeReslut", data);
+            }
+            console.log("dbclick", data);
           }
           _this.clickCount = 0;
         }, 500);
         fnEmitDblClick();
       } else {
-        this.$emit("clickNodeReslut", data);
+        console.log("click", data);
+        // this.$emit("clickNodeReslut", data);
       }
+    },
+    // 递归获取父节点
+    getParentNode(node) {
+      console.log("node", node);
+      const selectedLabelArray = [];
+      const recursionParent = node => {
+        if (!node.key) {
+          return;
+        }
+        selectedLabelArray.push(node.label);
+        recursionParent(node.parent);
+      };
     },
     /* 搜索关键字 */
     filterNode(value, data) {
@@ -179,10 +217,15 @@ export default {
           this.uniteChildSame(currentObj, false);
         }
       }
-      const checkedVal = this.$refs.menuTreeNode
-        .getCheckedKeys()
-        .concat(this.$refs.menuTreeNode.getHalfCheckedKeys());
-      this.$emit("passCheckedNode", checkedVal);
+      // const checkedVal = this.$refs.menuTreeNode
+      //   .getCheckedKeys()
+      //   .concat(this.$refs.menuTreeNode.getHalfCheckedKeys());
+      // this.$emit("passCheckedNode", checkedVal);
+      const checkedNode = this.$refs.menuTreeNode
+        .getCheckedNodes(false)
+        .concat(this.$refs.menuTreeNode.getHalfCheckedNodes(false));
+      // console.log("checkedNode", checkedNode);
+      this.$emit("passCheckedNode", checkedNode);
     },
     // 统一处理子节点为相同的勾选状态
     uniteChildSame(treeList, isSelected) {
@@ -252,7 +295,7 @@ export default {
     },
     /* 设置默认选中节点 */
     setDefaultChecked(checkedMemu) {
-      // console.log(255, checkedMemu);
+      console.log(255, checkedMemu);
       this.$refs.menuTreeNode.setCheckedKeys(checkedMemu);
     }
   }

@@ -23,6 +23,7 @@ export const clearFilterVal = (filterForm) => {
       filterForm[i].value = "";
     }
   }
+  return filterForm
 }
 /**
  * 过滤掉无值对象属性
