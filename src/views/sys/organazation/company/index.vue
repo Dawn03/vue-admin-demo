@@ -65,10 +65,11 @@
       :table-fit="tableFit"
       style="margin-top: 10px;"
       @requstLazyLoad="requstLazyLoad"
+      @loadSubTable="loadSubTable"
     >
       <template slot="companyName" slot-scope="scope">
         <span class="td-color" @click="companyEdit(scope.row, '编辑公司')">
-          {{ scope.row.companyName }}
+          ({{ scope.row.viewCode }}) {{ scope.row.companyName }}
         </span>
       </template>
       <template slot="area" slot-scope="scope">
@@ -85,7 +86,7 @@
             <el-button
               type="text"
               size="small"
-              @click="companyEdit(scope.row, '公司机构')"
+              @click="companyEdit(scope.row, '编辑公司')"
             >
               <i class="el-icon-edit" title="编辑"></i>
             </el-button>
@@ -101,7 +102,7 @@
                     : 'el-icon-circle-check'
                 ]"
                 :style="{
-                  color: [scope.row.status === '0' ? '#f00' : '#409EFF']
+                  color: [scope.row.status === '0' ? '#f00' : '#69aa46']
                 }"
                 :title="scope.row.status === '0' ? '正常' : '停用'"
               ></i>
@@ -141,6 +142,10 @@ export default {
   },
   data() {
     return {
+      params: {
+        status: "",
+        ctrlPermi: 2
+      },
       btnText: "查询",
       formInline: [
         {
@@ -189,7 +194,7 @@ export default {
   inject: ["reload"],
   created() {},
   mounted() {
-    this.init({});
+    this.init(this.params);
   },
   methods: {
     initPage() {
@@ -205,17 +210,20 @@ export default {
         this.tableData = res;
       });
     },
+    loadSubTable(param) {
+      console.log(21444, "收缩功能不知道怎么调用elementUI 的懒加载事件");
+    },
     // tree 懒加载
     requstLazyLoad(param) {
-      console.log(param);
+      console.log(214, param);
       const obj = {
         ctrlPermi: 2,
-        nodeid: param.tree.id,
-        parentCode: param.tree.id,
-        parentid: param.tree.parentCode,
-        n_level: param.tree.treeLevel,
-        _search: false,
-        status: ""
+        nodeid: param.tree.id, // "0_SCRH"
+        parentCode: param.tree.id, //
+        parentid: param.tree.parentCode, // 0
+        n_level: param.tree.treeLevel, // 0
+        _search: false, //
+        status: "" //
       };
       orgApi.getCompanyList(obj).then(res => {
         for (let i = 0, len = res.length; i < len; i++) {
@@ -259,13 +267,13 @@ export default {
     },
     refreshPage() {
       this.reload();
-      // this.$refs.theTable.expandFolodTable(this.tableData, false);
+      // this.$refs.theTable.expandFoldTable(this.tableData, false);
     },
     expandTable() {
-      this.$refs.theTable.expandFolodTable(this.tableData, true);
+      this.$refs.theTable.expandFoldTable(this.tableData, true, true);
     },
     foldTable() {
-      this.$refs.theTable.expandFolodTable(this.tableData, false);
+      this.$refs.theTable.expandFoldTable(this.tableData, false);
     },
     forArr(arr, isExpand) {
       arr.forEach(i => {
@@ -295,6 +303,7 @@ export default {
               if (res.result === "true") {
                 this.$message.success(res.message);
                 this.reload();
+                this.init(this.params);
               } else {
                 this.$message.waring(res.message);
               }
@@ -313,10 +322,7 @@ export default {
             })
             .then(res => {
               if (res.result === "true") {
-                this.init({
-                  status: "",
-                  ctrlPermi: 2
-                });
+                this.init(this.params);
                 this.$message.success(res.message);
               } else {
                 this.$message.waring(res.message);

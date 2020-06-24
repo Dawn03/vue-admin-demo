@@ -128,7 +128,7 @@
                     :table-data="employeeOfficeList"
                     :slot-columns="slotColumns"
                     :show-overflow="false"
-                    :default-height="100"
+                    :default-height="50"
                     :show-index="false"
                   >
                     <template slot="officeName" slot-scope="scope">
@@ -265,12 +265,12 @@ import TableTree from "@/components/tableTree";
 import ExtentionFeild from "@/components/extentionFeild";
 import ChooseMenuTree from "@/components/chooseMenuTree";
 import { returnReg } from "@/utils/validate";
-import { toTreeData, filterNokeyVal, stringVal } from "@/utils/pubFunc";
+import { filterNokeyVal, stringVal } from "@/utils/pubFunc";
 import { orgApi } from "@/api/organization";
 import { roleApi } from "@/api/role";
 import { pubApi } from "@/api/public_request";
 import AssignRoleDetail from "./assignRoleDetail";
-
+import { getOffceList, getCompanyList } from "@/js/publicData";
 export default {
   name: "UserEdit",
   components: {
@@ -395,10 +395,21 @@ export default {
         postCode: "附属岗位"
       },
       addCountIndex: 0,
-      roleChooseList: []
+      roleChooseList: [],
+      offceList: [],
+      companyList: []
     };
   },
-  mounted() {},
+  mounted() {
+    console.log(404);
+    getOffceList().then(res => {
+      this.offceList = res;
+    });
+
+    getCompanyList().then(res => {
+      this.companyList = res;
+    });
+  },
   methods: {
     /* 获取编辑详情 */
     /* 显示对话框 */
@@ -470,13 +481,14 @@ export default {
     },
     /* 获取归属机构列表 */
     getOfficeMenuTree() {
-      this.menuData = this.$store.state.publicData.officeList;
+      console.log(473, this.offceList);
+      this.menuData = this.offceList;
       this.innerDialogVisible = true;
     },
     /*  触发选择归属公司*/
     companyChoose() {
       this.menuTreeTitle = "归属公司选择";
-      this.menuData = this.$store.state.publicData.companyList;
+      this.menuData = this.companyList;
       this.innerDialogVisible = true;
     },
     /* 关闭选择归属机构或者归属公司 */
@@ -526,8 +538,9 @@ export default {
     /* 删除新增 */
     deleteAdd(row) {
       for (let i = 0, len = this.employeeOfficeList.length; i < len; i++) {
+        console.log(542, row);
         if (row.flagId === this.employeeOfficeList[i].flagId) {
-          this.employeeOfficeList.splice(this.employeeOfficeList[i], 1);
+          this.employeeOfficeList.splice(i, 1);
           return;
         }
       }

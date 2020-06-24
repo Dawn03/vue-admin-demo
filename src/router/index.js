@@ -122,9 +122,9 @@ export const constantRoutes = [{
             }
           },
           {
-            path: 'secondManage',
-            component: () => import('@/views/sys/role/secondManage'),
-            name: 'secondManage',
+            path: 'secAdmin',
+            component: () => import('@/views/sys/role/secAdmin'),
+            name: 'secAdmin',
             meta: {
               title: '二级管理员'
             }

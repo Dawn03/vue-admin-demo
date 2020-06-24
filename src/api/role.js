@@ -102,5 +102,11 @@ export const roleApi = {
     return httpRequestor.postFormData(`a/sys/role/deleteAuthUser`, param).catch(err => {
       Message.error(err)
     })
+  },
+  /* 二级管理员*/
+  getSecAdmin: (param) => {
+    return httpRequestor.post(`a/sys/secAdmin/listData`, param).catch(err => {
+      Message.error(err)
+    })
   }
 };

@@ -3,7 +3,7 @@
     <div class="current-type clearfix">
       <div class="fl">
         <i class="el-icon-user"></i>
-        <span>岗位管理</span>
+        <span>二级管理员</span>
       </div>
       <div class="fr">
         <el-button
@@ -25,11 +25,7 @@
       </div>
     </div>
     <div>
-      <InputFilter
-        :form-item="formInline"
-        class="search"
-        @statusValChange="statusValChange"
-      >
+      <InputFilter :form-item="formInline" class="search">
         <template slot="btnGroups">
           <el-button
             type="primary"
@@ -52,13 +48,10 @@
       :table-fit="tableFit"
       style="margin-top: 10px;"
     >
-      <template slot="postName" slot-scope="scope">
+      <template slot="loginCode" slot-scope="scope">
         <span class="td-color" @click="postEdit(scope.row, '编辑')">
-          {{ scope.row.postName }}
+          {{ scope.row.loginCode }}
         </span>
-      </template>
-      <template slot="postType" slot-scope="scope">
-        {{ swichText("sys_post_type", scope.row.postType, "未设置") }}
       </template>
       <template slot="status" slot-scope="scope">
         {{ swichText("sys_search_status", scope.row.status, "未设置") }}
@@ -81,13 +74,13 @@
                     : 'el-icon-circle-check'
                 ]"
                 :style="{
-                  color: [scope.row.status == '0' ? '#f00' : '#69aa46']
+                  color: [scope.row.status == '0' ? '#f00' : '#409EFF']
                 }"
                 :title="swichText('sys_search_status', scope.row.status, '')"
               ></i>
             </el-button>
             <el-button type="text" size="small" @click="deleteBtn(scope.row)">
-              <i class="el-icon-delete" style="color:#f00;" title="删除"></i>
+              <i class="el-icon-delete" title="删除"></i>
             </el-button>
           </template>
         </el-table-column>
@@ -107,7 +100,8 @@ import InputFilter from "@/components/inputFliter";
 import Pagination from "@/components/pagination";
 import AddAndEdit from "./addAndEdit";
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
-import { orgApi } from "@/api/organization";
+// import { orgApi } from "@/api/organization";
+import { roleApi } from "../../../../api/role";
 export default {
   name: "UserManage",
   inject: ["reload"],
@@ -124,22 +118,33 @@ export default {
       formInline: [
         {
           type: "input",
-          label: "岗位编码",
-          key: "postCode",
+          label: "登录账号",
+          key: "loginCode",
           value: ""
         },
         {
           type: "input",
-          label: "岗位名称",
-          key: "postName",
+          label: " 昵称",
+          key: "userName",
           value: ""
         },
         {
-          type: "select",
-          label: "岗位分类",
-          key: "postType",
-          value: "",
-          options: this.getPostOption("sys_post_type")
+          type: "input",
+          label: "邮箱",
+          key: "email",
+          value: ""
+        },
+        {
+          type: "input",
+          label: "手机",
+          key: "mobile",
+          value: ""
+        },
+        {
+          type: "input",
+          label: "电话",
+          key: "phone",
+          value: ""
         },
         {
           type: "select",
@@ -153,14 +158,14 @@ export default {
         updateDate: 130
         // email: 170
       },
-      slotColumns: ["postName", "postType", "status"],
+      slotColumns: ["loginCode", "status"],
       tableHead: {
-        postName: "岗位名称",
-        postCode: "岗位编码",
-        postSort: "排序号",
-        postType: "岗位分类",
+        loginCode: "登录账号",
+        userName: "用户昵称",
+        email: "电子邮箱",
+        mobile: "手机号码",
+        phone: "办公电话",
         updateDate: "更新时间",
-        remarks: "备注信息", // 无对应键名
         status: "状态" // status
       },
       tableData: [],
@@ -169,6 +174,9 @@ export default {
         pageSize: 20,
         pageNo: 1,
         status: ""
+        // postCode: "",
+        // postName_like: "",
+        // postType: ""
       },
       tableFit: true
     };
@@ -182,7 +190,7 @@ export default {
     },
     init(param) {
       // console.log(2222, param);
-      orgApi.getPostList(param).then(res => {
+      roleApi.getSecAdmin(param).then(res => {
         this.pageNation.total = res.count;
         this.tableData = res.list;
       });
@@ -255,18 +263,12 @@ export default {
       return dictTypeMap(type, val, other);
       // console.log(99, dictTypeMap(type, val, other));
     },
-    statusValChange(item) {
-      this.searchBtn();
-    },
     /* 获取填入输入框的值  */
     searchBtn(data = {}) {
-      const obj = {
-        total: this.pageNation.total,
-        pageSize: this.pageNation.pageSize,
-        pageNo: this.pageNation.pageNo,
-        status: ""
-      };
-      const valObj = Object.assign(obj, getInputVal(this.formInline));
+      const valObj = Object.assign(
+        this.pageNation,
+        getInputVal(this.formInline)
+      );
       this.init(valObj);
     },
     /* 清除输入框内的值 */

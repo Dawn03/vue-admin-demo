@@ -80,7 +80,8 @@ export default {
   },
   methods: {
     changeResult(val, item) {
-      this.$emit("statusValChange", val, item);
+      // console.log(83, val, item);
+      this.$emit("statusValChange", item);
     },
     showChoosePanel(item) {
       //   console.log(2343);

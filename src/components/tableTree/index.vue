@@ -123,11 +123,14 @@ export default {
         // console.log("清空checkedbox", rows);
       }
     },
-    expandFolodTable(arr, isExpand) {
+    expandFoldTable(arr, isExpand, flag = false) {
       arr.forEach(i => {
         this.$refs.tableDom.toggleRowExpansion(i, isExpand);
+        if (flag) {
+          this.$emit("loadSubTable", i);
+        }
         if (i.children) {
-          this.expandFolodTable(i.children, isExpand);
+          this.expandFoldTable(i.children, isExpand);
         }
       });
     },

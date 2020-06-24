@@ -119,7 +119,7 @@ export default {
     return {
       showKeyVal: true,
       display: "block",
-      expandAll: false
+      expandAll: true
     };
   },
   computed: {
@@ -167,8 +167,9 @@ export default {
     },
     // 设置默认选中
     setDefaultChecked(tree) {
-      console.log(170, tree, this.checkedMemu);
-      this.$refs.menuTreeDom.setDefaultChecked(this.checkedMemu);
+      // "CDYL01", "CDYL02"
+      console.log(170, "设置回显", tree, this.checkedMemu);
+      this.$refs.menuTreeDom.setDefaultChecked(tree);
     }
   }
 };

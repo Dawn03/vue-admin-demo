@@ -82,6 +82,7 @@
               v-show="it.addIcon"
               :slot="it.slotPosition"
               :icon="it.iconType"
+              @click="btnClick(it.prop, 'iconType')"
             ></el-button>
           </component>
         </el-form-item>
@@ -156,11 +157,11 @@ export default {
   computed: {
     newFormValue: {
       get: function() {
-        console.log("get", this.formValue);
+        console.log(222, "get", this.formValue);
         return this.formValue;
       },
       set: function(value) {
-        console.log("set", this.formValue);
+        console.log(333, "set", this.formValue);
         this.$emit("update:formValue", value);
       }
     }
@@ -204,6 +205,12 @@ export default {
       //   console.log(obj)
       //   return obj
       // }
+    },
+    /* 点击带图标的input 触发事件 ， iconType 设置触发icon点击事件类型  */
+    btnClick(keyName, iconType) {
+      if (iconType === "inputSearch") {
+        this.focus({}, keyName);
+      }
     },
     focus(event, keyName) {
       console.log(240, event, keyName);

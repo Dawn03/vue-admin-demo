@@ -137,7 +137,7 @@ export const orgApi = {
   },
   /* 删除公司管理列表*/
   deleteCompany: (param) => {
-    return httpRequestor.post(`/a/sys/company/delete`, param).catch(err => {
+    return httpRequestor.post(`/a/sys/company/delete?companyCode=${param.companyCode}`, param).catch(err => {
       Message.error(err)
     })
   },
@@ -178,9 +178,21 @@ export const orgApi = {
       Message.error(err)
     })
   },
+  /* 初始化新增岗位管*/
+  deletePost: (param) => {
+    return httpRequestor.post(`/a/sys/post/delete?postCode=${param.postCode}`).catch(err => {
+      Message.error(err)
+    })
+  },
   /* 保存编辑结果*/
   saveEdit: (param) => {
     return httpRequestor.postFormData(`/a/sys/post/save`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 初始化新增岗位管*/
+  stopUsePost: (param) => {
+    return httpRequestor.post(`/a/sys/post/${param.stopOrStart}?postCode=${param.postCode}`).catch(err => {
       Message.error(err)
     })
   }
