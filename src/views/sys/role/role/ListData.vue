@@ -64,13 +64,11 @@
         {{ swichText("sys_role_biz_scope", scope.row.bizScope, "") }}
       </template>
       <template slot="statusText" slot-scope="scope">
-        <el-button
-          size="mini"
-          :type="scope.row.statusText === '正常' ? 'success' : 'danger'"
-          round
+        <span
+          :style="[{ color: scope.row.statusText === '正常' ? ' ' : 'red' }]"
         >
           {{ scope.row.statusText }}
-        </el-button>
+        </span>
       </template>
       <template slot="operate">
         <el-table-column fixed="right" label="操作" width="120" align="center">

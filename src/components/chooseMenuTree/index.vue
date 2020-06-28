@@ -1,4 +1,4 @@
-/*带搜索图标输入框的选择弹窗模板 弹窗嵌套弹窗 背景遮罩问题 单独写*/
+/*带搜索图标输入框的选择弹窗模板 弹窗嵌套弹窗 背景遮罩问题 单独写 :modal-append-to-body="false"*/
 <template>
   <div class="inner-dailog-box">
     <el-dialog
@@ -169,7 +169,9 @@ export default {
     setDefaultChecked(tree) {
       // "CDYL01", "CDYL02"
       console.log(170, "设置回显", tree, this.checkedMemu);
-      this.$refs.menuTreeDom.setDefaultChecked(tree);
+      this.$nextTick(() => {
+        this.$refs.menuTreeDom.setDefaultChecked(tree);
+      });
     }
   }
 };

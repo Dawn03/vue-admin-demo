@@ -135,7 +135,7 @@ export default {
         fullName: "",
         treeSort: "",
         updateDate: "",
-        retmarks: ""
+        remarks: ""
       },
       componentList: [
         {
@@ -356,28 +356,31 @@ export default {
             this.checkedMemu = includCode;
             this.companyForm.remarks = row.remarks;
             // console.log(includCode)
-            this.$refs.chooseMenuTree.setDefaultChecked(includCode);
+            // this.$refs.chooseMenuTree.setDefaultChecked(includCode);
           });
       }
     },
     focusIt(keyName) {
-      // console.log(23, keyName);
+      // this.innerDialogVisible = true;
+      this.innerDialogVisible = true;
       this.$nextTick(() => {
         if (keyName === "superCompanyName") {
-          this.innerDialogVisible = true;
           this.showCheckbox = false;
           this.getCompanyMenuTree();
           this.chooseTypePanel = "superCompanyName";
         } else if (keyName === "areaName") {
-          this.innerDialogVisible = true;
+          // this.innerDialogVisible = true;
           this.showCheckbox = false;
           this.getAreaMenuTree();
           this.chooseTypePanel = "areaName";
         } else if (keyName === "companyOfficeListJson") {
-          this.innerDialogVisible = true;
+          // this.innerDialogVisible = true;
           this.showCheckbox = true;
           this.getOfficeMenuTree();
           this.chooseTypePanel = "companyOfficeListJson";
+          this.$refs.chooseMenuTree.setDefaultChecked(
+            this.companyForm.companyOfficeListJsonId
+          );
         }
       });
     },
@@ -391,6 +394,7 @@ export default {
       pubApi.getCompanyMenuTree().then(res => {
         this.menuData = toTreeData(res, attributes);
         this.companyListOrg = toTreeData(res, attributes);
+        // this.innerDialogVisible = true;
       });
     },
     getAreaMenuTree() {
@@ -428,7 +432,7 @@ export default {
         }
       }
       this.companyForm.companyOfficeListJson = labelArr.join(",");
-      this.companyForm.companyOfficeListJsonId = idArr.join(",");
+      this.companyForm.companyOfficeListJsonId = idArr;
       console.log("复选框中的值", val);
     },
     /* 菜单树中当前点击的树节点*/
@@ -468,7 +472,6 @@ export default {
 
     /* 提交 */
     submitForm(formName) {
-      // console.log(3, this.companyForm);
       this.$refs[formName].validate(valid => {
         if (valid) {
           const obj = {};
@@ -481,9 +484,9 @@ export default {
           obj.fullName = this.companyForm.fullName;
           obj.treeSort = this.companyForm.treeSort;
           obj.remarks = this.companyForm.remarks;
-          // obj.companyOfficeListJson = JSON.stringify([this.companyForm.companyOfficeListJsonId]);
-          obj.companyOfficeListJson = this.companyForm.companyOfficeListJsonId;
-          console.log(this.companyForm.companyOfficeListJsonId);
+          obj.companyOfficeListJson = JSON.stringify(
+            this.companyForm.companyOfficeListJsonId
+          );
           obj["extend.extendS1"] = this.extend.extendS1;
           obj["extend.extendS2"] = this.extend.extendS2;
           obj["extend.extendS3"] = this.extend.extendS3;
