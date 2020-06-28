@@ -59,11 +59,6 @@
                 <i v-show="changeArrowDirection" class="el-icon-arrow-down"></i>
                 <i v-show="!changeArrowDirection" class="el-icon-arrow-up"></i>
               </el-button>
-              <!-- <ul>
-                <li>分配角色</li>
-                <li>数据权限</li>
-                <li>重置密码</li>
-              </ul> -->
             </template>
           </el-table-column>
         </template>

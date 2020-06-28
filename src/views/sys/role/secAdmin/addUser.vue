@@ -8,7 +8,11 @@
       @closeDialog="closeDialog"
     >
       <template slot="content">
-        <InputFliter :form-item="formInline" style="margin-bottom: 10px;">
+        <InputFliter
+          :form-item="formInline"
+          style="margin-bottom: 10px;"
+          @searchBtn="searchBtn"
+        >
           <template slot="btnGroups">
             <el-button
               type="primary"
@@ -28,11 +32,12 @@
               :table-head="tableHead"
               :table-data="tableData"
               :slot-columns="slotColumns"
-              @tableCheckBox="tableCheckBox"
+              @rowClick="rowClick"
+              @rowDblclick="rowDblclick"
             >
-              <template slot="chechbox">
+              <!-- <template slot="chechbox">
                 <el-table-column type="selection" width="40"></el-table-column>
-              </template>
+              </template> -->
               <template slot="status" slot-scope="scope">
                 <span
                   :style="[
@@ -61,7 +66,7 @@
                 closable
                 @close="handleClose(tag)"
               >
-                {{ tag.loginCode }}
+                {{ tag.userName }}
               </el-tag>
             </div>
           </el-col>
@@ -163,7 +168,8 @@ export default {
     };
   },
   methods: {
-    show(row) {
+    show(row, type) {
+      console.log(172, type);
       this.currentRow = row;
       this.init(this.pageNation);
       this.showDailog = true;
@@ -187,8 +193,17 @@ export default {
       this.init(searchObj);
       console.log(searchObj);
     },
-    tableCheckBox(row) {
-      this.tableCheckBoxValue = row;
+    rowClick(row) {
+      this.tableCheckBoxValue = [];
+      this.tableCheckBoxValue.push(row);
+    },
+    rowDblclick(row) {
+      this.saveBtn()
+    },
+    /*  关闭当前选中 跳转到 编辑页 */
+    saveBtn() {
+      this.$emit("addUserVal", this.tableCheckBoxValue);
+      this.showDailog = false;
     },
     /* 取消已经选择tag */
     handleClose(tag) {
@@ -198,35 +213,7 @@ export default {
       );
       this.$refs.tableDomTree.cancleChecked(closedTag);
     },
-    saveBtn() {
-      const obj = {
-        roleCode: this.currentRow.roleCode,
-        userRoleString: []
-      };
-      const temp = this.tableCheckBoxValue;
-      if (temp.length === 1) {
-        obj.userRoleString = temp[0].id;
-      }
-      if (temp.length > 1) {
-        const idArr = [];
-        for (let i = 0, len = temp.length; i < len; i++) {
-          idArr.push(temp[i].id);
-        }
-        obj.userRoleString = idArr;
-      }
-      roleApi.saveAuthUser(obj).then(res => {
-        if (res.result === "true") {
-          this.$message.success(res.message);
-          this.closeDialog();
-          this.$emit("reloadPage");
-        } else {
-          this.$message.error(res.message);
-        }
-      });
-      console.log(this.tableCheckBoxValue);
-    },
     currentChange(val) {
-      console.log(220, this.pageNation.stauts);
       this.pageNation.pageNo = val;
       this.init(this.pageNation);
     },

@@ -253,3 +253,14 @@ export const dictTypeMap = (type, val, other) => {
   //   wf_frm_type: "表单类型"
   // }
 }
+/*  */
+export const resetVal = (arr, ctrlType) => {
+  const result = [];
+  for (let i = 0, len = arr.length; i < len; i++) {
+    result.push({
+      ctrlType,
+      ctrlData: arr[i].id ? arr[i].id : arr[i]
+    });
+  }
+  return result;
+}

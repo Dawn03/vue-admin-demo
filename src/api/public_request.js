@@ -44,5 +44,11 @@ export const pubApi = {
     return httpRequestor.post(`/a/sys/area/treeData`, param).catch(err => {
       Message.error(err)
     })
+  },
+  /* 获取角色*/
+  getRoleMenuTree: (param) => {
+    return httpRequestor.post(`/a/sys/role/treeData`, param).catch(err => {
+      Message.error(err)
+    })
   }
 };

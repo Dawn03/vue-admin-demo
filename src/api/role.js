@@ -104,8 +104,27 @@ export const roleApi = {
     })
   },
   /* 二级管理员*/
+  /* 获取列表 */
   getSecAdmin: (param) => {
-    return httpRequestor.post(`a/sys/secAdmin/listData`, param).catch(err => {
+    return httpRequestor.postFormData(`a/sys/secAdmin/listData`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 删除二级列表*/
+  deleteSecAdmin: (param) => {
+    return httpRequestor.post(`a/sys/secAdmin/delete?userCode=${param.userCode}`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 编辑初始化页面*/
+  editInitSecAdmin: (param) => {
+    return httpRequestor.post(`a/sys/secAdmin/form.json?userCode=${param.userCode}`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 编辑保存*/
+  saveSecAdmin: (param) => {
+    return httpRequestor.postFormData(`a/sys/secAdmin/save`, param).catch(err => {
       Message.error(err)
     })
   }

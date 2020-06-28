@@ -137,7 +137,7 @@ export default {
         fnEmitDblClick();
       } else {
         console.log("click", data);
-        // this.$emit("clickNodeReslut", data);
+        this.$emit("clickNodeReslut", data);
       }
     },
     // 递归获取父节点

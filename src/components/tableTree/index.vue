@@ -16,6 +16,8 @@
       :empty-text="'暂无数据'"
       :select-on-indeterminate="selectOnIndeterminate"
       @selection-change="handleSelectionChange"
+      @row-click="rowClick"
+      @row-dblclick="rowDblclick"
     >
       >
       <slot name="chechbox"></slot>
@@ -97,6 +99,14 @@ export default {
     load(tree, treeNode, resolve) {
       console.log(tree, treeNode);
       this.$emit("requstLazyLoad", { tree, resolve });
+    },
+    /* row单击  */
+    rowClick(row, column, event) {
+      this.$emit("rowClick", row);
+    },
+    /* row双击  */
+    rowDblclick(row, column, event) {
+      this.$emit("rowDblclick", row);
     },
     handleSelectionChange(val) {
       console.log("tableCheckBox", val);

@@ -88,13 +88,13 @@ export default {
         };
         const treeData = toTreeData(res, attributes);
         this.instMenuData = treeData;
-
         this.defaultExpand = treeData[0].id;
         // console.log("treeData", this.defaultExpand, treeData);
       });
     },
     // 双击树节点获取数据查询结果
     clickNodeReslut(data) {
+      console.log(222);
       this.$refs.userRight.searchBtn(data);
       console.log("左侧树节点双击", data);
     }

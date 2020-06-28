@@ -56,9 +56,11 @@
               <el-table-column type="selection" width="40"></el-table-column>
             </template>
             <template slot="status" slot-scope="scope">
-              <el-button size="mini" type="success" round>
-                {{ scope.row.status }}
-              </el-button>
+              <span
+                :style="[{ color: scope.row.status === '0' ? '#000' : '#f00' }]"
+              >
+                {{ swichText("sys_search_status", scope.row.status, "") }}
+              </span>
             </template>
             <template slot="operate">
               <el-table-column
@@ -98,7 +100,7 @@ import DailogFrame from "@/components/dailogPanel/frame";
 import TableTree from "@/components/tableTree";
 import InputFliter from "@/components/inputFliter";
 import AddUserPanel from "./addUserPanel";
-import { clearFilterVal, getInputVal } from "@/utils/pubFunc";
+import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
 import Pagination from "@/components/pagination";
 import { roleApi } from "@/api/role";
 export default {
@@ -117,7 +119,7 @@ export default {
         pageNo: 1,
         pageSize: 20,
         ctrlPermi: 2,
-        status: ""
+        status: "0"
       },
       showAssginRole: false,
       roleForm: {
@@ -240,6 +242,11 @@ export default {
     resetForm() {
       this.getFormAuthUser({});
       clearFilterVal(this.formInline);
+    },
+    /* 列表文本转义 */
+    swichText(type, val, other) {
+      return dictTypeMap(type, val, other);
+      // console.log(99, dictTypeMap(type, val, other));
     },
     /* 单个取消 */
     singleCancel(row) {

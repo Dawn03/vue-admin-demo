@@ -14,6 +14,7 @@
           :style="{
             width: item.width ? `${item.width}px` : `${defaultWidth}px`
           }"
+          @keyup.enter.native="searchBtn"
         ></el-input>
         <!-- 下拉选择框 -->
         <el-select
@@ -79,6 +80,9 @@ export default {
     }
   },
   methods: {
+    searchBtn() {
+      this.$emit("searchBtn");
+    },
     changeResult(val, item) {
       // console.log(83, val, item);
       this.$emit("statusValChange", item);

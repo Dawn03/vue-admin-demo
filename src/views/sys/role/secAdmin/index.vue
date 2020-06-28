@@ -25,7 +25,11 @@
       </div>
     </div>
     <div>
-      <InputFilter :form-item="formInline" class="search">
+      <InputFilter
+        :form-item="formInline"
+        class="search"
+        @searchBtn="searchBtn"
+      >
         <template slot="btnGroups">
           <el-button
             type="primary"
@@ -49,7 +53,7 @@
       style="margin-top: 10px;"
     >
       <template slot="loginCode" slot-scope="scope">
-        <span class="td-color" @click="postEdit(scope.row, '编辑')">
+        <span class="td-color" @click="secAdminEdit(scope.row, '编辑')">
           {{ scope.row.loginCode }}
         </span>
       </template>
@@ -62,11 +66,11 @@
             <el-button
               type="text"
               size="small"
-              @click="postEdit(scope.row, '编辑')"
+              @click="secAdminEdit(scope.row, '编辑')"
             >
               <i class="el-icon-edit" title="编辑"></i>
             </el-button>
-            <el-button type="text" size="small" @click="stopUsePost(scope.row)">
+            <!-- <el-button type="text" size="small" @click="stopUsePost(scope.row)">
               <i
                 :class="[
                   scope.row.status === '0'
@@ -78,9 +82,9 @@
                 }"
                 :title="swichText('sys_search_status', scope.row.status, '')"
               ></i>
-            </el-button>
+            </el-button> -->
             <el-button type="text" size="small" @click="deleteBtn(scope.row)">
-              <i class="el-icon-delete" title="删除"></i>
+              <i style="color:red;" class="el-icon-delete" title="删除"></i>
             </el-button>
           </template>
         </el-table-column>
@@ -91,14 +95,16 @@
       :page-size="pageNation.pageSize"
       @currentChange="currentChange"
     ></Pagination>
-    <AddAndEdit ref="postEditPanel" @initPage="initPage"></AddAndEdit>
+    <SecAdminEdit ref="secAdminEditPanel" @initPage="initPage"></SecAdminEdit>
+    <AddUser ref="secAdminAddUser" @addUserVal="addUserVal"></AddUser>
   </div>
 </template>
 <script>
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
 import Pagination from "@/components/pagination";
-import AddAndEdit from "./addAndEdit";
+import SecAdminEdit from "./secAdminEdit";
+import AddUser from "./addUser";
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
 // import { orgApi } from "@/api/organization";
 import { roleApi } from "../../../../api/role";
@@ -109,7 +115,8 @@ export default {
     TableTree,
     InputFilter,
     Pagination,
-    AddAndEdit
+    SecAdminEdit,
+    AddUser
   },
   data() {
     return {
@@ -120,43 +127,48 @@ export default {
           type: "input",
           label: "登录账号",
           key: "loginCode",
-          value: ""
+          value: "",
+          width: "100"
         },
         {
           type: "input",
           label: " 昵称",
           key: "userName",
-          value: ""
+          value: "",
+          width: "100"
         },
         {
           type: "input",
           label: "邮箱",
           key: "email",
-          value: ""
+          value: "",
+          width: "100"
         },
         {
           type: "input",
           label: "手机",
           key: "mobile",
-          value: ""
+          value: "",
+          width: "100"
         },
         {
           type: "input",
           label: "电话",
           key: "phone",
-          value: ""
+          value: "",
+          width: "100"
         },
         {
           type: "select",
           label: "状态",
           options: this.getStatusOption("sys_search_status"),
           key: "status",
-          value: ""
+          value: "",
+          width: "100"
         }
       ],
       columnWidths: {
         updateDate: 130
-        // email: 170
       },
       slotColumns: ["loginCode", "status"],
       tableHead: {
@@ -244,8 +256,8 @@ export default {
       this.$alertMsgBox(`此操作将永久删除该文件, 是否继续?`, "提示")
         .then(() => {
           orgApi
-            .deletePost({
-              postCode: row.postCode
+            .deleteSecAdmin({
+              userCode: row.userCode
             })
             .then(res => {
               if (res.result === "true") {
@@ -265,10 +277,13 @@ export default {
     },
     /* 获取填入输入框的值  */
     searchBtn(data = {}) {
-      const valObj = Object.assign(
-        this.pageNation,
-        getInputVal(this.formInline)
-      );
+      // this.pageNation
+      const obj = {
+        pageSize: this.pageNation.pageSize,
+        pageNo: 1,
+        status: ""
+      };
+      const valObj = Object.assign(obj, getInputVal(this.formInline));
       this.init(valObj);
     },
     /* 清除输入框内的值 */
@@ -288,11 +303,15 @@ export default {
       this.init(obj);
     },
     /* 编辑表格 */
-    postEdit(row, type) {
-      this.$refs.postEditPanel.show(row, type);
+    secAdminEdit(row, type) {
+      this.$refs.secAdminEditPanel.show(row, type);
     },
     addNew(row, type) {
-      this.$refs.postEditPanel.show(row, type);
+      this.$refs.secAdminAddUser.show(row, type);
+    },
+    /* 选中的用户 */
+    addUserVal(row) {
+      this.$refs.secAdminEditPanel.show(row[0], "编辑");
     }
   }
 };
