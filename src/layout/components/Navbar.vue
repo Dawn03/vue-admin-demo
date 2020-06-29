@@ -1,5 +1,6 @@
 <template>
   <div class="navbar">
+
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
@@ -11,7 +12,7 @@
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
             <el-dropdown-item >
-              Home 
+              Home
             </el-dropdown-item>
           </router-link>
           <a
@@ -38,18 +39,19 @@
 <script>
 import { mapGetters } from "vuex";
 import Breadcrumb from "@/components/Breadcrumb";
-
+import Hamburger from "@/components/Hamburger";
 export default {
   components: {
-    Breadcrumb
+    Breadcrumb,
+    Hamburger
   },
   computed: {
     ...mapGetters(["sidebar", "avatar"])
   },
   methods: {
-    // toggleSideBar() {
-    //   this.$store.dispatch('app/toggleSideBar')
-    // },
+    toggleSideBar() {
+      this.$store.dispatch("app/toggleSideBar");
+    },
     async logout() {
       await this.$store.dispatch("user/logout");
       this.$router.push(`/login?redirect=${this.$route.fullPath}`);

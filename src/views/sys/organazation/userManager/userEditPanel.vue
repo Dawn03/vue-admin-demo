@@ -605,6 +605,32 @@ export default {
               this.$emit("initListPage");
             }
           });
+          /* postFromData 提交方式保存有问题 */
+          //   for (const key in this.extend) {
+          //   obj["extend." + key] = this.extend[key];
+          // }
+          // obj.op = this.userForm.op;
+          // obj.userType = this.userForm.userType;
+          // obj.userCode = this.userForm.userCode;
+          // obj.oldLoginCode = this.userForm.oldLoginCode;
+          // obj.loginCode = this.userForm.loginCode;
+          // obj.userName = this.userForm.userName;
+          // obj.email = this.userForm.email;
+          // obj.mobile = this.userForm.mobile;
+          // obj.phone = this.userForm.phone;
+          // obj.userWeight = this.userForm.userWeight;
+          // obj.remarks = this.userForm.remarks;
+          // obj["employee.office.officeCode"] = this.userForm.officeCode;
+          // obj["employee.office.officeName"] = this.userForm.officeName;
+          // obj["employee.company.companyName"] = this.userForm.companyName;
+          // obj["employee.company.companyCode"] = this.userForm.companyCode;
+          // obj["employee.empNo"] = this.userForm.empNo;
+          // obj["employee.empName"] = this.userForm.empName;
+          // obj["employee.employeePosts"] =
+          //   JSON.stringify(this.employeePosts) || [];
+          // obj["employee.empNameEn"] = this.userForm.empNameEn;
+          // obj["employee.employeeOfficeList"] =
+          //   JSON.stringify(this.employeeOfficeList) || [];
         } else {
           console.log("error submit!!");
           return false;

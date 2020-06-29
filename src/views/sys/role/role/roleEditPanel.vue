@@ -285,12 +285,6 @@ export default {
       // 监听到数据变化时立即调用
       immediate: true
     }
-    // "form.extend": {
-    //   immediate: true,
-    //   handler: function(val) {
-    //     this.init();
-    //   }
-    // }
   },
   mounted() {},
   methods: {
@@ -308,18 +302,20 @@ export default {
       this.titleName = type;
       if (type === "编辑角色") {
         this.componentList[2].disabled = true;
-        roleApi.editAndAddRole({ roleCode: row.roleCode, op: "edit" }).then(res => {
-          this.form.roleName = res.role.roleName;
-          this.form.oldRoleName = res.role.roleName;
-          this.form.roleCode = res.role.roleCode;
-          this.form.roleSort = res.role.roleSort;
-          this.form.userType = res.role.userType;
-          this.form.isSys = res.role.isSys;
-          this.form.roleType = res.role.roleType;
-          this.form.remarks = res.role.remarks;
-          this.extend = formExtendMap(this.extend, res.role.extend);
-          this.showEditDailog = true;
-        });
+        roleApi
+          .editAndAddRole({ roleCode: row.roleCode, op: "edit" })
+          .then(res => {
+            this.form.roleName = res.role.roleName;
+            this.form.oldRoleName = res.role.roleName;
+            this.form.roleCode = res.role.roleCode;
+            this.form.roleSort = res.role.roleSort;
+            this.form.userType = res.role.userType;
+            this.form.isSys = res.role.isSys;
+            this.form.roleType = res.role.roleType;
+            this.form.remarks = res.role.remarks;
+            this.extend = formExtendMap(this.extend, res.role.extend);
+            this.showEditDailog = true;
+          });
       }
       if (type === "新增角色") {
         this.getAuthorizeData();

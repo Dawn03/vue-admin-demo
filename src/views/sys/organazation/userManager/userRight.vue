@@ -88,14 +88,9 @@
         </span>
       </template>
       <template slot="statusText" slot-scope="scope">
-        <!-- <el-button round type="success" size="mini"> -->
-        <el-button
-          round
-          :type="scope.row.status === '0' ? 'success' : 'danger'"
-          size="mini"
-        >
+        <span :style="[{ color: scope.row.status === '0' ? '#000' : '#f00' }]">
           {{ scope.row.statusText }}
-        </el-button>
+        </span>
       </template>
       <template slot="operate">
         <el-table-column fixed="right" label="操作" width="120" align="center">

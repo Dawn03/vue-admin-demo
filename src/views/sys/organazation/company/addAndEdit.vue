@@ -487,26 +487,9 @@ export default {
           obj.companyOfficeListJson = JSON.stringify(
             this.companyForm.companyOfficeListJsonId
           );
-          obj["extend.extendS1"] = this.extend.extendS1;
-          obj["extend.extendS2"] = this.extend.extendS2;
-          obj["extend.extendS3"] = this.extend.extendS3;
-          obj["extend.extendS4"] = this.extend.extendS4;
-          obj["extend.extendS5"] = this.extend.extendS5;
-          obj["extend.extendS6"] = this.extend.extendS6;
-          obj["extend.extendS7"] = this.extend.extendS7;
-          obj["extend.extendS8"] = this.extend.extendS8;
-          obj["extend.extendI1"] = this.extend.extendI1;
-          obj["extend.extendI2"] = this.extend.extendI2;
-          obj["extend.extendI3"] = this.extend.extendI3;
-          obj["extend.extendI4"] = this.extend.extendI4;
-          obj["extend.extendF1"] = this.extend.extendF1;
-          obj["extend.extendF2"] = this.extend.extendF2;
-          obj["extend.extendF3"] = this.extend.extendF3;
-          obj["extend.extendF4"] = this.extend.extendF4;
-          obj["extend.extendD1"] = this.extend.extendD1;
-          obj["extend.extendD2"] = this.extend.extendD2;
-          obj["extend.extendD3"] = this.extend.extendD3;
-          obj["extend.extendD4"] = this.extend.extendD4;
+          for (const key in this.extend) {
+            obj["extend." + key] = this.extend[key];
+          }
           if (this.titleType === "新增公司") {
             obj.isNewRecord = true;
           } else {
