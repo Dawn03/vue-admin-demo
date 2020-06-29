@@ -325,6 +325,11 @@ export default {
       // this.form.isSys = "0";
       if (type === "新增角色") {
         this.getAuthorizeData();
+        roleApi.addRolInit().then(res => {
+          this.form.roleSort = res.role.roleSort;
+          this.form.isSys = res.role.isSys;
+          this.form.userType = res.role.userType;
+        });
         this.componentList[2].disabled = false;
         this.showEditDailog = true;
         this.form.oldRoleName = "";
@@ -384,7 +389,6 @@ export default {
           break;
       }
     },
-
     changeSystem(val) {
       // this.roleForm.isSys = val;
       console.log(272, val);

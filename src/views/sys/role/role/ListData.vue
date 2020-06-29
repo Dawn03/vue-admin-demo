@@ -284,14 +284,12 @@ export default {
     };
   },
   mounted() {
-    console.log(168, JSON.parse(sessionStorage.getItem("allDicType")));
     /* 获取用户类型 */
     //  this.dictTypeFunc({
     //     dictType: "sys_user_type",
     //     status: ""
     //   });
     this.$nextTick(() => {
-      // console.log(777, dictTypeMap('sys_office_type', '1'));
       this.dictTypeFunc({
         dictType: "sys_user_type",
         status: ""
@@ -491,7 +489,7 @@ export default {
         pageSize: this.pageNation.pageSize,
         pageNo: this.pageNation.pageNo,
         ctrlPermi: this.pageNation.ctrlPermi,
-        status: this.pageNation.stauts
+        status: this.pageNation.status
       });
     },
     checkTreeVal(param) {
