@@ -39,7 +39,7 @@ export const roleApi = {
   },
   /* 新增角色  &  保存授权功能菜单数据  //postFormData*/
   addRole: (param) => {
-    return httpRequestor.post(`a/sys/role/save`, param).catch(err => {
+    return httpRequestor.postFormData(`a/sys/role/save`, param).catch(err => {
       Message.error(err)
     })
   },

@@ -319,7 +319,6 @@ export default {
           this.form.remarks = res.role.remarks;
           this.extend = formExtendMap(this.extend, res.role.extend);
           this.showEditDailog = true;
-          console.log(345, res);
         });
       }
       // this.roleForm = row;
@@ -358,7 +357,7 @@ export default {
     /* 获取授权菜单 */
     getAuthorizeData() {
       roleApi.getAuthorizeData({ roleCode: "" }).then(res => {
-        console.log(359, res);
+        console.log(359, "获取授权菜单", res);
         const attributes = {
           id: "id",
           parentId: "pId",
@@ -369,16 +368,19 @@ export default {
       });
     },
     checkTreeVal(param) {
-      console.log(259, param);
+      const idArr = [];
+      for (let i = 0, len = param.val.length; i < len; i++) {
+        idArr.push(param.val[i].id);
+      }
       switch (param.current) {
         case 1:
-          this.checkTree1 = param.val || [];
+          this.checkTree1 = idArr || [];
           break;
         case 2:
-          this.checkTree2 = param.val || [];
+          this.checkTree2 = idArr || [];
           break;
         case 3:
-          this.checkTree3 = param.val || [];
+          this.checkTree3 = idArr || [];
           break;
       }
     },
@@ -390,7 +392,6 @@ export default {
     /* 提交 */
     submitForm(formName) {
       console.log(397, this.checkTree1);
-      // return;
       this.$refs[formName].validate(valid => {
         if (valid) {
           const obj = {};
@@ -401,7 +402,9 @@ export default {
             obj.op = "edit";
             obj.isNewRecord = false;
           }
-          obj.extend = this.extend;
+          for (const key in this.extend) {
+            obj["extend." + key] = this.extend[key];
+          }
           obj.oldRoleName = this.form.oldRoleName;
           obj.roleName = this.form.roleName;
           obj.roleCode = this.form.roleCode;
@@ -411,16 +414,13 @@ export default {
           obj.roleType = this.form.roleType;
           obj.remarks = this.form.remarks;
           /* roleMenuListJson 新增时候的授权列表["1244877435923841024","1244877436259385344"]*/
-          // obj.roleMenuListJson = JSON.stringify(this.checkTree1);
-          obj.roleMenuListJson = this.checkTree1;
-          // return;
+          obj.roleMenuListJson = JSON.stringify(this.checkTree1);
           // if (this.checkTree2.length) {
           //   obj.roleMenuListJson = this.checkTree1.concat(this.checkTree2);
           // }
           // if (this.checkTree3.length) {
           //   obj.roleMenuListJson = this.checkTree1.concat(this.checkTree3);
           // }
-
           roleApi.addRole(obj).then(res => {
             if (res.result === "true") {
               this.$message.success(res.message);

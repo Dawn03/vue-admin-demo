@@ -204,6 +204,8 @@ export default {
     },
     /* 保存 */
     saveDataRights() {
+      console.log(207, this.roleMenuListJson);
+      return;
       const obj = {
         op: "auth",
         oldRoleName: this.currentRow.roleName,

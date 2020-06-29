@@ -320,20 +320,23 @@ export default {
         label: "name",
         rootId: "0"
       };
-      pubApi.getCompanyMenuTree().then(res => {
-        this.companyMenuData = toTreeData(res, attributes);
-        if (this.companyCheckedArr.length === res.length) {
-          this.isIndeterminate2 = false;
-          this.checkAll2 = true;
-        } else if (this.companyMenuData === 0) {
-          this.isIndeterminate2 = false;
-          this.checkAll2 = false;
-        } else {
-          this.isIndeterminate2 = true;
-          this.checkAll2 = false;
-        }
-        console.log(222);
-        // this.innerDialogVisible = true;
+      return new Promise((resolve, reject) => {
+        pubApi.getCompanyMenuTree().then(res => {
+          this.companyMenuData = toTreeData(res, attributes);
+          if (this.companyCheckedArr.length === res.length) {
+            this.isIndeterminate2 = false;
+            this.checkAll2 = true;
+          } else if (this.companyMenuData === 0) {
+            this.isIndeterminate2 = false;
+            this.checkAll2 = false;
+          } else {
+            this.isIndeterminate2 = true;
+            this.checkAll2 = false;
+          }
+          console.log(222);
+          resolve(res);
+          // this.innerDialogVisible = true;
+        });
       });
     },
     /* 获取全部机构 */
@@ -344,23 +347,27 @@ export default {
         label: "name",
         rootId: "0"
       };
-      pubApi.getOfficeMenuTree({ ctrlPermi: 2, excludeCode: "" }).then(res => {
-        this.officeMenuData = toTreeData(res, attributes);
-        console.log(11, this.officeCheckedArr, res.length, res);
-        if (this.officeCheckedArr.length === res.length) {
-          console.log(1);
-          this.isIndeterminate1 = false;
-          this.checkAll1 = true;
-        } else if (this.officeMenuData === 0) {
-          console.log(2);
-          this.isIndeterminate1 = false;
-          this.checkAll1 = false;
-        } else {
-          console.log(3);
-          this.isIndeterminate1 = true;
-          this.checkAll1 = false;
-        }
-        console.log(333);
+      return new Promise((resolve, rejec) => {
+        pubApi
+          .getOfficeMenuTree({ ctrlPermi: 2, excludeCode: "" })
+          .then(res => {
+            this.officeMenuData = toTreeData(res, attributes);
+            if (this.officeCheckedArr.length === res.length) {
+              console.log(1);
+              this.isIndeterminate1 = false;
+              this.checkAll1 = true;
+            } else if (this.officeMenuData === 0) {
+              console.log(2);
+              this.isIndeterminate1 = false;
+              this.checkAll1 = false;
+            } else {
+              console.log(3);
+              this.isIndeterminate1 = true;
+              this.checkAll1 = false;
+            }
+            console.log(333);
+            resolve(res);
+          });
       });
     },
     /* 初始化页面 */
@@ -393,19 +400,25 @@ export default {
         label: "name",
         rootId: "0"
       };
-      pubApi.getRoleMenuTree({ ctrlPermi: 2, excludeCode: "" }).then(res => {
-        this.roleMenuData = toTreeData(res, attributes);
-        if (this.roleCheckedArr.length === res.length) {
-          this.isIndeterminate3 = false;
-          this.checkAll3 = true;
-        } else if (this.roleMenuData === 0) {
-          this.isIndeterminate3 = false;
-          this.checkAll3 = false;
-        } else {
-          this.isIndeterminate3 = true;
-          this.checkAll3 = false;
-        }
-        console.log(444);
+      return new Promise((resolve, reject) => {
+        pubApi.getRoleMenuTree({ ctrlPermi: 2, excludeCode: "" }).then(res => {
+          this.roleMenuData = toTreeData(res, attributes);
+          if (this.roleCheckedArr.length === res.length) {
+            console.log(1);
+            this.isIndeterminate3 = false;
+            this.checkAll3 = true;
+          } else if (this.roleMenuData === 0) {
+            console.log(2);
+            this.isIndeterminate3 = false;
+            this.checkAll3 = false;
+          } else {
+            console.log(3);
+            this.isIndeterminate3 = true;
+            this.checkAll3 = false;
+          }
+          resolve(res);
+          console.log(444);
+        });
       });
     }
   }
