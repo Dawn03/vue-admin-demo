@@ -61,7 +61,13 @@
         {{ swichText("sys_post_type", scope.row.postType, "未设置") }}
       </template>
       <template slot="status" slot-scope="scope">
-        {{ swichText("sys_search_status", scope.row.status, "未设置") }}
+        <span
+          :style="{
+            color: [scope.row.status == '0' ? '#000' : '#f00']
+          }"
+        >
+          {{ swichText("sys_search_status", scope.row.status, "未设置") }}
+        </span>
       </template>
       <template slot="operate">
         <el-table-column fixed="right" label="操作" width="120" align="center">
@@ -83,7 +89,7 @@
                 :style="{
                   color: [scope.row.status == '0' ? '#f00' : '#69aa46']
                 }"
-                :title="swichText('sys_search_status', scope.row.status, '')"
+                :title="scope.row.status === '0' ? '停用岗位' : '启用岗位'"
               ></i>
             </el-button>
             <el-button type="text" size="small" @click="deleteBtn(scope.row)">

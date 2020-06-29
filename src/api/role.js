@@ -128,5 +128,12 @@ export const roleApi = {
     return httpRequestor.postFormData(`a/sys/secAdmin/save`, param).catch(err => {
       Message.error(err)
     })
+  },
+  /* a/sys/secAdmin/listData */
+  /* 获取系统管理员*/
+  getCorpAdminList: (param) => {
+    return httpRequestor.postFormData(`a/sys/corpAdmin/listData`, param).catch(err => {
+      Message.error(err)
+    })
   }
 };

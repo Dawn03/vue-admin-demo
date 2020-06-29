@@ -1,9 +1,9 @@
 <template>
-  <div class="user-right-box">
+  <div class="corp-admin">
     <div class="current-type clearfix">
       <div class="fl">
         <i class="el-icon-user"></i>
-        <span>用户管理</span>
+        <span>系统管理员</span>
       </div>
       <div class="fr">
         <el-button
@@ -20,20 +20,11 @@
           size="mini"
           @click="editHandleClick({}, '新增')"
         >
-          新增
+          新增租户管理
         </el-button>
-        <el-dropdown size="mini" @click="showImportAndExport">
-          <el-button type="primary" size="mini">
-            更多
-            <i class="el-icon-arrow-down el-icon--right"></i>
-          </el-button>
-          <el-dropdown-menu slot="dropdown" size="mini">
-            <el-dropdown-item>导入</el-dropdown-item>
-            <el-dropdown-item>导出</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
       </div>
     </div>
+
     <div>
       <InputFilter
         v-show="btnText == '隐藏'"
@@ -51,16 +42,10 @@
             查询
           </el-button>
           <el-button size="mini" @click="resetForm"> 重置 </el-button>
-          <el-button size="mini" @click="getMore"> 更多 </el-button>
         </template>
       </InputFilter>
-      <InputFilter
-        v-show="showMore"
-        :form-item="moreFormItem"
-        @filterPanel="showFilterPanel"
-        @statusValChange="statusValChange"
-      />
     </div>
+
     <TableTree
       :table-head="tableHead"
       :table-data="tableData"
@@ -74,79 +59,54 @@
           scope.row.loginCode
         }}</span>
       </template>
-      <template slot="refName" slot-scope="scope">
-        <span>{{ scope.row.refName }}</span>
+      <template slot="userWeight" slot-scope="scope">
+        <span class="td-color">{{ scope.row.userWeight }}</span>
       </template>
-      <template slot="employee.empName" slot-scope="scope">
-        {{ scope.row.employee.empName }}
-      </template>
-      <template slot="employee.company.companyName" slot-scope="scope">
-        {{ scope.row.employee.company.companyName }}
-      </template>
-      <template slot="employee.office.officeName" slot-scope="scope">
-        <span v-for="(value, key) in scope.row.employee.office" :key="key">
-          <span v-if="key == 'officeName'"> {{ value }} </span>
-        </span>
-      </template>
+
       <template slot="status" slot-scope="scope">
         <span :style="[{ color: scope.row.status === '0' ? '#000' : '#f00' }]">
-          {{ swichText("sys_user_status", scope.row.status, "未设置") }}
+          {{ swichText("sys_search_status", scope.row.status, "未设置") }}
         </span>
       </template>
       <template slot="operate">
-        <el-table-column fixed="right" label="操作" width="120" align="center">
+        <el-table-column fixed="right" label="操作" width="140" align="center">
           <template slot-scope="scope">
             <el-button
               type="text"
               size="small"
               @click="editHandleClick(scope.row, '编辑')"
             >
-              <i class="el-icon-edit" title="编辑用户"></i>
+              <i class="el-icon-edit" title="编辑"></i>
             </el-button>
             <el-button type="text" size="small" @click="stopUse(scope.row)">
               <i
                 :class="[
                   scope.row.status === '0'
-                    ? 'el-icon-video-pause'
-                    : 'el-icon-circle-check'
+                    ? 'el-icon-circle-check'
+                    : ' el-icon-video-pause'
                 ]"
-                :title="scope.row.status === '0' ? '停用用户' : '启用用户'"
+                :title="scope.row.statusText"
               ></i>
             </el-button>
             <el-button
               type="text"
               size="small"
-              style="color: red;"
               @click="deleteHandleClick(scope.row)"
             >
-              <i class="el-icon-delete" title="删除用户"></i>
+              <i class="el-icon-delete" style="color: red;" title="删除"></i>
             </el-button>
-
+            <el-button
+              type="text"
+              size="small"
+              @click="deleteHandleClick(scope.row)"
+            >
+              <i class="el-icon-plus" title="新增"></i>
+            </el-button>
             <el-popover
               placement="right"
               trigger="hover"
               @click="moreHandleClick(scope.row)"
             >
-              <div>
-                <el-button
-                  type="text"
-                  size="small"
-                  @click="assignRole(scope.row)"
-                >
-                  分配角色
-                  <i class="el-icon-user-solid"></i>
-                </el-button>
-              </div>
-              <div>
-                <el-button
-                  type="text"
-                  size="small"
-                  @click="dataRights(scope.row)"
-                >
-                  数据权限
-                  <i style="color: #66b1ff;" class="el-icon-circle-check"></i>
-                </el-button>
-              </div>
               <div>
                 <el-button
                   type="text"
@@ -177,17 +137,10 @@
       @currentChange="currentChange"
     ></Pagination>
 
-    <!-- table行点击对话框 -->
     <userEditPanel
       ref="userEditPanel"
       @initListPage="initListPage"
     ></userEditPanel>
-    <AssignRole ref="assignRolePanel"></AssignRole>
-    <DataRights ref="dataRightsPanel"></DataRights>
-    <InAndCompany
-      ref="inAndCompanyPanel"
-      @getClickNode="getClickNode"
-    ></InAndCompany>
   </div>
 </template>
 <script>
@@ -195,29 +148,19 @@ import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
 import Pagination from "@/components/pagination";
 import UserEditPanel from "./userEditPanel";
-import AssignRole from "./assignRole";
-import DataRights from "./dataRights";
-import InAndCompany from "./insAndcompanyPanel";
 
 // import { returnReg } from "@/utils/validate"; /* 表单正则验证 */
-import {
-  clearFilterVal,
-  getInputVal,
-  toTreeData,
-  dictTypeMap
-} from "@/utils/pubFunc";
-import { orgApi } from "@/api/organization";
+import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
+import { roleApi } from "@/api/role";
 
+import { statusMap } from "@/utils/pubFunc";
 export default {
-  name: "UserRight",
+  name: "CorpAdmin",
   components: {
     TableTree,
     InputFilter,
-    UserEditPanel,
-    AssignRole,
-    DataRights,
     Pagination,
-    InAndCompany
+    UserEditPanel
   },
   props: {
     instMenuData: {
@@ -239,90 +182,48 @@ export default {
       formInline: [
         {
           type: "input",
-          label: "账号",
+          label: "登录账号",
           key: "loginCode",
           value: ""
         },
         {
           type: "input",
-          label: "昵称",
+          label: "用户昵称",
           key: "userName",
           value: ""
         },
         {
           type: "input",
-          label: "姓名",
-          key: "refName",
+          label: "租户代码",
+          key: "userWeight",
           value: ""
         },
         {
           type: "input",
-          label: "手机",
-          key: "mobile",
+          label: "租户名称",
+          key: "corpName_",
           value: ""
         },
         {
           type: "select",
           label: "状态",
-          options: this.getStatusOption("sys_user_status"),
+          options: this.getStatusOption("sys_search_status"),
           key: "status",
           value: ""
         }
       ],
 
-      showMore: false,
-      moreFormItem: [
-        {
-          type: "searchInput",
-          label: "机构",
-          key: "institution",
-          value: ""
-        },
-        {
-          type: "searchInput",
-          label: "公司",
-          key: "company",
-          value: ""
-        },
-        {
-          type: "input",
-          label: "邮箱",
-          key: "email",
-          value: ""
-        },
-        {
-          type: "select",
-          label: "岗位",
-          key: "employee.postCode",
-          options: [],
-          value: ""
-        },
-        {
-          type: "input",
-          label: "电话",
-          key: "phone",
-          value: ""
-        }
-      ],
       tableFit: true,
       columnWidths: {
         updateDate: 130
         // email: 170
       },
-      slotColumns: [
-        "loginCode",
-        "refName",
-        "employee.empName",
-        "employee.company.companyName",
-        "employee.office.officeName",
-        "status"
-      ],
+      slotColumns: ["loginCode", "userWeight", "status"],
       tableHead: {
         loginCode: "登录账号",
         userName: "用户昵称",
-        "employee.empName": "员工姓名",
-        "employee.company.companyName": "归属机构",
-        "employee.office.officeName": "归属公司",
+        userWeight: "租户代码",
+        corpName_: "租户名称",
         email: "电子邮箱",
         mobile: "手机号",
         phone: "办公电话",
@@ -332,28 +233,21 @@ export default {
       tableData: [],
       statusOption: {},
       pageNation: {
+        ctrlPermi: 2,
         total: 0,
         pageSize: 20,
-        pageNo: 1,
-        ctrlPermi: 2
+        pageNo: 1
       },
       searchVal: {
         loginCode: null,
-        refName: null,
         mobile: null,
         status: null,
-        "employee.office.officeName": null, // 企管部
-        "employee.office.officeCode": null, // SDJN01
-        "employee.company.companyName": null, // 济南公司
-        "employee.company.companyCode": null, // SDJN
         email: null, // 邮箱
-        "employee.postCode": null, // ceo
         phone: null, // 08277648513
         orderBy: null //
       }
     };
   },
-  created() {},
   mounted() {
     const obj = {
       pageSize: this.pageNation.pageSize,
@@ -366,39 +260,16 @@ export default {
     // console.log(397, '刚刚启动时进入页面')
   },
   methods: {
-    async init(param) {
-      await this.$store.dispatch("user/getUserMapFeild", "sys_user_status");
-      await this.getPost();
-      orgApi
-        .getUserList(param)
-        .then(response => {
-          this.pageNation.total = response.count;
-          this.tableData = response.list;
+    init(param) {
+      roleApi
+        .getCorpAdminList(param)
+        .then(res => {
+          this.pageNation.total = res.count;
+          this.tableData = res.list;
         })
-        .catch(function(error) {
+        .catch(error => {
           console.log(error);
         });
-    },
-    initListPage() {
-      this.init({
-        pageSize: this.pageNation.pageSize,
-        pageNo: this.pageNation.pageNo,
-        status: ""
-      });
-    },
-    getPost() {
-      orgApi.getEmployeePosts().then(res => {
-        const postOptionArr = [];
-        for (let i = 0, len = res.length; i < len; i++) {
-          postOptionArr.push({
-            label: res[i].name,
-            value: res[i].id
-          });
-        }
-        this.moreFormItem[3].options = postOptionArr;
-        console.log(400, postOptionArr);
-        return postOptionArr;
-      });
     },
     /* 获取状态下拉框数据 */
     getStatusOption(type) {
@@ -412,80 +283,45 @@ export default {
       return dictTypeMap(type, val, other);
       // console.log(99, dictTypeMap(type, val, other));
     },
+    initListPage() {
+      this.init({
+        pageSize: this.pageNation.pageSize,
+        pageNo: this.pageNation.pageNo,
+        status: ""
+      });
+    },
     showOrHidden() {
       this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
     },
     // select
-    statusValChange(val) {
-      this.searchBtn();
+    statusValChange(item) {
+      this.searchBtn(item);
     },
     /* 获取填入输入框的值  */
     searchBtn(data = {}) {
-      this.searchVal["employee.office.officeName"] = data.label;
-      this.searchVal["employee.office.officeCode"] = data.id;
       this.searchVal = Object.assign(
-        this.searchVal,
         this.pageNation,
-        getInputVal(this.formInline),
-        getInputVal(this.moreFormItem)
+        getInputVal(this.formInline)
       );
       this.init(this.searchVal);
     },
     /* 清除输入框内的值 */
     resetForm() {
       clearFilterVal(this.formInline);
-      clearFilterVal(this.moreFormItem);
       this.searchVal = {};
       const obj = {
         pageSize: this.pageNation.pageSize,
-        pageNo: 1,
+        pageNo: this.pageNation.pageNo,
         status: null
       };
       this.init(obj);
-      console.log(this.searchVal);
-    },
-    /* 切换显示更多条件筛选 */
-    getMore() {
-      this.showMore = !this.showMore;
-    },
-    // 显示带搜索图标的对话框
-    showFilterPanel(item) {
-      this.titleName = `${item.label}选择`;
-      if (item.key === "institution") {
-        this.$refs.inAndCompanyPanel.show(item, this.instMenuData);
-      } else {
-        orgApi.getCompanyMenuTree({ ctrlPermi: 2 }).then(res => {
-          const attributes = {
-            id: "id",
-            parentId: "pId",
-            label: "name",
-            rootId: "YD"
-          };
-          const treeData = toTreeData(res, attributes);
-          this.$refs.inAndCompanyPanel.show(item, treeData);
-        });
-      }
-    },
-    getClickNode(val, typeVal) {
-      console.log("typeVal.key", val);
-      if (typeVal.key === "institution") {
-        this.moreFormItem[0].value = val.label;
-        this.searchVal["employee.office.officeCode"] = val.id;
-        this.searchVal["employee.office.officeName"] = val.label;
-      } else {
-        this.moreFormItem[1].value = val.label;
-        this.searchVal["employee.company.companyCode"] = val.id;
-        this.searchVal["employee.company.companyName"] = val.label;
-      }
     },
     /* 编辑表格 */
     editHandleClick(row, type) {
       // console.log(11, row);
       this.$refs.userEditPanel.show(row, type);
     },
-    showImportAndExport() {
-      alert("button click");
-    },
+
     /* 禁用启用 */
     stopUse(row) {
       if (row.status === "0") {
@@ -535,19 +371,7 @@ export default {
           this.$message.info("取消");
         });
     },
-    assignRole(row) {
-      this.$refs.assignRolePanel.init(row);
-    },
-    /* 数据权限 */
-    dataRights(row) {
-      orgApi
-        .getDataRightDetail({
-          userCode: row.userCode
-        })
-        .then(res => {
-          this.$refs.dataRightsPanel.init(res);
-        });
-    },
+
     resetPassword(row) {
       this.$alertMsgBox(
         `确认要将 ${row.userCode} 用户密码重置到初始状态吗`,
@@ -581,13 +405,18 @@ export default {
   }
 };
 </script>
-<style lang="scss">
+
+<style>
 .el-popover {
-  min-width: 100px;
+  padding: 0 0 0 10px;
 }
 </style>
+
 <style lang="scss" scoped>
-.user-right-box {
+.corp-admin {
+  width: 100%;
+  height: calc(100vh - 100px);
+  // display: flex;
   margin: 0 10px;
   .current-type {
     height: 45px;
@@ -599,8 +428,6 @@ export default {
   .td-color {
     color: #1890ff;
     cursor: pointer;
-  }
-  .table-witth {
   }
 }
 </style>

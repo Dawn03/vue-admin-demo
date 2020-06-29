@@ -49,7 +49,11 @@
       </div>
     </div>
     <div>
-      <InputFilter v-show="btnText == '隐藏'" :form-item="formInline">
+      <InputFilter
+        v-show="btnText == '隐藏'"
+        :form-item="formInline"
+        @searchBtn="searchBtn"
+      >
         <template slot="btnGroups">
           <el-button type="primary" size="mini" @click="searchBtn">
             查询

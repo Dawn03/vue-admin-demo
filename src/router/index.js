@@ -128,6 +128,14 @@ export const constantRoutes = [{
             meta: {
               title: '二级管理员'
             }
+          },
+          {
+            path: 'corpAdmin',
+            component: () => import('@/views/sys/role/corpAdmin'),
+            name: 'corpAdmin',
+            meta: {
+              title: '系统管理员'
+            }
           }
         ]
       }

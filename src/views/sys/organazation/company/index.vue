@@ -48,7 +48,12 @@
         </el-button>
       </div>
     </div>
-    <InputFilter v-show="btnText == '隐藏'" :form-item="formInline">
+    <InputFilter
+      v-show="btnText == '隐藏'"
+      :form-item="formInline"
+      @searchBtn="searchBtn"
+      @statusValChange="statusValChange"
+    >
       <template slot="btnGroups">
         <el-button type="primary" size="mini" @click="searchBtn">
           查询
@@ -104,7 +109,7 @@
                 :style="{
                   color: [scope.row.status === '0' ? '#f00' : '#69aa46']
                 }"
-                :title="scope.row.status === '0' ? '正常' : '停用'"
+                :title="scope.row.status === '0' ? '停用公司' : '启用公司'"
               ></i>
             </el-button>
             <el-button
@@ -246,9 +251,11 @@ export default {
       );
       return selectTypeData[type];
     },
-
     showOrHidden() {
       this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
+    },
+    statusValChange(item) {
+      this.searchBtn(item);
     },
     /* 获取填入输入框的值  */
     searchBtn(data = {}) {

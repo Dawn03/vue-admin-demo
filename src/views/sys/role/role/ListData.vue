@@ -63,11 +63,9 @@
         <!-- {{ scope.row.bizScope }} -->
         {{ swichText("sys_role_biz_scope", scope.row.bizScope, "") }}
       </template>
-      <template slot="statusText" slot-scope="scope">
-        <span
-          :style="[{ color: scope.row.statusText === '正常' ? ' ' : 'red' }]"
-        >
-          {{ scope.row.statusText }}
+      <template slot="status" slot-scope="scope">
+        <span :style="[{ color: scope.row.status === '0' ? '#000' : '#f00' }]">
+          {{ swichText("sys_search_status", scope.row.status, "未设置") }}
         </span>
       </template>
       <template slot="operate">
@@ -82,12 +80,16 @@
             </el-button>
             <el-button type="text" size="small" @click="stopUse(scope.row)">
               <i
-                v-if="scope.row.status === '0'"
-                class="el-icon-video-pause"
-                style="color:red;"
-                title="停用"
+                :class="[
+                  scope.row.status === '0'
+                    ? 'el-icon-video-pause'
+                    : 'el-icon-circle-check'
+                ]"
+                :style="{
+                  color: [scope.row.status === '0' ? '#f00' : '#69aa46']
+                }"
+                :title="scope.row.status === '0' ? '停用角色' : '启用角色'"
               ></i>
-              <i v-else class="el-icon-circle-check" title="启用"></i>
             </el-button>
             <el-button
               type="text"
@@ -243,7 +245,7 @@ export default {
         {
           type: "select",
           label: "状态",
-          options: [],
+          options: this.getStatusOption("sys_search_status"),
           key: "status",
           width: 120,
           value: ""
@@ -262,7 +264,7 @@ export default {
         "isSys",
         "dataScope",
         "bizScope",
-        "statusText"
+        "status"
       ],
       tableHead: {
         roleName: "角色名称",
@@ -274,7 +276,7 @@ export default {
         bizScope: "业务范围", // 没有显示未设置
         updateDate: "更新时间",
         remarks: "备注信息",
-        statusText: "状态"
+        status: "状态"
       },
       tableData: [],
       statusMapKey: [],
@@ -359,6 +361,12 @@ export default {
           this.roleType = userOptions;
         }
       });
+    },
+    getStatusOption(type) {
+      const selectTypeData = JSON.parse(
+        sessionStorage.getItem("selectDicType")
+      );
+      return selectTypeData[type];
     },
     /* 列表文本转义 */
     swichText(type, val, other) {

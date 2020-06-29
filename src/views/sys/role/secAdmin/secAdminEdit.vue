@@ -192,12 +192,15 @@ export default {
       isIndeterminate2: true,
       isIndeterminate3: true,
       officeMenuData: [],
+      officeMenuDataSource: [],
       officeCheckedArr: [],
       officeCheckedArrSave: [],
       companyMenuData: [],
+      companyMenuDataSource: [],
       companyCheckedArr: [],
       companyCheckedArrSave: [],
       roleMenuData: [],
+      roleMenuDataSource: [],
       roleCheckedArr: [],
       roleCheckedArrSave: [],
       checkAll1: false,
@@ -228,18 +231,13 @@ export default {
       ]).then(res => {
         console.log(299, res);
       });
-
-      // this.editInitSecAdmin(row);
-      // this.getCompanyMenuTree();
-      // this.getOfficeMenuTree();
-      // this.getRoleMenuTree();
       // this.showDailog = true;
     },
     saveBtn() {
       const tempUserDataScopeListJson = Object.assign(
         this.companyCheckedArrSave,
-        this.officeMenuData,
-        this.roleCheckedArr
+        this.officeCheckedArrSave,
+        this.roleCheckedArrSave
       );
       const obj = {
         userCode: this.secAdminForm.userCode,
@@ -290,10 +288,12 @@ export default {
     /* 设置全选反选 */
     handleCheckAllChange1(val) {
       this.$refs.menuTreeDom1.checkAll(val);
+      this.isIndeterminate1 = false;
     },
     /* 设置全选反选 */
     handleCheckAllChange2(val) {
       this.$refs.menuTreeDom2.checkAll(val);
+      this.isIndeterminate2 = false;
     },
     /* 设置全选反选 */
     handleCheckAllChange3(val) {
@@ -303,72 +303,35 @@ export default {
     // 已选择机构
     officePassCheckedNode(data) {
       this.officeCheckedArrSave = resetVal(data, "Office");
+      if (data.length === this.companyMenuDataSource.length) {
+        this.expandAll1 = true;
+        this.isIndeterminate1 = false;
+      } else {
+        this.expandAll1 = false;
+        this.isIndeterminate1 = true;
+      }
     },
     // 已选择公司
     companyPassCheckedNode(data) {
       this.companyCheckedArrSave = resetVal(data, "Company");
+      if (data.length === this.companyMenuDataSource.length) {
+        this.expandAll2 = true;
+        this.isIndeterminate2 = false;
+      } else {
+        this.expandAll2 = false;
+        this.isIndeterminate2 = true;
+      }
     },
     // 已选用户
     rolePassCheckedNode(data) {
-      this.roleCheckedArr = resetVal(data, "Role");
-    },
-    /* 获取全部公司 */
-    getCompanyMenuTree() {
-      const attributes = {
-        id: "id",
-        parentId: "pId",
-        label: "name",
-        rootId: "0"
-      };
-      return new Promise((resolve, reject) => {
-        pubApi.getCompanyMenuTree().then(res => {
-          this.companyMenuData = toTreeData(res, attributes);
-          if (this.companyCheckedArr.length === res.length) {
-            this.isIndeterminate2 = false;
-            this.checkAll2 = true;
-          } else if (this.companyMenuData === 0) {
-            this.isIndeterminate2 = false;
-            this.checkAll2 = false;
-          } else {
-            this.isIndeterminate2 = true;
-            this.checkAll2 = false;
-          }
-          console.log(222);
-          resolve(res);
-          // this.innerDialogVisible = true;
-        });
-      });
-    },
-    /* 获取全部机构 */
-    getOfficeMenuTree() {
-      const attributes = {
-        id: "id",
-        parentId: "pId",
-        label: "name",
-        rootId: "0"
-      };
-      return new Promise((resolve, rejec) => {
-        pubApi
-          .getOfficeMenuTree({ ctrlPermi: 2, excludeCode: "" })
-          .then(res => {
-            this.officeMenuData = toTreeData(res, attributes);
-            if (this.officeCheckedArr.length === res.length) {
-              console.log(1);
-              this.isIndeterminate1 = false;
-              this.checkAll1 = true;
-            } else if (this.officeMenuData === 0) {
-              console.log(2);
-              this.isIndeterminate1 = false;
-              this.checkAll1 = false;
-            } else {
-              console.log(3);
-              this.isIndeterminate1 = true;
-              this.checkAll1 = false;
-            }
-            console.log(333);
-            resolve(res);
-          });
-      });
+      this.roleCheckedArrSave = resetVal(data, "Role");
+      if (data.length === this.roleMenuDataSource.length) {
+        this.expandAll3 = true;
+        this.isIndeterminate3 = false;
+      } else {
+        this.expandAll3 = false;
+        this.isIndeterminate3 = true;
+      }
     },
     /* 初始化页面 */
     editInitSecAdmin(row) {
@@ -386,12 +349,68 @@ export default {
               this.roleCheckedArr.push(res.userDataScopeList[i].ctrlData);
             }
           }
-          console.log(111);
           this.showDailog = true;
           resolve(res);
         });
       });
     },
+    /* 获取全部公司 */
+    getCompanyMenuTree() {
+      const attributes = {
+        id: "id",
+        parentId: "pId",
+        label: "name",
+        rootId: "0"
+      };
+      return new Promise((resolve, reject) => {
+        pubApi.getCompanyMenuTree().then(res => {
+          this.companyMenuDataSource = JSON.parse(JSON.stringify(res));
+          this.companyMenuData = toTreeData(res, attributes);
+          if (this.companyCheckedArr.length === this.companyMenuDataSource.length) {
+            this.isIndeterminate2 = false;
+            this.checkAll2 = true;
+          } else if (this.companyMenuData === 0) {
+            this.isIndeterminate2 = false;
+            this.checkAll2 = false;
+          } else {
+            this.isIndeterminate2 = true;
+            this.checkAll2 = false;
+          }
+          resolve(res);
+        });
+      });
+    },
+    /* 获取全部机构 */
+    getOfficeMenuTree() {
+      const attributes = {
+        id: "id",
+        parentId: "pId",
+        label: "name",
+        rootId: "0"
+      };
+      return new Promise((resolve, rejec) => {
+        pubApi
+          .getOfficeMenuTree({ ctrlPermi: 2, excludeCode: "" })
+          .then(res => {
+            this.officeMenuDataSource = JSON.parse(JSON.stringify(res));
+            this.officeMenuData = toTreeData(res, attributes);
+            if (
+              this.officeCheckedArr.length === this.officeMenuDataSource.length
+            ) {
+              this.isIndeterminate1 = false;
+              this.checkAll1 = true;
+            } else if (this.officeMenuData === 0) {
+              this.isIndeterminate1 = false;
+              this.checkAll1 = false;
+            } else {
+              this.isIndeterminate1 = true;
+              this.checkAll1 = false;
+            }
+            resolve(res);
+          });
+      });
+    },
+
     /* 获取全部角色 */
     getRoleMenuTree() {
       const attributes = {
@@ -402,22 +421,19 @@ export default {
       };
       return new Promise((resolve, reject) => {
         pubApi.getRoleMenuTree({ ctrlPermi: 2, excludeCode: "" }).then(res => {
+          this.roleMenuDataSource = JSON.parse(JSON.stringify(res));
           this.roleMenuData = toTreeData(res, attributes);
-          if (this.roleCheckedArr.length === res.length) {
-            console.log(1);
+          if (this.roleCheckedArr.length === this.roleMenuDataSource.length) {
             this.isIndeterminate3 = false;
             this.checkAll3 = true;
-          } else if (this.roleMenuData === 0) {
-            console.log(2);
+          } else if (this.roleCheckedArr === 0) {
             this.isIndeterminate3 = false;
             this.checkAll3 = false;
           } else {
-            console.log(3);
             this.isIndeterminate3 = true;
             this.checkAll3 = false;
           }
           resolve(res);
-          console.log(444);
         });
       });
     }

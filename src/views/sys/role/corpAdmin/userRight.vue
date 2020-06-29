@@ -39,7 +39,6 @@
         v-show="btnText == '隐藏'"
         :form-item="formInline"
         @statusValChange="statusValChange"
-        @searchBtn="searchBtn"
       >
         <template slot="btnGroups">
           <el-button
@@ -88,9 +87,9 @@
           <span v-if="key == 'officeName'"> {{ value }} </span>
         </span>
       </template>
-      <template slot="status" slot-scope="scope">
+      <template slot="statusText" slot-scope="scope">
         <span :style="[{ color: scope.row.status === '0' ? '#000' : '#f00' }]">
-          {{ swichText("sys_user_status", scope.row.status, "未设置") }}
+          {{ scope.row.statusText }}
         </span>
       </template>
       <template slot="operate">
@@ -101,25 +100,24 @@
               size="small"
               @click="editHandleClick(scope.row, '编辑')"
             >
-              <i class="el-icon-edit" title="编辑用户"></i>
+              <i class="el-icon-edit" title="编辑"></i>
             </el-button>
             <el-button type="text" size="small" @click="stopUse(scope.row)">
               <i
                 :class="[
                   scope.row.status === '0'
-                    ? 'el-icon-video-pause'
-                    : 'el-icon-circle-check'
+                    ? 'el-icon-circle-check'
+                    : ' el-icon-video-pause'
                 ]"
-                :title="scope.row.status === '0' ? '停用用户' : '启用用户'"
+                :title="scope.row.statusText"
               ></i>
             </el-button>
             <el-button
               type="text"
               size="small"
-              style="color: red;"
               @click="deleteHandleClick(scope.row)"
             >
-              <i class="el-icon-delete" title="删除用户"></i>
+              <i class="el-icon-delete" title="删除"></i>
             </el-button>
 
             <el-popover
@@ -144,7 +142,7 @@
                   @click="dataRights(scope.row)"
                 >
                   数据权限
-                  <i style="color: #66b1ff;" class="el-icon-circle-check"></i>
+                  <i class="el-icon-circle-check"></i>
                 </el-button>
               </div>
               <div>
@@ -182,12 +180,6 @@
       ref="userEditPanel"
       @initListPage="initListPage"
     ></userEditPanel>
-    <AssignRole ref="assignRolePanel"></AssignRole>
-    <DataRights ref="dataRightsPanel"></DataRights>
-    <InAndCompany
-      ref="inAndCompanyPanel"
-      @getClickNode="getClickNode"
-    ></InAndCompany>
   </div>
 </template>
 <script>
@@ -195,29 +187,19 @@ import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
 import Pagination from "@/components/pagination";
 import UserEditPanel from "./userEditPanel";
-import AssignRole from "./assignRole";
-import DataRights from "./dataRights";
-import InAndCompany from "./insAndcompanyPanel";
 
 // import { returnReg } from "@/utils/validate"; /* 表单正则验证 */
-import {
-  clearFilterVal,
-  getInputVal,
-  toTreeData,
-  dictTypeMap
-} from "@/utils/pubFunc";
+import { clearFilterVal, getInputVal, toTreeData } from "@/utils/pubFunc";
 import { orgApi } from "@/api/organization";
 
+import { statusMap } from "@/utils/pubFunc";
 export default {
   name: "UserRight",
   components: {
     TableTree,
     InputFilter,
-    UserEditPanel,
-    AssignRole,
-    DataRights,
     Pagination,
-    InAndCompany
+    UserEditPanel
   },
   props: {
     instMenuData: {
@@ -264,7 +246,20 @@ export default {
         {
           type: "select",
           label: "状态",
-          options: this.getStatusOption("sys_user_status"),
+          options: [
+            {
+              label: "正常",
+              value: "0"
+            },
+            {
+              label: "停用",
+              value: "2"
+            },
+            {
+              label: "冻结",
+              value: "3"
+            }
+          ],
           key: "status",
           value: ""
         }
@@ -294,7 +289,20 @@ export default {
           type: "select",
           label: "岗位",
           key: "employee.postCode",
-          options: [],
+          options: [
+            {
+              label: "总经理",
+              value: "ceo"
+            },
+            {
+              label: "财务经理",
+              value: "cfo"
+            },
+            {
+              label: "人力经理",
+              value: "hrm"
+            }
+          ],
           value: ""
         },
         {
@@ -315,7 +323,7 @@ export default {
         "employee.empName",
         "employee.company.companyName",
         "employee.office.officeName",
-        "status"
+        "statusText"
       ],
       tableHead: {
         loginCode: "登录账号",
@@ -327,7 +335,7 @@ export default {
         mobile: "手机号",
         phone: "办公电话",
         updateDate: "更新时间",
-        status: "状态" // status
+        statusText: "状态" // status
       },
       tableData: [],
       statusOption: {},
@@ -353,7 +361,6 @@ export default {
       }
     };
   },
-  created() {},
   mounted() {
     const obj = {
       pageSize: this.pageNation.pageSize,
@@ -368,12 +375,16 @@ export default {
   methods: {
     async init(param) {
       await this.$store.dispatch("user/getUserMapFeild", "sys_user_status");
-      await this.getPost();
       orgApi
         .getUserList(param)
         .then(response => {
+          const obj = {};
+          const res = this.$store.state.user.userMap;
+          for (let i = 0, len = res.length; i < len; i++) {
+            obj[res[i]["value"]] = res[i]["name"];
+          }
           this.pageNation.total = response.count;
-          this.tableData = response.list;
+          this.tableData = statusMap(response.list, obj);
         })
         .catch(function(error) {
           console.log(error);
@@ -386,38 +397,21 @@ export default {
         status: ""
       });
     },
-    getPost() {
-      orgApi.getEmployeePosts().then(res => {
-        const postOptionArr = [];
-        for (let i = 0, len = res.length; i < len; i++) {
-          postOptionArr.push({
-            label: res[i].name,
-            value: res[i].id
-          });
-        }
-        this.moreFormItem[3].options = postOptionArr;
-        console.log(400, postOptionArr);
-        return postOptionArr;
-      });
-    },
-    /* 获取状态下拉框数据 */
-    getStatusOption(type) {
-      const selectTypeData = JSON.parse(
-        sessionStorage.getItem("selectDicType")
-      );
-      return selectTypeData[type];
-    },
-    /* 列表文本转义 */
-    swichText(type, val, other) {
-      return dictTypeMap(type, val, other);
-      // console.log(99, dictTypeMap(type, val, other));
-    },
     showOrHidden() {
       this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
     },
     // select
-    statusValChange(val) {
-      this.searchBtn();
+    statusValChange(val, item) {
+      const searchObj = {
+        pageSize: this.pageNation.pageSize,
+        pageNo: this.pageNation.pageNo
+      };
+      if (item.key === "status") {
+        searchObj.status = val;
+        this.init(searchObj);
+      } else {
+        this.searchVal[item.key] = val;
+      }
     },
     /* 获取填入输入框的值  */
     searchBtn(data = {}) {
@@ -599,8 +593,6 @@ export default {
   .td-color {
     color: #1890ff;
     cursor: pointer;
-  }
-  .table-witth {
   }
 }
 </style>

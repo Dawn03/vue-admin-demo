@@ -69,8 +69,17 @@ export default {
 .r-btn {
   color: #f00;
 }
- .td-color {
-    color: #1890ff;
-    cursor: pointer;
-  }
+.td-color {
+  color: #409eff;
+  cursor: pointer;
+}
+/* 修改 elementUI 默认的icon 小图标颜色 */
+.el-icon-edit,
+.el-icon-circle-check {
+  color: #67c23a;
+}
+.el-icon-video-pause,
+.el-icon-delete {
+  color: #f56c6c;
+}
 </style>
