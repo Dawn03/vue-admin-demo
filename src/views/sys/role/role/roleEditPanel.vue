@@ -308,7 +308,7 @@ export default {
       this.titleName = type;
       if (type === "编辑角色") {
         this.componentList[2].disabled = true;
-        roleApi.editRole({ roleCode: row.roleCode, op: "edit" }).then(res => {
+        roleApi.editAndAddRole({ roleCode: row.roleCode, op: "edit" }).then(res => {
           this.form.roleName = res.role.roleName;
           this.form.oldRoleName = res.role.roleName;
           this.form.roleCode = res.role.roleCode;
@@ -321,11 +321,9 @@ export default {
           this.showEditDailog = true;
         });
       }
-      // this.roleForm = row;
-      // this.form.isSys = "0";
       if (type === "新增角色") {
         this.getAuthorizeData();
-        roleApi.addRolInit().then(res => {
+        roleApi.editAndAddRole({ op: "add" }).then(res => {
           this.form.roleSort = res.role.roleSort;
           this.form.isSys = res.role.isSys;
           this.form.userType = res.role.userType;

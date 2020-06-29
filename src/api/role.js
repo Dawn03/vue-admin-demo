@@ -12,8 +12,8 @@ export const roleApi = {
       Message.error(err)
     })
   },
-  // 编辑角色
-  editRole: (param) => {
+  // 编辑/新增角色
+  editAndAddRole: (param) => {
     return httpRequestor.get(`a/sys/role/form.json`, param).catch(err => {
       Message.error(err)
     })
@@ -24,12 +24,7 @@ export const roleApi = {
       Message.error(err)
     })
   },
-  // 新增角色初始化
-  addRolInit: (param) => {
-    return httpRequestor.get(`a/sys/role/form.json?op=add`, param).catch(err => {
-      Message.error(err)
-    })
-  },
+
   /* 获取授权功能菜单数据 */
   getAuthorizeData: (param) => {
     // console.log("param", param)
