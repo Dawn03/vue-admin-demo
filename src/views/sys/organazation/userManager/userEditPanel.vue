@@ -428,7 +428,7 @@ export default {
           this.showEditDailog = true;
         });
         /* 新增 分配角色 */
-        roleApi.getRoleList().then(res => {
+        pubApi.getRoleMenuTree().then(res => {
           this.roleChooseList = res;
         });
       } else {

@@ -34,7 +34,7 @@ export default {
 .column-text {
   font-size: 15px;
   font-style: oblique;
-  color: #6379bb;
+  color: #1890ff;
   border-bottom: 1px solid #ddd;
   margin: 8px 10px 25px 0;
   padding-bottom: 10px;

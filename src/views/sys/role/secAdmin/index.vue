@@ -70,19 +70,6 @@
             >
               <i class="el-icon-edit" title="编辑"></i>
             </el-button>
-            <!-- <el-button type="text" size="small" @click="stopUsePost(scope.row)">
-              <i
-                :class="[
-                  scope.row.status === '0'
-                    ? 'el-icon-video-pause'
-                    : 'el-icon-circle-check'
-                ]"
-                :style="{
-                  color: [scope.row.status == '0' ? '#f00' : '#409EFF']
-                }"
-                :title="swichText('sys_search_status', scope.row.status, '')"
-              ></i>
-            </el-button> -->
             <el-button type="text" size="small" @click="deleteBtn(scope.row)">
               <i style="color:red;" class="el-icon-delete" title="删除"></i>
             </el-button>

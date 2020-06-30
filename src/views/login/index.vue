@@ -74,7 +74,8 @@ export default {
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error("Please enter the correct user name"));
+        callback();
+        // callback(new Error("Please enter the correct user name"));
       } else {
         callback();
       }
@@ -130,10 +131,12 @@ export default {
           this.loading = true;
           this.$store
             .dispatch("user/login", this.loginForm)
-            .then(() => {
+            .then(res => {
               this.afterRun();
               this.loading = false;
-
+              if (res.result === false) {
+                this.$message.error(res.message);
+              }
               // sysApi
               //   .dictType({
               //     pageNo: 1,

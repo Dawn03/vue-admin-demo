@@ -1,6 +1,6 @@
 import {
-  roleApi
-} from "@/api/role";
+  pubApi
+} from "@/api/public_request";
 const state = {
   roleList: []
 }
@@ -13,9 +13,9 @@ const actions = {
   getRole({
     commit
   }) {
-    roleApi.getRoleList().then(res => {
+    pubApi.getRoleMenuTree().then(res => {
       commit("GET_ROLE_LIST", res)
-      console.log(20, res);
+      // console.log(20, res);
     });
   }
 }
@@ -23,5 +23,5 @@ export default {
   namespaced: true,
   state,
   mutations,
-  actions,
+  actions
 }

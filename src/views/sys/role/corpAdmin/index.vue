@@ -98,7 +98,7 @@
             <el-button
               type="text"
               size="small"
-              @click="deleteHandleClick(scope.row)"
+              @click="addClick(scope.row,'行新增') "
             >
               <i class="el-icon-plus" title="新增"></i>
             </el-button>
@@ -137,17 +137,17 @@
       @currentChange="currentChange"
     ></Pagination>
 
-    <userEditPanel
-      ref="userEditPanel"
+    <CorpAdminEditAndAddPanel
+      ref="corpAdminEditPanel"
       @initListPage="initListPage"
-    ></userEditPanel>
+    ></CorpAdminEditAndAddPanel>
   </div>
 </template>
 <script>
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
 import Pagination from "@/components/pagination";
-import UserEditPanel from "./userEditPanel";
+import CorpAdminEditAndAddPanel from "./corpAdminEditAndAddPanel";
 
 // import { returnReg } from "@/utils/validate"; /* 表单正则验证 */
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
@@ -160,7 +160,7 @@ export default {
     TableTree,
     InputFilter,
     Pagination,
-    UserEditPanel
+    CorpAdminEditAndAddPanel
   },
   props: {
     instMenuData: {
@@ -222,7 +222,7 @@ export default {
       tableHead: {
         loginCode: "登录账号",
         userName: "用户昵称",
-        userWeight: "租户代码",
+        corpCode_: "租户代码",
         corpName_: "租户名称",
         email: "电子邮箱",
         mobile: "手机号",
@@ -312,45 +312,45 @@ export default {
       const obj = {
         pageSize: this.pageNation.pageSize,
         pageNo: this.pageNation.pageNo,
-        status: null
+        status: ""
       };
       this.init(obj);
     },
     /* 编辑表格 */
     editHandleClick(row, type) {
-      // console.log(11, row);
-      this.$refs.userEditPanel.show(row, type);
+      this.$refs.corpAdminEditPanel.show(row, type);
+    },
+    /* 行点击添加*/
+    addClick(row, type) {
+      this.$refs.corpAdminEditPanel.show(row, type);
     },
 
     /* 禁用启用 */
     stopUse(row) {
+      const obj = {
+        userCode: row.userCode
+      };
       if (row.status === "0") {
-        this.stopOrStart = "disable";
-        this.stopOrStartText = "停用";
+        obj.type = "disable";
       } else {
-        this.stopOrStart = "enable";
-        this.stopOrStartText = "起用";
+        obj.type = "enable";
       }
-      this.$alertMsgBox(`确定要${this.stopOrStartText}该用户吗`, "信息")
+      const status = row.status === "0" ? "停用" : "启用";
+      this.$alertMsgBox(`确定要${status}该用户吗`, "信息")
         .then(() => {
-          orgApi
-            .stopUseOrStart({
-              stopOrStart: this.stopOrStart,
-              userCode: row.userCode
-            })
-            .then(res => {
-              if (res.result === "true") {
-                const obj = {
-                  pageSize: this.searchVal.pageSize,
-                  pageNo: this.searchVal.pageNo,
-                  status: ""
-                };
-                this.init(obj);
-                this.$message.success(res.message);
-              } else {
-                this.$message.warning(res.message);
-              }
-            });
+          roleApi.stopUse(obj).then(res => {
+            if (res.result === "true") {
+              const obj = {
+                pageSize: this.pageNation.pageSize,
+                pageNo: this.pageNation.pageNo,
+                status: ""
+              };
+              this.init(obj);
+              this.$message.success(res.message);
+            } else {
+              this.$message.warning(res.message);
+            }
+          });
         })
         .catch(() => {
           this.$message.info("取消");
@@ -359,11 +359,17 @@ export default {
     deleteHandleClick(row) {
       this.$alertMsgBox("确认要删除该用户吗", "信息")
         .then(() => {
-          orgApi.deleteUser(row.userCode).then(res => {
+          roleApi.deleteCorpAdmin({ userCode: row.userCode }).then(res => {
             if (res.result === "false") {
               this.$message.warning(res.message);
             } else {
               this.$message.success(res.message);
+              const obj = {
+                pageSize: this.pageNation.pageSize,
+                pageNo: this.pageNation.pageNo,
+                status: ""
+              };
+              this.init(obj);
             }
           });
         })
@@ -374,11 +380,11 @@ export default {
 
     resetPassword(row) {
       this.$alertMsgBox(
-        `确认要将 ${row.userCode} 用户密码重置到初始状态吗`,
+        `确认要将 ${row.loginCode} 用户密码重置到初始状态吗`,
         "信息"
       )
         .then(() => {
-          orgApi.resetPw({ userCode: row.userCode }).then(res => {
+          roleApi.resetPw({ userCode: row.userCode }).then(res => {
             if (res.result === "true") {
               this.$message.success(res.message);
             } else {

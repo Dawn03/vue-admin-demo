@@ -76,6 +76,7 @@
             @blur="blur"
             @change="change"
             @onbackblankaccount="onbackblankaccount"
+            @input="inputIt"
           >
             <!-- 设置带Icon 的input  tips: slot:append/prepend  icon:class类名-->
             <el-button
@@ -157,11 +158,11 @@ export default {
   computed: {
     newFormValue: {
       get: function() {
-        console.log(222, "get", this.formValue);
+        // console.log(222, "get", this.formValue);
         return this.formValue;
       },
       set: function(value) {
-        console.log(333, "set", this.formValue);
+        // console.log(333, "set", this.formValue);
         this.$emit("update:formValue", value);
       }
     }
@@ -219,7 +220,10 @@ export default {
     },
     blur(event) {
       // console.log('event', event)
-      // this.$emit('blur')
+      this.$emit('blur')
+    },
+    inputIt(val){
+      console.log(2231, val);
     },
     change(val) {
       console.log(201, val);

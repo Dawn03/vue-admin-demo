@@ -47,7 +47,7 @@ export const pubApi = {
   },
   /* 获取角色*/
   getRoleMenuTree: (param) => {
-    return httpRequestor.post(`/a/sys/role/treeData`, param).catch(err => {
+    return httpRequestor.postFormData(`/a/sys/role/treeData`, param).catch(err => {
       Message.error(err)
     })
   }

@@ -21,13 +21,13 @@
     >
       >
       <slot name="chechbox"></slot>
-      <el-table-column
+      <!-- <el-table-column
         fixed
         label="序号"
         type="index"
         align="center"
         width="50"
-      ></el-table-column>
+      ></el-table-column> -->
       <el-table-column
         v-for="(value, key) in tableHead"
         :key="key"
@@ -45,11 +45,20 @@
         </template>
       </el-table-column>
       <slot name="operate"></slot>
+      <!-- <el-table-column fixed="right" label="操作" width="140" align="center">
+        <template slot-scope="scope">
+          <TableButton :row-data="scope.row" @editHandleClick="editHandleClick"></TableButton>
+        </template>
+      </el-table-column> -->
     </el-table>
   </div>
 </template>
 <script>
+import TableButton from "@/components/tableButton";
 export default {
+  components: {
+    TableButton
+  },
   props: {
     tableFit: {
       type: Boolean,

@@ -18,12 +18,6 @@ export const roleApi = {
       Message.error(err)
     })
   },
-  // 用户角色
-  getRoleList: (param) => {
-    return httpRequestor.get(`a/sys/role/treeData`, param).catch(err => {
-      Message.error(err)
-    })
-  },
 
   /* 获取授权功能菜单数据 */
   getAuthorizeData: (param) => {
@@ -133,6 +127,42 @@ export const roleApi = {
   /* 获取系统管理员*/
   getCorpAdminList: (param) => {
     return httpRequestor.postFormData(`a/sys/corpAdmin/listData`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 获取系统管理员编辑详情*/
+  getCorpAdminEdit: (param) => {
+    return httpRequestor.postFormData(`a/sys/corpAdmin/form.json?userCode=${param.userCode}&op=${param.op}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 修改/新增 系统管理员的*/
+  saveCorpAdmin: (param) => {
+    return httpRequestor.postFormData(`a/sys/corpAdmin/save`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 启用/停用用户 系统管理员的*/
+  stopUse: (param) => {
+    return httpRequestor.post(`a/sys/corpAdmin/${param.type}?userCode=${param.userCode}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 验证登录账号是否已经存在oldLoginCode=&loginCode=%E7%99%BB%E5%BD%95%E8%B4%A6%E5%8F%B7dss */
+  validLoginCode: (param) => {
+    return httpRequestor.get(`a/sys/user/checkLoginCode?oldLoginCode=&loginCode=${param.loginCode}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 删除 系统管理员*/
+  deleteCorpAdmin: (param) => {
+    return httpRequestor.post(`a/sys/corpAdmin/delete?userCode=${param.userCode}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 重置密码 系统管理员*/
+  resetPw: (param) => {
+    return httpRequestor.post(`a/sys/corpAdmin/resetpwd?userCode=${param.userCode}`).catch(err => {
       Message.error(err)
     })
   }
