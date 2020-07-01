@@ -53,6 +53,8 @@
       :slot-columns="slotColumns"
       :table-fit="tableFit"
       style="margin-top: 10px;"
+      :page-nation="pageNation"
+      @currentChange="currentChange"
     >
       <template slot="loginCode" slot-scope="scope">
         <span class="td-color" @click="editHandleClick(scope.row, '编辑')">{{
@@ -98,7 +100,7 @@
             <el-button
               type="text"
               size="small"
-              @click="addClick(scope.row,'行新增') "
+              @click="addClick(scope.row, '行新增')"
             >
               <i class="el-icon-plus" title="新增"></i>
             </el-button>
@@ -131,12 +133,6 @@
         </el-table-column>
       </template>
     </TableTree>
-    <Pagination
-      :total="pageNation.total"
-      :page-size="pageNation.pageSize"
-      @currentChange="currentChange"
-    ></Pagination>
-
     <CorpAdminEditAndAddPanel
       ref="corpAdminEditPanel"
       @initListPage="initListPage"
@@ -146,7 +142,6 @@
 <script>
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
-import Pagination from "@/components/pagination";
 import CorpAdminEditAndAddPanel from "./corpAdminEditAndAddPanel";
 
 // import { returnReg } from "@/utils/validate"; /* 表单正则验证 */
@@ -159,7 +154,6 @@ export default {
   components: {
     TableTree,
     InputFilter,
-    Pagination,
     CorpAdminEditAndAddPanel
   },
   props: {
@@ -177,6 +171,12 @@ export default {
       changeArrowDirection: false,
       currentId: null,
       stopOrStart: null,
+      pageNation: {
+        ctrlPermi: 2,
+        total: 0,
+        pageSize: 20,
+        pageNo: 1
+      },
       titleName: "",
       stopOrStartText: "", // 停用或者启用
       formInline: [
@@ -232,12 +232,7 @@ export default {
       },
       tableData: [],
       statusOption: {},
-      pageNation: {
-        ctrlPermi: 2,
-        total: 0,
-        pageSize: 20,
-        pageNo: 1
-      },
+
       searchVal: {
         loginCode: null,
         mobile: null,
@@ -401,12 +396,8 @@ export default {
       this.changeArrowDirection = !this.changeArrowDirection;
     },
     currentChange(val) {
-      this.searchVal.pageNo = val;
-      const obj = {
-        pageSize: this.pageNation.pageSize,
-        pageNo: this.pageNation.pageNo
-      };
-      this.init(obj);
+      this.pageNation.pageNo = val;
+      this.init(this.pageNation);
     }
   }
 };

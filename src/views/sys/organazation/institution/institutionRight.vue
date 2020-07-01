@@ -70,6 +70,7 @@
       :slot-columns="slotColumns"
       :table-fit="tableFit"
       style="margin-top: 10px;"
+      :show-page="false"
       @requstLazyLoad="requstLazyLoad"
     >
       <template slot="officeName" slot-scope="scope">

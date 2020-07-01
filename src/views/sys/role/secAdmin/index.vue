@@ -51,6 +51,8 @@
       :slot-columns="slotColumns"
       :table-fit="tableFit"
       style="margin-top: 10px;"
+      :page-nation="pageNation"
+      @currentChange="currentChange"
     >
       <template slot="loginCode" slot-scope="scope">
         <span class="td-color" @click="secAdminEdit(scope.row, '编辑')">
@@ -77,11 +79,6 @@
         </el-table-column>
       </template>
     </TableTree>
-    <Pagination
-      :total="pageNation.total"
-      :page-size="pageNation.pageSize"
-      @currentChange="currentChange"
-    ></Pagination>
     <SecAdminEdit ref="secAdminEditPanel" @initPage="initPage"></SecAdminEdit>
     <AddUser ref="secAdminAddUser" @addUserVal="addUserVal"></AddUser>
   </div>
@@ -89,7 +86,6 @@
 <script>
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
-import Pagination from "@/components/pagination";
 import SecAdminEdit from "./secAdminEdit";
 import AddUser from "./addUser";
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
@@ -101,7 +97,6 @@ export default {
   components: {
     TableTree,
     InputFilter,
-    Pagination,
     SecAdminEdit,
     AddUser
   },
@@ -283,11 +278,8 @@ export default {
       this.init(valObj);
     },
     currentChange(val) {
-      const obj = {
-        pageSize: this.pageNation.pageSize,
-        pageNo: this.pageNation.pageNo
-      };
-      this.init(obj);
+      this.pageNation.pageNo = val;
+      this.init(this.pageNation);
     },
     /* 编辑表格 */
     secAdminEdit(row, type) {

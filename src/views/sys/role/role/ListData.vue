@@ -25,7 +25,12 @@
       </div>
     </div>
     <div>
-      <InputFilter v-show="btnText == '隐藏'" :form-item="formInline">
+      <InputFilter
+        v-show="btnText == '隐藏'"
+        :form-item="formInline"
+        @searchBtn="searchBtn"
+        @statusValChange="statusValChange"
+      >
         <template slot="btnGroups">
           <el-button type="primary" size="mini" @click="searchBtn">
             查询
@@ -42,6 +47,8 @@
       :slot-columns="slotColumns"
       :table-fit="tableFit"
       style="margin-top: 10px;"
+      :page-nation="pageNation"
+      @currentChange="currentChange"
     >
       <template slot="roleName" slot-scope="scope">
         <span class="td-color" @click="roleEdit(scope.row, '编辑角色')">
@@ -147,11 +154,6 @@
         </el-table-column>
       </template>
     </TableTree>
-    <Pagination
-      :total="pageNation.total"
-      :page-size="pageNation.pageSize"
-      @currentChange="currentChange"
-    ></Pagination>
     <!-- table行点击对话框 -->
     <RoleEditPanel
       ref="RoleEditPanel"
@@ -175,7 +177,6 @@
 </template>
 <script>
 import TableTree from "@/components/tableTree";
-import Pagination from "@/components/pagination";
 import InputFilter from "@/components/inputFliter";
 import RoleEditPanel from "./roleEditPanel";
 import AccreditMenu from "./accreditMune";
@@ -192,7 +193,6 @@ export default {
   components: {
     TableTree,
     InputFilter,
-    Pagination,
     RoleEditPanel,
     AccreditMenu,
     DataRights,
@@ -205,7 +205,7 @@ export default {
       btnText: "查询",
       total: "",
       pageNation: {
-        total: null,
+        total: 0,
         pageNo: 1,
         pageSize: 20,
         ctrlPermi: 2,
@@ -376,6 +376,9 @@ export default {
     showOrHidden() {
       this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
     },
+    statusValChange(item) {
+      this.searchBtn();
+    },
     /* 获取填入输入框的值  */
     searchBtn() {
       const valObj = Object.assign(getInputVal(this.formInline), {
@@ -484,13 +487,8 @@ export default {
         });
     },
     currentChange(val) {
-      const obj = {
-        ctrlPermi: this.pageNation.ctrlPermi,
-        pageSize: this.pageNation.pageSize,
-        pageNo: val,
-        status: this.pageNation.stauts
-      };
-      this.init(obj);
+      this.pageNation.pageNo = val;
+      this.init(this.pageNation);
     },
     initPage() {
       this.init({
@@ -502,7 +500,6 @@ export default {
     },
     checkTreeVal(param) {
       this.checkedMemu = param.val;
-      console.log(476, this.checkedMemu);
     }
   }
 };

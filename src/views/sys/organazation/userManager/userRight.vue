@@ -68,6 +68,8 @@
       :slot-columns="slotColumns"
       :table-fit="tableFit"
       style="margin-top: 10px;"
+      :page-nation="pageNation"
+      @currentChange="currentChange"
     >
       <template slot="loginCode" slot-scope="scope">
         <span class="td-color" @click="editHandleClick(scope.row, '编辑')">{{
@@ -171,12 +173,6 @@
         </el-table-column>
       </template>
     </TableTree>
-    <Pagination
-      :total="pageNation.total"
-      :page-size="pageNation.pageSize"
-      @currentChange="currentChange"
-    ></Pagination>
-
     <!-- table行点击对话框 -->
     <userEditPanel
       ref="userEditPanel"
@@ -193,7 +189,6 @@
 <script>
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
-import Pagination from "@/components/pagination";
 import UserEditPanel from "./userEditPanel";
 import AssignRole from "./assignRole";
 import DataRights from "./dataRights";
@@ -216,7 +211,6 @@ export default {
     UserEditPanel,
     AssignRole,
     DataRights,
-    Pagination,
     InAndCompany
   },
   props: {
@@ -571,12 +565,8 @@ export default {
       this.changeArrowDirection = !this.changeArrowDirection;
     },
     currentChange(val) {
-      this.searchVal.pageNo = val;
-      const obj = {
-        pageSize: this.pageNation.pageSize,
-        pageNo: this.pageNation.pageNo
-      };
-      this.init(obj);
+      this.pageNation.pageNo = val;
+      this.init(this.pageNation);
     }
   }
 };

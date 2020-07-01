@@ -29,6 +29,7 @@
         :form-item="formInline"
         class="search"
         @statusValChange="statusValChange"
+        @searchBtn="searchBtn"
       >
         <template slot="btnGroups">
           <el-button
@@ -51,6 +52,8 @@
       :slot-columns="slotColumns"
       :table-fit="tableFit"
       style="margin-top: 10px;"
+      :page-nation="pageNation"
+      @currentChange="currentChange"
     >
       <template slot="postName" slot-scope="scope">
         <span class="td-color" @click="postEdit(scope.row, '编辑')">
@@ -99,18 +102,13 @@
         </el-table-column>
       </template>
     </TableTree>
-    <Pagination
-      :total="pageNation.total"
-      :page-size="pageNation.pageSize"
-      @currentChange="currentChange"
-    ></Pagination>
+
     <AddAndEdit ref="postEditPanel" @initPage="initPage"></AddAndEdit>
   </div>
 </template>
 <script>
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
-import Pagination from "@/components/pagination";
 import AddAndEdit from "./addAndEdit";
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
 import { orgApi } from "@/api/organization";
@@ -120,7 +118,6 @@ export default {
   components: {
     TableTree,
     InputFilter,
-    Pagination,
     AddAndEdit
   },
   data() {
@@ -285,11 +282,8 @@ export default {
       this.init(valObj);
     },
     currentChange(val) {
-      const obj = {
-        pageSize: this.pageNation.pageSize,
-        pageNo: this.pageNation.pageNo
-      };
-      this.init(obj);
+      this.pageNation.pageNo = val;
+      this.init(this.pageNation);
     },
     /* 编辑表格 */
     postEdit(row, type) {

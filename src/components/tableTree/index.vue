@@ -51,13 +51,21 @@
         </template>
       </el-table-column> -->
     </el-table>
+    <Pagination
+      v-show="showPage"
+      :total="pageNation.total"
+      :page-size="pageNation.pageSize"
+      v-on="$listeners"
+    ></Pagination>
   </div>
 </template>
 <script>
 import TableButton from "@/components/tableButton";
+import Pagination from "@/components/pagination";
 export default {
   components: {
-    TableButton
+    TableButton,
+    Pagination
   },
   props: {
     tableFit: {
@@ -87,6 +95,20 @@ export default {
     selectOnIndeterminate: {
       type: Boolean,
       default: false
+    },
+    showPage: {
+      type: Boolean,
+      default: true
+    },
+    pageNation: {
+      type: Object,
+      default: () => {
+        return {
+          total: 0,
+          pageSize: 20,
+          pageNo: 1
+        };
+      }
     }
   },
   data() {
