@@ -130,6 +130,7 @@
                     :show-overflow="false"
                     :default-height="50"
                     :show-index="false"
+                    :show-page="false"
                   >
                     <template slot="officeName" slot-scope="scope">
                       <el-input

@@ -6,6 +6,7 @@
       :table-head="tableHead"
       :table-data="tableData"
       :default-height="200"
+      :show-page="false"
       @tableCheckBox="tableCheckBox"
     >
       <template slot="chechbox">

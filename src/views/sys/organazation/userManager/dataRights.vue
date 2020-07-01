@@ -128,6 +128,8 @@ import ColumnBar from "@/components/commonColumn";
 import DailogFrame from "@/components/dailogPanel/frame";
 import MenuTree from "@/components/menuTree";
 import { orgApi } from "@/api/organization";
+import { pubApi } from "@/api/public_request";
+import { toTreeData, resetVal } from "@/utils/pubFunc";
 export default {
   name: "DataRights",
   components: {
@@ -161,23 +163,62 @@ export default {
   },
   methods: {
     init(res) {
+      console.log(164, this.$store.state.publicData);
       this.formDetail = JSON.parse(JSON.stringify(res));
-      this.officeMenuData = this.$store.state.publicData.officeList;
-      this.companyMenuData = this.$store.state.publicData.companyList;
-      // 已经选择的 默认的
-      const temp = this.formDetail.userDataScopeList;
-      for (let i = 0, len = temp.length; i < len; i++) {
-        if (temp[i]["ctrlType"] === "Company") {
-          this.companyCheckedArr.push(temp[i].ctrlData);
-        } else if (temp[i]["ctrlType"] === "Office") {
-          this.officeCheckedArr.push(temp[i].ctrlData);
+
+      Promise.all([this.getCompanyMenuTree(), this.getOfficeMenuTree()]).then(
+        res => {
+          // 已经选择的 默认的
+          const temp = this.formDetail.userDataScopeList;
+          for (let i = 0, len = temp.length; i < len; i++) {
+            if (temp[i]["ctrlType"] === "Company") {
+              this.companyCheckedArr.push(temp[i].ctrlData);
+            } else if (temp[i]["ctrlType"] === "Office") {
+              this.officeCheckedArr.push(temp[i].ctrlData);
+            }
+          }
+          this.showDataRights = true;
+          this.$nextTick(() => {
+            this.$refs.menuTreeDom1.expandFirst(this.officeMenuData);
+            this.$refs.menuTreeDom2.expandFirst(this.companyMenuData);
+          });
         }
-      }
-      this.$nextTick(() => {
-        this.$refs.menuTreeDom1.expandFirst(this.officeMenuData);
-        this.$refs.menuTreeDom2.expandFirst(this.companyMenuData);
+      );
+    },
+    /* 获取全部机构 */
+    getOfficeMenuTree() {
+      const attributes = {
+        id: "id",
+        parentId: "pId",
+        label: "name",
+        rootId: "0"
+      };
+      return new Promise((resolve, rejec) => {
+        pubApi
+          .getOfficeMenuTree({ ctrlPermi: 2, excludeCode: "" })
+          .then(res => {
+            this.officeMenuDataSource = JSON.parse(JSON.stringify(res));
+            this.officeMenuData = toTreeData(res, attributes);
+            resolve(res);
+          });
       });
-      this.showDataRights = true;
+    },
+    /* 获取全部公司 */
+    getCompanyMenuTree() {
+      const attributes = {
+        id: "id",
+        parentId: "pId",
+        label: "name",
+        rootId: "0"
+      };
+      return new Promise((resolve, reject) => {
+        pubApi.getCompanyMenuTree().then(res => {
+          this.companyMenuDataSource = JSON.parse(JSON.stringify(res));
+          this.companyMenuData = toTreeData(res, attributes);
+
+          resolve(res);
+        });
+      });
     },
     /* 展开或收起选项 */
     switchStatus1() {
@@ -224,23 +265,11 @@ export default {
     },
     // 已选择机构
     officePassCheckedNode(data) {
-      this.officeCheckedArrSave = this.resetVal(data, "Office");
+      this.officeCheckedArrSave = resetVal(data, "Office");
     },
     // 已选择公司
     companyPassCheckedNode(data) {
-      this.companyCheckedArrSave = this.resetVal(data, "Company");
-    },
-    /* 重组保存已选值 */
-    resetVal(arr, ctrlType) {
-      //  id: "YD", lable: "苑东生物";
-      const result = [];
-      for (let i = 0, len = arr.length; i < len; i++) {
-        result.push({
-          ctrlType,
-          ctrlData: arr[i]
-        });
-      }
-      return result;
+      this.companyCheckedArrSave = resetVal(data, "Company");
     }
   }
 };
