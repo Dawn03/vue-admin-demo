@@ -111,7 +111,7 @@ export const constantRoutes = [{
         path: 'role',
         component: () => import('@/views/sys/role/index'),
         meta: {
-          title: '权限管理'
+          title: '系统设置'
         },
         children: [{
             path: 'listData',
@@ -137,6 +137,38 @@ export const constantRoutes = [{
               title: '系统管理员'
             }
           }
+        ]
+      },
+      {
+        path: 'systemSet',
+        component: () => import('@/views/sys/systemSet/index'),
+        meta: {
+          title: '系统设置'
+        },
+        children: [{
+            path: 'menu',
+            component: () => import('@/views/sys/systemSet/menu'),
+            name: 'menu',
+            meta: {
+              title: '菜单管理'
+            }
+          }
+          // {
+          //   path: 'module',
+          //   component: () => import('@/views/sys/role/secAdmin'),
+          //   name: 'module',
+          //   meta: {
+          //     title: '模块管理'
+          //   }
+          // },
+          // {
+          //   path: 'config',
+          //   component: () => import('@/views/sys/role/corpAdmin'),
+          //   name: 'config',
+          //   meta: {
+          //     title: '参数设置'
+          //   }
+          // }
         ]
       }
     ]

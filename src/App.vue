@@ -73,6 +73,9 @@ export default {
   color: #409eff;
   cursor: pointer;
 }
+.tl {
+  text-align: left;
+}
 /* 修改 elementUI 默认的icon 小图标颜色 */
 .el-icon-edit,
 .el-icon-circle-check {

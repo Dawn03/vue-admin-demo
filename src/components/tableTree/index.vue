@@ -28,13 +28,14 @@
         align="center"
         width="50"
       ></el-table-column> -->
+
       <el-table-column
         v-for="(value, key) in tableHead"
         :key="key"
         :prop="value"
         :label="value"
         :width="columnWidths[key]"
-        align="center"
+        :align="columnTextPostion[key]"
         :show-overflow-tooltip="showOverflow"
       >
         <template slot-scope="scope">
@@ -83,6 +84,12 @@ export default {
     columnWidths: {
       type: Object,
       default: () => ({})
+    },
+    columnTextPostion: {
+      type: Object,
+      default: () => {
+        return "center";
+      }
     },
     slotColumns: {
       type: Array,

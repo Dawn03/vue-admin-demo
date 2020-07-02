@@ -8,7 +8,14 @@ import {
 /**
  * 用户管理
  * **/
+
 export const pubApi = {
+  /* 获取用户有权的菜单列表 */
+  getMenuTree: (param) => {
+    return httpRequestor.get(`/a/menuTree`, param).catch(err => {
+      Message.error(err)
+    })
+  },
   /* 获取全部需要映射的字段 */
   getMapFieldList: (param) => {
     return httpRequestor.get(`/a/sys/dictData/treeData`, param).catch(err => {
@@ -48,6 +55,12 @@ export const pubApi = {
   /* 获取角色*/
   getRoleMenuTree: (param) => {
     return httpRequestor.postFormData(`/a/sys/role/treeData`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 获取左侧菜单*/
+  getLeftMenuTree: (param) => {
+    return httpRequestor.postFormData(`/a/menuTree`, param).catch(err => {
       Message.error(err)
     })
   }

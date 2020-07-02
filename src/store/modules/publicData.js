@@ -12,6 +12,7 @@ const state = {
   companyList: [],
   companyListOrg: [],
   employeePosts: [],
+  leftMenuList: [],
   allDicType: "",
   selectDicType: ""
 }
@@ -74,6 +75,10 @@ const mutations = {
     /* 用于下拉选择框 数据 */
     sessionStorage.setItem('selectDicType', JSON.stringify(selectObj))
     // state.allDicType = data
+  },
+  GET_LEFT_MENU_TREE: (state, data) => {
+    // state.officeList = data
+    sessionStorage.setItem('leftMenuList', data)
   }
 }
 const actions = {
@@ -91,7 +96,6 @@ const actions = {
   }) {
     pubApi.getCompanyMenuTree().then(res => {
       // console.log('GET_COMPANY_TREE_LIST', res);
-
       commit("GET_COMPANY_TREE_LIST", res)
     });
   },
@@ -109,11 +113,16 @@ const actions = {
     commit
   }) {
     pubApi.dictTypeFunc().then(res => {
-      // console.log(73, res)
-
       commit("GET_ALL_DIC_TYPE", res)
       console.log(82, res)
     })
+  },
+  getLeftMenuTree({
+    commit
+  }) {
+    pubApi.getLeftMenuTree().then(res => {
+      commit("GET_LEFT_MENU_TREE", res)
+    });
   }
 }
 export default {

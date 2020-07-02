@@ -65,7 +65,6 @@
 
 <script>
 import { validUsername } from "@/utils/validate";
-import { sysApi } from "@/api/systemSet";
 import { pubApi } from "@/api/public_request";
 
 // import { pubApi } from "@/api/public_request"
@@ -166,7 +165,8 @@ export default {
       Promise.all([
         this.getCompany(),
         this.getOffice(),
-        this.getAllDicType()
+        this.getAllDicType(),
+        this.getMenuTree()
       ]).then(res => {
         /* 你的逻辑代码 */
         this.$router.push({ path: this.redirect || "/" });
@@ -195,6 +195,15 @@ export default {
       return new Promise((resolve, reject) => {
         /* 你的逻辑代码 */
         this.$store.dispatch("publicData/getAllDicType").then(res => {
+          resolve(res);
+        });
+      });
+    },
+    /* 获取左侧菜单数据 */
+    getMenuTree() {
+      return new Promise((resolve, reject) => {
+        /* 你的逻辑代码 */
+        this.$store.dispatch("publicData/getLeftMenuTree").then(res => {
           resolve(res);
         });
       });

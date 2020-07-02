@@ -7,8 +7,8 @@ import {
 } from 'element-ui'
 export const sysApi = {
   /* 系统设置 字典管理 */
-  dictType: (param) => {
-    return httpRequestor.get(`a/sys/dictType/listData`, param).catch(err => {
+  getMenu: (param) => {
+    return httpRequestor.postFormData(`a/sys/menu/listData`, param).catch(err => {
       Message.error(err)
     })
   }
