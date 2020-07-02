@@ -24,68 +24,87 @@
           :prop="it.prop"
           :show-message="it.showMessage"
           :style="{ height: it.height }"
+          class="clearfix"
         >
-          <component
-            :is="it.componentName"
-            v-if="it.bySelf === true ? false : true"
-            v-model="newFormValue[it.value]"
-            class="dymForm"
-            :placeholder="''"
-            :clearable="it.clearable"
-            :multiple="it.multiple"
-            :options="it.options"
-            :disabled="it.disabled || editModel === 'V' ? true : false"
-            :collapse-tags="it.collapseTags"
-            :type="it.type"
-            :prop="it.prop"
-            :name="it.name"
-            :reload="it.reload"
-            :query-paras="buildQueryParas(it.queryName, it.queryValue)"
-            :cascader-props="it.cascaderProps"
-            :selected-field="it.selectedField"
-            :maxlength="it.maxlength"
-            :minlength="it.minlength"
-            :value-format="it.format"
-            :picker-options="it.pickerOptions"
-            :tag-id="it.tagId"
-            :autosize="it.autosize"
-            :dict-type-code="it.dictTypeCode"
-            :api="it.api"
-            :value-key="it.valueKey"
-            :capital-source="it.capitalSource"
-            :load-list="it.loadList"
-            :account-width="it.accountWidth"
-            :time-type="it.timeType"
-            :time-size="it.timeSize"
-            :format="it.format"
-            :active-value="'1'"
-            :inactive-value="'0'"
-            :percent.sync="newFormValue[it.percent]"
-            :reset-value.sync="it.resetValue"
-            :amount.sync="newFormValue[it.amount]"
-            :company-id="it.companyId"
-            :start-placeholder="it.startPlaceholder"
-            :end-placeholder="it.endPlaceholder"
-            :rows="it.rowsSpan"
-            :radios="it.radios"
-            :checked-radio="it.checkedRadio"
-            v-on="$listeners"
-            @selectChanged="selectChanged"
-            @focus="focus($event, it.prop)"
-            @otherData="otherData"
-            @blur="blur"
-            @change="change"
-            @onbackblankaccount="onbackblankaccount"
-            @input="inputIt"
-          >
-            <!-- 设置带Icon 的input  tips: slot:append/prepend  icon:class类名-->
-            <el-button
-              v-show="it.addIcon"
-              :slot="it.slotPosition"
-              :icon="it.iconType"
-              @click="btnClick(it.prop, 'iconType')"
-            ></el-button>
-          </component>
+          <i
+            v-if="it.questionIcon"
+            :title="it.questionText"
+            class="question icon-question"
+          ></i>
+          <!-- 部分参数说明：1.showAlpha （el-color-picker）颜色选择器 是否启用rgba -->
+          <div style="div-box">
+            <component
+              :is="it.componentName"
+              v-if="it.bySelf === true ? false : true"
+              v-model="newFormValue[it.value]"
+              :show-alpha="it.showAlpha"
+              class="dymForm"
+              :placeholder="''"
+              :clearable="it.clearable"
+              :multiple="it.multiple"
+              :options="it.options"
+              :disabled="it.disabled || editModel === 'V' ? true : false"
+              :collapse-tags="it.collapseTags"
+              :type="it.type"
+              :prop="it.prop"
+              :name="it.name"
+              :reload="it.reload"
+              :query-paras="buildQueryParas(it.queryName, it.queryValue)"
+              :cascader-props="it.cascaderProps"
+              :selected-field="it.selectedField"
+              :maxlength="it.maxlength"
+              :minlength="it.minlength"
+              :value-format="it.format"
+              :picker-options="it.pickerOptions"
+              :tag-id="it.tagId"
+              :autosize="it.autosize"
+              :dict-type-code="it.dictTypeCode"
+              :api="it.api"
+              :value-key="it.valueKey"
+              :capital-source="it.capitalSource"
+              :load-list="it.loadList"
+              :account-width="it.accountWidth"
+              :time-type="it.timeType"
+              :time-size="it.timeSize"
+              :format="it.format"
+              :active-value="'1'"
+              :inactive-value="'0'"
+              :percent.sync="newFormValue[it.percent]"
+              :reset-value.sync="it.resetValue"
+              :amount.sync="newFormValue[it.amount]"
+              :company-id="it.companyId"
+              :start-placeholder="it.startPlaceholder"
+              :end-placeholder="it.endPlaceholder"
+              :rows="it.rowsSpan"
+              :radios="it.radios"
+              :checked-radio="it.checkedRadio"
+              v-on="$listeners"
+              @selectChanged="selectChanged"
+              @focus="focus($event, it.prop)"
+              @otherData="otherData"
+              @blur="blur"
+              @change="change"
+              @onbackblankaccount="onbackblankaccount"
+              @input="inputIt"
+            >
+              <!-- 设置带Icon 的input  tips: slot:append/prepend  icon:class类名-->
+              <el-button
+                v-show="it.addIcon"
+                :slot="it.slotPosition"
+                :icon="it.iconType"
+                @click="btnClick(it.prop, 'iconType')"
+              >
+              </el-button>
+              <!-- 当一个组件上存在第二个icon的时候使用 -->
+              <el-button
+                v-show="it.anotherIcon"
+                :slot="it.anotherSlotPosition"
+                :icon="it.anotherIconType"
+                @click="anotherBtnClick(it.prop, 'iconType')"
+              >
+              </el-button>
+            </component>
+          </div>
         </el-form-item>
         <slot v-else name="bySelf"> </slot>
       </el-col>
@@ -96,6 +115,7 @@
 import ColumnBar from "@/components/commonColumn";
 import BaseSelect from "@/components/element/BaseSelect";
 import RadioChoose from "@/components/element/RadioChoose";
+import CheckBoxChoose from "@/components/element/CheckBoxChoose";
 import dict from "@/components/element/SelectDictionary.vue"; // 字典组件
 // import officeTree from '@/components/element/officeTree.vue' // 公司树
 // import orgTree from '@/components/element/orgTree.vue' // 根据公司树查询下面机构
@@ -117,6 +137,7 @@ export default {
   components: {
     BaseSelect,
     RadioChoose,
+    CheckBoxChoose,
     dict,
     // officeTree,
     // orgTree,
@@ -213,20 +234,26 @@ export default {
         this.focus({}, keyName);
       }
     },
+    /* 当一个组件前后都有icon 图标时 */
+    anotherBtnClick(keyName, iconType) {
+      // if (iconType === "inputSearch") {
+      //   this.focus({}, keyName);
+      // }
+    },
     focus(event, keyName) {
-      console.log(240, event, keyName);
+      // console.log(240, event, keyName);
       // this.$emit('focus', keyName)
       this.$emit("focusIt", keyName);
     },
     blur(event) {
       // console.log('event', event)
-      this.$emit('blur')
+      this.$emit("blur");
     },
-    inputIt(val){
-      console.log(2231, val);
+    inputIt(val) {
+      // console.log(2231, val);
     },
     change(val) {
-      console.log(201, val);
+      // console.log(201, val);
       this.selectObj[name] = val;
       this.$emit("selectChanged", val, name, this.selectObj);
     },
@@ -237,3 +264,19 @@ export default {
   }
 };
 </script>
+<style scoped>
+.question {
+  margin: 7px 10px 0 0;
+  float: left;
+  width: 18px;
+}
+.div-box {
+  width: calc(100%-18px);
+  outline: 5px solid red;
+}
+.dymForm {
+  /* display: inline-block; */
+  vertical-align: middle;
+  float: left;
+}
+</style>

@@ -25,6 +25,18 @@ export default {
   }
 };
 </script>
+/* 字体font-awesome图标使用 */
+<style type="text/css">
+[class^="el-icon-fa"],
+[class*=" el-icon-fa"] {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome !important;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+</style>
 <style>
 /* 解决table 表格错位问题 */
 .el-table--border th.gutter:last-of-type {

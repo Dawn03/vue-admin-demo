@@ -35,14 +35,17 @@
         :prop="value"
         :label="value"
         :width="columnWidths[key]"
-        :align="columnTextPostion[key]"
+        :align="columnTextPostion[key] ? columnTextPostion[key] : 'center'"
         :show-overflow-tooltip="showOverflow"
       >
+        xsssssssssssssssss{{ columnTextPostion[key] }}
         <template slot-scope="scope">
           <slot v-if="slotColumns.indexOf(key) > -1" :name="key" v-bind="scope">
           </slot>
           <!-- 用于某一列需要特殊处理  判断slotColumns传进来的值key里边是否存在 给调用他的父级传scope -->
-          <template v-else>{{ scope.row[key] }}</template>
+          <template v-else>
+            {{ scope.row[key] }} {{ columnTextPostion[key] }}
+          </template>
         </template>
       </el-table-column>
       <slot name="operate"></slot>
@@ -87,9 +90,7 @@ export default {
     },
     columnTextPostion: {
       type: Object,
-      default: () => {
-        return "center";
-      }
+      default: () => ({})
     },
     slotColumns: {
       type: Array,

@@ -1,14 +1,15 @@
 <template>
   <div>
     <!-- label 支持类型 string number  boolean  -->
+    <!-- {{ radios }} -->
     <el-radio
       v-for="(item, index) in radios"
       :key="index"
       v-model="radioValue"
-      :label="item.label"
+      :label="item.value"
       :disabled="item.disabled ? true : false"
     >
-      {{ item.labelName }}
+      {{ item.labelName || item.label }}
     </el-radio>
   </div>
 </template>
@@ -47,7 +48,6 @@ export default {
     // 转换绑定的选中数据，与v-model同步
     radioValue: {
       get: function() {
-        console.log("get", this.value);
         return this.value;
       },
       set: function(value) {

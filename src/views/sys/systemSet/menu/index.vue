@@ -3,6 +3,7 @@
     <div class="current-type clearfix">
       <div class="fl">
         <i class="el-icon-user"></i>
+      
         <span>菜单管理</span>
       </div>
       <div class="fr">
@@ -48,6 +49,7 @@
       :table-head="tableHead"
       :table-data="tableData"
       :column-widths="columnWidths"
+      :column-text-postion="columnTextPostion"
       :slot-columns="slotColumns"
       :table-fit="tableFit"
       style="margin-top: 10px;"
@@ -57,7 +59,7 @@
       @requstLazyLoad="requstLazyLoad"
     >
       <template slot="menuName" slot-scope="scope">
-        <span class="td-color tl" @click="secAdminEdit(scope.row, '编辑')">
+        <span class="td-color tl" @click="menuEdit(scope.row, '编辑')">
           {{ scope.row.menuName }}
         </span>
       </template>
@@ -100,7 +102,7 @@
             <el-button
               type="text"
               size="small"
-              @click="secAdminEdit(scope.row, '编辑')"
+              @click="menuEdit(scope.row, '编辑')"
             >
               <i class="el-icon-edit" title="编辑"></i>
             </el-button>
@@ -111,14 +113,14 @@
         </el-table-column>
       </template>
     </TableTree>
-    <SecAdminEdit ref="secAdminEditPanel" @initPage="initPage"></SecAdminEdit>
+    <menuEdit ref="secAdminEditPanel" @initPage="initPage"></menuEdit>
     <AddUser ref="secAdminAddUser" @addUserVal="addUserVal"></AddUser>
   </div>
 </template>
 <script>
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
-import SecAdminEdit from "./secAdminEdit";
+import menuEdit from "./menuEdit";
 import AddUser from "./addUser";
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
 // import { orgApi } from "@/api/organization";
@@ -129,7 +131,7 @@ export default {
   components: {
     TableTree,
     InputFilter,
-    SecAdminEdit,
+    menuEdit,
     AddUser
   },
   data() {
@@ -147,6 +149,7 @@ export default {
       columnTextPostion: {
         menuName: "left"
       },
+      columnWidths: {},
       slotColumns: [
         "menuName",
         "moduleCodes",
@@ -210,9 +213,6 @@ export default {
     },
     /* 列表文本转义 */
     swichText(type, val, other) {
-      if (type === "sys_menu_type") {
-        // console.log(218, type, val, other);
-      }
       return dictTypeMap(type, val, other);
     },
     showOrHidden() {
@@ -303,7 +303,7 @@ export default {
       this.init(this.pageNation);
     },
     /* 编辑表格 */
-    secAdminEdit(row, type) {
+    menuEdit(row, type) {
       this.$refs.secAdminEditPanel.show(row, type);
     },
     addNew(row, type) {

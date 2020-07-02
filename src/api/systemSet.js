@@ -11,5 +11,17 @@ export const sysApi = {
     return httpRequestor.postFormData(`a/sys/menu/listData`, param).catch(err => {
       Message.error(err)
     })
+  },
+  /* 系统设置 模块管理 */
+  initMenuCodeEdit: (param) => {
+    return httpRequestor.get(`a/sys/menu/form.json?menuCode=${param.menuCode}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统设置 模块管理 */
+  getModules: (param) => {
+    return httpRequestor.postFormData(`a/sys/module/listData`, param).catch(err => {
+      Message.error(err)
+    })
   }
 }

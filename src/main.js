@@ -1,6 +1,6 @@
 import Vue from 'vue'
 
-import 'normalize.css/normalize.css' // A modern alternative to CSS resets
+import "normalize.css/normalize.css" // A modern alternative to CSS resets
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -20,7 +20,8 @@ import '@/icons' // icon
 import '@/permission' // permission control
 import 'default-passive-events'
 import '@/components/messageBox'
-
+import 'font-awesome/css/font-awesome.css'
+import 'simple-line-icons/css/simple-line-icons.css'
 import baseUrl_ from '@/api/config'
 Vue.prototype.GLOBAL = baseUrl_;
 import adaptive from "@/directive/el-table"
