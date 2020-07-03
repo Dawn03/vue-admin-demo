@@ -2,8 +2,7 @@
   <div class="post  wrapper_content">
     <div class="current-type clearfix">
       <div class="fl">
-        <i class="el-icon-user"></i>
-
+        <i class="color fa icon-book-open"></i>
         <span>菜单管理</span>
       </div>
       <div class="fr">
@@ -59,6 +58,7 @@
       @requstLazyLoad="requstLazyLoad"
     >
       <template slot="menuName" slot-scope="scope">
+        <i :class="scope.row.menuIcon"></i>
         <span class="td-color tl" @click="menuEdit(scope.row, '编辑')">
           {{ scope.row.menuName }}
         </span>
@@ -70,7 +70,6 @@
       </template>
       <template slot="treeSort" slot-scope="scope">
         <el-input v-model="scope.row.treeSort" class="tree-sort"></el-input>
-        <!-- {{ scope.row.treeSort }} -->
       </template>
       <template slot="weight" slot-scope="scope">
         <span v-if="scope.row.weight == '80'" style="color:#c243d6">
@@ -106,7 +105,7 @@
             >
               <i class="el-icon-edit" title="编辑"></i>
             </el-button>
-            <el-button type="text" size="small" @click="deleteBtn(scope.row)">
+            <el-button type="text" size="small" @click="deleteMenu(scope.row)">
               <i style="color:red;" class="el-icon-delete" title="删除"></i>
             </el-button>
           </template>
@@ -175,16 +174,18 @@ export default {
   },
   mounted() {
     this.init(this.pageNation);
-    this.getIcons();
+    // this.getIcons();
   },
   methods: {
     getIcons() {
-      sysApi.getIcons().then((res) => {
-        console.log(183, res)
-      })
+      sysApi.getIcons().then(res => {
+        console.log(183, res);
+      });
     },
     initPage() {
       this.reload();
+      console.log(187);
+      // this.init(this.pageNation);
     },
     init(param) {
       // console.log(2222, param);
@@ -318,6 +319,26 @@ export default {
     /* 选中的用户 */
     addUserVal(row) {
       this.$refs.secAdminEditPanel.show(row[0], "编辑");
+    },
+    deleteMenu(row) {
+      this.$alertMsgBox("确认要删除该菜单及所有子菜单吗？", "信息")
+        .then(() => {
+          sysApi
+            .deleteMenu({
+              menuCode: row.menuCode
+            })
+            .then(res => {
+              if (res.result === "true") {
+                this.init(this.params);
+                this.$message.success(res.message);
+              } else {
+                this.$message.waring(res.message);
+              }
+            });
+        })
+        .catch(() => {
+          this.$message.info("取消");
+        });
     }
   }
 };

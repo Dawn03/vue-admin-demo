@@ -1,4 +1,5 @@
-/*带搜索图标输入框的选择弹窗模板 弹窗嵌套弹窗 背景遮罩问题 单独写 :modal-append-to-body="false"*/
+/*带搜索图标输入框的选择弹窗模板 弹窗嵌套弹窗 背景遮罩问题 单独写
+:modal-append-to-body="false"*/
 <template>
   <div class="inner-dailog-box">
     <el-dialog
@@ -152,6 +153,7 @@ export default {
 
     /* 展开或收起选项 */
     switchStatus() {
+      // console.log(155);
       this.expandAll = !this.expandAll;
       this.$refs.menuTreeDom.showOrHiddenAllNodes();
     },

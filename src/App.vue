@@ -81,6 +81,9 @@ export default {
 .r-btn {
   color: #f00;
 }
+.color {
+  color: #409eff;
+}
 .td-color {
   color: #409eff;
   cursor: pointer;

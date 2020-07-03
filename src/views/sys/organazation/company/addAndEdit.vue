@@ -69,7 +69,6 @@
   </div>
 </template>
 <script>
-import ColumnBar from "@/components/commonColumn";
 import DailogFrame from "@/components/dailogPanel/frame";
 import DymForm from "@/components/element/dymForm";
 import ChooseMenuTree from "@/components/chooseMenuTree";
@@ -77,13 +76,12 @@ import ExtentionFeild from "@/components/extentionFeild";
 import { returnReg } from "@/utils/validate";
 import { orgApi } from "../../../../api/organization";
 import { pubApi } from "@/api/public_request";
-import { toTreeData, filterNokeyVal, stringVal } from "@/utils/pubFunc";
+import { toTreeData } from "@/utils/pubFunc";
 export default {
   name: "UserEdit",
   components: {
     DailogFrame,
     DymForm,
-    ColumnBar,
     ExtentionFeild,
     ChooseMenuTree
   },

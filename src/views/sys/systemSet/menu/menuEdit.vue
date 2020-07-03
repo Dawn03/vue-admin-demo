@@ -22,30 +22,32 @@
             :component-list="componentList"
             :form-value.sync="menuForm"
             @focusIt="focusIt"
+            @showExtentionDom="showExtentionDom"
           >
           </DymForm>
+          <ExtentionFeild
+            ref="extentionDom"
+            :style="{ height: exHeight }"
+            style="overflow: hidden;"
+            :extention-form="extend"
+          ></ExtentionFeild>
         </el-form>
-        <!-- <el-row style="margin-top:20px;">
-          <el-col :span="12">
-            <el-row style="margin-top:20px;">
-              <el-col :span="24">
-                <MenuTree
-                  ref="menuTreeDom1"
-                  :menu-data="officeMenuData"
-                  :default-expand="defaultExpand1"
-                  :expand-all="expandAll1"
-                  :show-checkbox="true"
-                  :checked-arr="officeCheckedArr"
-                  @passCheckedNode="officePassCheckedNode"
-                ></MenuTree>
-              </el-col>
-            </el-row>
-          </el-col>
-        </el-row> -->
+        <ChooseMenuTree
+          :inner-dialog-visible="innerDialogVisible"
+          :title-name="menuTreeTitle"
+          :menu-data="menuData"
+          :key-val="keyVal"
+          :default-expand="defaultExpand"
+          @closeInnerDialog="closeMuneTreeChoose"
+          @on-change-keyVal="changeKeyVal"
+          @clickNodeReslut="clickNodeReslut"
+        ></ChooseMenuTree>
         <FontChoose ref="showFont" @iconChoose="iconChoose"></FontChoose>
       </template>
       <template slot="footer">
-        <el-button size="mini" type="primary" @click="saveBtn">保存</el-button>
+        <el-button size="mini" type="primary" @click="saveBtn('menuForm')">
+          保存
+        </el-button>
         <el-button size="mini" @click="colseBtn">关闭</el-button>
       </template>
     </DailogPanel>
@@ -55,11 +57,13 @@
 import DymForm from "@/components/element/dymForm";
 import DailogPanel from "@/components/dailogPanel/frame";
 import ColumnBar from "@/components/commonColumn";
-import MenuTree from "@/components/menuTree";
+import ChooseMenuTree from "@/components/chooseMenuTree";
 import FontChoose from "./fontsIcon/index";
+import ExtentionFeild from "@/components/extentionFeild";
 import { toTreeData, dictTypeMap, resetVal } from "@/utils/pubFunc";
 import { sysApi } from "@/api/systemSet";
 import { pubApi } from "@/api/public_request";
+import { returnReg } from "../../../../utils/validate";
 
 export default {
   name: "",
@@ -67,8 +71,9 @@ export default {
     DailogPanel,
     DymForm,
     ColumnBar,
-    MenuTree,
-    FontChoose
+    ChooseMenuTree,
+    FontChoose,
+    ExtentionFeild
   },
   data() {
     return {
@@ -76,6 +81,7 @@ export default {
       titleName: "编辑菜单",
       editModel: "E",
       currentRow: {},
+      superMenuName: "",
       menuForm: {
         loginCode: "",
         parent: {
@@ -100,11 +106,11 @@ export default {
       componentList: [
         {
           label: "上级菜单：",
-          prop: "menuNameOrig",
+          prop: "superMenuName",
           labelWidth: "120px",
           componentName: "el-input",
           cols: [12, 12, 12, 12],
-          value: "menuNameOrig",
+          value: "superMenuName",
           addIcon: true,
           slotPosition: "append",
           iconType: "el-icon-search"
@@ -278,11 +284,34 @@ export default {
         menuType: [{ required: true, message: "必填信息", trigger: "blur" }],
         moduleCodes: [{ required: true, message: "必填信息", trigger: "blur" }]
       },
-      isIndeterminate1: true,
-      officeMenuData: [],
-      officeMenuDataSource: [],
-      officeCheckedArr: [],
-      officeCheckedArrSave: []
+      innerDialogVisible: false,
+      menuTreeTitle: "上级菜单",
+      menuData: [],
+      defaultExpand: ["1"],
+      keyVal: "",
+      exHeight: "0px",
+      extend: {
+        extendS1: "",
+        extendS2: "",
+        extendS3: "",
+        extendS4: "",
+        extendS5: "",
+        extendS6: "",
+        extendS7: "",
+        extendS8: "",
+        extendI1: "",
+        extendI2: "",
+        extendI3: "",
+        extendI4: "",
+        extendF1: "",
+        extendF2: "",
+        extendF3: "",
+        extendF4: "",
+        extendD1: "",
+        extendD2: "",
+        extendD3: "",
+        extendD4: ""
+      }
     };
   },
   methods: {
@@ -316,19 +345,33 @@ export default {
         sysApi.initMenuCodeEdit({ menuCode: row.menuCode }).then(res => {
           // for (let i = 0, len = res.userDataScopeList.length; i < len; i++) {
           // }
+          const tempMenuNameOrig = row.treeNames.split("/");
+          this.menuForm.parent.id =
+            row.parentCode !== "0" ? row.parentCode : "";
+          this.menuForm.parent.menuNameOrig =
+            tempMenuNameOrig[tempMenuNameOrig.length - 2] || "";
+          this.menuForm.superMenuName =
+            tempMenuNameOrig[tempMenuNameOrig.length - 2] || "";
+          for (const key in res.menu.extend) {
+            if (res.menu.extend[key]) {
+              this.extend[key] = res.menu.extend[key];
+            }
+          }
           this.menuForm.menuNameOrig = res.menu.menuNameOrig;
           this.menuForm.menuType = res.menu.menuType;
           this.menuForm.menuName = res.menu.menuName;
-          this.menuForm.moduleCodes = ["bpm", "cms"]; // res.menu.moduleCodes.split(",");
+          this.menuForm.menuCode = res.menu.menuCode;
+          this.menuForm.moduleCodes = res.menu.moduleCodes.split(",");
           this.menuForm.menuHref = res.menu.menuHref;
           this.menuForm.menuTarget = res.menu.menuTarget;
           this.menuForm.treeSort = res.menu.treeSort;
           this.menuForm.permission = res.menu.permission;
           this.menuForm.menuIcon = res.menu.menuIcon;
-          this.menuForm.menuColor = res.menu.menuColor;
+          this.menuForm.menuColor = res.menu.menuColor || "#DDD";
           this.menuForm.menuTitle = res.menu.menuTitle;
           this.menuForm.isShow = res.menu.isShow + "";
           this.menuForm.weight = res.menu.weight + "";
+          this.menuForm.remarks = res.menu.remarks;
           this.componentList[8].anotherIconType = res.menu.menuIcon;
           this.showDailog = true;
           resolve(res);
@@ -343,23 +386,73 @@ export default {
       return selectTypeData[type];
     },
     focusIt(keyName) {
-      // console.log(338, keyName);
-      this.$refs.showFont.show();
+      console.log(338, keyName);
+      // this.userForm.companyName = data.label;
+      // this.userForm.companyCode = data.id;
+      if (keyName === "menuNameOrig") {
+        this.getMenuTree();
+      }
+      if (keyName === "menuIcon") {
+        this.$refs.showFont.show();
+      }
     },
-    saveBtn() {
-      const obj = {
-        userDataScopeListJson: JSON.stringify(tempUserDataScopeListJson)
-      };
-      // console.log(77, obj);
-      // roleApi.saveSecAdmin(obj).then(res => {
-      //   if (res.result === "true") {
-      //     this.$message.success(res.message);
-      //     this.showDailog = false;
-      //   } else {
-      //     this.$message.error(res.message);
-      //   }
-      //   console.log(231, this.roleCheckedArrSave);
-      // });
+    saveBtn(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          const obj = {};
+          //           sysCode: default
+          // menuCode: 1265831542859640832
+          // parent.menuNameOrig: 人员管理
+          // parent.id: 1265831298675650560
+          // menuType: 1
+          // menuNameOrig: 人员花名册
+          // moduleCodes: bpm
+          // !moduleCodes:
+          // menuHref: /ydyx/ydyxUserRoster/list
+          // menuTarget: 标(Target)
+          // treeSort: 30
+          // permission: ydyx:ydyxUserRoster:view,ydyx:ydyxUserRoster:edit
+          // menuIcon: icon-people
+          // menuColor:
+          // menuTitle: 页签标题
+          // isShow: 1
+          // weight: 40
+          // remarks:
+
+          obj.sysCode = "default"; // :filterNokeyVal();
+          for (const key in this.extend) {
+            obj["extend." + key] = this.extend[key];
+          }
+          obj["parent.menuNameOrig"] = this.menuForm.parent.menuNameOrig;
+          obj["parent.id"] = this.menuForm.parent.id;
+          obj.menuNameOrig = this.menuForm.menuNameOrig;
+          obj.menuType = this.menuForm.menuType;
+          obj.menuCode = this.menuForm.menuCode;
+          obj.moduleCodes = this.menuForm.moduleCodes;
+          obj.menuHref = this.menuForm.menuHref;
+          obj.menuTarget = this.menuForm.menuTarget;
+          obj.treeSort = this.menuForm.treeSort;
+          obj.permission = this.menuForm.permission;
+          obj.menuIcon = this.menuForm.menuIcon;
+          obj.menuColor = this.menuForm.menuColor;
+          obj.menuTitle = this.menuForm.menuTitle;
+          obj.isShow = this.menuForm.isShow;
+          obj.weight = this.menuForm.weight;
+          obj.remarks = this.menuForm.remarks;
+          sysApi.saveMenu(obj).then(res => {
+            if (res.result === "false") {
+              this.$message.warning(res.message);
+            } else {
+              this.$message.success(res.message);
+              this.closeDialog();
+              this.$emit("initListPage");
+            }
+          });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
     colseBtn() {
       this.closeDialog();
@@ -376,6 +469,48 @@ export default {
       this.companyCheckedArr = [];
       this.officeCheckedArr = [];
       this.roleCheckedArr = [];
+    },
+    /* 显示扩展字段 */
+    showExtentionDom() {
+      this.exHeight = this.exHeight === "0px" ? "480px" : "0px";
+    },
+    /* 菜单树中当前点击的树节点*/
+    clickNodeReslut(data) {
+      console.log(411, data);
+      this.menuForm.menuNameOrig = data.label;
+      this.menuForm.parent.menuNameOrig = data.label;
+      this.menuForm.parent.id = data.id;
+      this.closeMuneTreeChoose();
+      this.keyVal = "";
+    },
+    /* changeKeyVal */
+    changeKeyVal(val) {
+      console.log(379, val);
+      this.keyVal = val;
+    },
+    /* 关闭选择上级菜单 */
+    closeMuneTreeChoose() {
+      this.innerDialogVisible = false;
+    },
+    /* 获取上级菜单 数据 */
+    getMenuTree() {
+      console.log(435, this.currentRow);
+      sysApi
+        .getMenuTree({
+          excludeCode: this.currentRow.id,
+          isShowNameOrig: true
+        })
+        .then(res => {
+          console.log(436, res);
+          const attributes = {
+            id: "id",
+            parentId: "pId",
+            label: "name",
+            rootId: "0"
+          };
+          this.menuData = toTreeData(res, attributes);
+          this.innerDialogVisible = true;
+        });
     }
   }
 };

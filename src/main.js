@@ -22,6 +22,7 @@ import 'default-passive-events'
 import '@/components/messageBox'
 import 'font-awesome/css/font-awesome.css'
 import 'simple-line-icons/css/simple-line-icons.css'
+// import 'open-iconic/font/css/open-iconic-bootstrap.css'
 import baseUrl_ from '@/api/config'
 Vue.prototype.GLOBAL = baseUrl_;
 import adaptive from "@/directive/el-table"
