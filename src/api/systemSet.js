@@ -23,5 +23,12 @@ export const sysApi = {
     return httpRequestor.postFormData(`a/sys/module/listData`, param).catch(err => {
       Message.error(err)
     })
+  },
+  /* 系统设置 获取icon */
+  getIcons: (param) => {
+    return httpRequestor.post(`tags/iconselect?value=icon-social-foursqare`, param).catch(err => {
+      Message.error(err)
+    })
   }
+
 }

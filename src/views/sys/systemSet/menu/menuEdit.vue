@@ -21,6 +21,7 @@
             :edit-model="editModel"
             :component-list="componentList"
             :form-value.sync="menuForm"
+            @focusIt="focusIt"
           >
           </DymForm>
         </el-form>
@@ -41,6 +42,7 @@
             </el-row>
           </el-col>
         </el-row> -->
+        <FontChoose ref="showFont" @iconChoose="iconChoose"></FontChoose>
       </template>
       <template slot="footer">
         <el-button size="mini" type="primary" @click="saveBtn">保存</el-button>
@@ -54,6 +56,7 @@ import DymForm from "@/components/element/dymForm";
 import DailogPanel from "@/components/dailogPanel/frame";
 import ColumnBar from "@/components/commonColumn";
 import MenuTree from "@/components/menuTree";
+import FontChoose from "./fontsIcon/index";
 import { toTreeData, dictTypeMap, resetVal } from "@/utils/pubFunc";
 import { sysApi } from "@/api/systemSet";
 import { pubApi } from "@/api/public_request";
@@ -64,7 +67,8 @@ export default {
     DailogPanel,
     DymForm,
     ColumnBar,
-    MenuTree
+    MenuTree,
+    FontChoose
   },
   data() {
     return {
@@ -140,20 +144,24 @@ export default {
           prop: "menuHref",
           labelWidth: "120px",
           componentName: "el-input",
-          cols: [11, 11, 11, 11],
+          cols: [12, 12, 12, 12],
           value: "menuHref",
           questionIcon: true,
+          width: "calc(100% - 28px)",
+          inline: "inline-block",
           questionText:
-            " 链接地址的跟路径，默认在 adminPath 路径下，外部链接需加'http://';  1、如果以  /// 开头，则代表是站点根路径（结果：http://localhost/{href}）2、如果以  // 开头，则代表是工程根路径（结果：http://localhost/{ctxPath}/{href}）3、如果以  / 开头，则代表是管理根路径（结果：http://localhost/{ctxPath}/{adminPath}/{href}）可带变量，变量格式  {变量名}1、jeesite.yml中的key可作为变量设置2、{ssoToken} : 单点登录的token编码，url参数中的参数分隔符请使用'%26'进行转义，例如：{projectUrl}/sso/{ssoToken}?url=/sys/user/list?p1=v1%26p2=v2&relogin=true3、{userCode} : 当前用户编码4、{userName} : 当前用户名称5、{userType} : 当前用户类型 "
+            " 链接地址的跟路径，默认在 adminPath 路径下，外部链接需加'http://'; \r 1、如果以  /// 开头，则代表是站点根路径（结果：http://localhost/{href}）\r2、如果以  // 开头，则代表是工程根路径（结果：http://localhost/{ctxPath}/{href}）\r3、如果以  / 开头，则代表是管理根路径（结果：http://localhost/{ctxPath}/{adminPath}/{href}）可带变量，变量格式  {变量名}\r1、jeesite.yml中的key可作为变量设置\r2、{ssoToken} : 单点登录的token编码，url参数中的参数分隔符请使用'%26'进行转义，例如：{projectUrl}/sso/{ssoToken}?url=/sys/user/list?p1=v1%26p2=v2&relogin=true\r3、{userCode} : 当前用户编码\r4、{userName} : 当前用户名称\r5、{userType} : 当前用户类型 "
         },
         {
           label: "目标(Target)：",
           prop: "menuTarget",
           labelWidth: "120px",
           componentName: "el-input",
-          cols: [11, 11, 11, 11],
+          cols: [12, 12, 12, 12],
           value: "menuTarget",
           questionIcon: true,
+          width: "calc(100% - 28px)",
+          inline: "inline-block",
           questionText:
             "链接打开的目标，默认addTabPage方式（新窗口中打开如：_blank）"
         },
@@ -171,7 +179,12 @@ export default {
           labelWidth: "120px",
           componentName: "el-input",
           cols: [12, 12, 12, 12],
-          value: "permission"
+          value: "permission",
+          questionIcon: true,
+          width: "calc(100% - 28px)",
+          inline: "inline-block",
+          questionText:
+            "控制器中定义的权限标识，如：@RequiresPermissions('权限标识')"
         },
         {
           label: "菜单图标：",
@@ -229,7 +242,12 @@ export default {
           componentName: "BaseSelect",
           cols: [12, 12, 12, 12],
           value: "weight",
-          options: this.getMenuType("sys_menu_weight")
+          options: this.getMenuType("sys_menu_weight"),
+          questionIcon: true,
+          width: "calc(100% - 28px)",
+          inline: "inline-block",
+          questionText:
+            "菜单权重：默认20；>=40一般管理员；>=60系统管理员；>=80超级管理员"
         },
         {
           label: "其他信息", // 授权功能菜单
@@ -287,6 +305,10 @@ export default {
         }
       });
     },
+    iconChoose(iconName) {
+      this.menuForm.menuIcon = iconName;
+      this.componentList[8].anotherIconType = iconName;
+    },
     /* 获取初始化页面数据 */
     initMenuCodeEdit(row) {
       /* "Company" "Office"  "Role"*/
@@ -307,6 +329,7 @@ export default {
           this.menuForm.menuTitle = res.menu.menuTitle;
           this.menuForm.isShow = res.menu.isShow + "";
           this.menuForm.weight = res.menu.weight + "";
+          this.componentList[8].anotherIconType = res.menu.menuIcon;
           this.showDailog = true;
           resolve(res);
         });
@@ -318,6 +341,10 @@ export default {
         sessionStorage.getItem("selectDicType")
       );
       return selectTypeData[type];
+    },
+    focusIt(keyName) {
+      // console.log(338, keyName);
+      this.$refs.showFont.show();
     },
     saveBtn() {
       const obj = {

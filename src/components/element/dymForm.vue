@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row :gutter="10">
+    <el-row :gutter="10" class="clearfix">
       <el-col
         v-for="(it, ind) in componentList"
         :key="ind"
@@ -24,7 +24,6 @@
           :prop="it.prop"
           :show-message="it.showMessage"
           :style="{ height: it.height }"
-          class="clearfix"
         >
           <i
             v-if="it.questionIcon"
@@ -32,79 +31,79 @@
             class="question icon-question"
           ></i>
           <!-- 部分参数说明：1.showAlpha （el-color-picker）颜色选择器 是否启用rgba -->
-          <div style="div-box">
-            <component
-              :is="it.componentName"
-              v-if="it.bySelf === true ? false : true"
-              v-model="newFormValue[it.value]"
-              :show-alpha="it.showAlpha"
-              class="dymForm"
-              :placeholder="''"
-              :clearable="it.clearable"
-              :multiple="it.multiple"
-              :options="it.options"
-              :disabled="it.disabled || editModel === 'V' ? true : false"
-              :collapse-tags="it.collapseTags"
-              :type="it.type"
-              :prop="it.prop"
-              :name="it.name"
-              :reload="it.reload"
-              :query-paras="buildQueryParas(it.queryName, it.queryValue)"
-              :cascader-props="it.cascaderProps"
-              :selected-field="it.selectedField"
-              :maxlength="it.maxlength"
-              :minlength="it.minlength"
-              :value-format="it.format"
-              :picker-options="it.pickerOptions"
-              :tag-id="it.tagId"
-              :autosize="it.autosize"
-              :dict-type-code="it.dictTypeCode"
-              :api="it.api"
-              :value-key="it.valueKey"
-              :capital-source="it.capitalSource"
-              :load-list="it.loadList"
-              :account-width="it.accountWidth"
-              :time-type="it.timeType"
-              :time-size="it.timeSize"
-              :format="it.format"
-              :active-value="'1'"
-              :inactive-value="'0'"
-              :percent.sync="newFormValue[it.percent]"
-              :reset-value.sync="it.resetValue"
-              :amount.sync="newFormValue[it.amount]"
-              :company-id="it.companyId"
-              :start-placeholder="it.startPlaceholder"
-              :end-placeholder="it.endPlaceholder"
-              :rows="it.rowsSpan"
-              :radios="it.radios"
-              :checked-radio="it.checkedRadio"
-              v-on="$listeners"
-              @selectChanged="selectChanged"
-              @focus="focus($event, it.prop)"
-              @otherData="otherData"
-              @blur="blur"
-              @change="change"
-              @onbackblankaccount="onbackblankaccount"
-              @input="inputIt"
+          <!--questionIcon： 是否显示title 提示图标  width：控制相邻input宽度  inline：设置input盒模型 questionText：title 提示文本内容  -->
+          <component
+            :is="it.componentName"
+            v-if="it.bySelf === true ? false : true"
+            v-model="newFormValue[it.value]"
+            :show-alpha="it.showAlpha"
+            class="dymForm"
+            :style="[{ width: it.width, display: it.inline }]"
+            :placeholder="''"
+            :clearable="it.clearable"
+            :multiple="it.multiple"
+            :options="it.options"
+            :disabled="it.disabled || editModel === 'V' ? true : false"
+            :collapse-tags="it.collapseTags"
+            :type="it.type"
+            :prop="it.prop"
+            :name="it.name"
+            :reload="it.reload"
+            :query-paras="buildQueryParas(it.queryName, it.queryValue)"
+            :cascader-props="it.cascaderProps"
+            :selected-field="it.selectedField"
+            :maxlength="it.maxlength"
+            :minlength="it.minlength"
+            :value-format="it.format"
+            :picker-options="it.pickerOptions"
+            :tag-id="it.tagId"
+            :autosize="it.autosize"
+            :dict-type-code="it.dictTypeCode"
+            :api="it.api"
+            :value-key="it.valueKey"
+            :capital-source="it.capitalSource"
+            :load-list="it.loadList"
+            :account-width="it.accountWidth"
+            :time-type="it.timeType"
+            :time-size="it.timeSize"
+            :format="it.format"
+            :active-value="'1'"
+            :inactive-value="'0'"
+            :percent.sync="newFormValue[it.percent]"
+            :reset-value.sync="it.resetValue"
+            :amount.sync="newFormValue[it.amount]"
+            :company-id="it.companyId"
+            :start-placeholder="it.startPlaceholder"
+            :end-placeholder="it.endPlaceholder"
+            :rows="it.rowsSpan"
+            :radios="it.radios"
+            :checked-radio="it.checkedRadio"
+            v-on="$listeners"
+            @selectChanged="selectChanged"
+            @focus="focus($event, it.prop)"
+            @otherData="otherData"
+            @blur="blur"
+            @change="change"
+            @onbackblankaccount="onbackblankaccount"
+            @input="inputIt"
+          >
+            <!-- 设置带Icon 的input  tips: slot:append/prepend  icon:class类名-->
+            <el-button
+              v-show="it.addIcon"
+              :slot="it.slotPosition"
+              :icon="it.iconType"
+              @click="btnClick(it.prop, 'inputSearch')"
             >
-              <!-- 设置带Icon 的input  tips: slot:append/prepend  icon:class类名-->
-              <el-button
-                v-show="it.addIcon"
-                :slot="it.slotPosition"
-                :icon="it.iconType"
-                @click="btnClick(it.prop, 'iconType')"
-              >
-              </el-button>
-              <!-- 当一个组件上存在第二个icon的时候使用 -->
-              <el-button
-                v-show="it.anotherIcon"
-                :slot="it.anotherSlotPosition"
-                :icon="it.anotherIconType"
-                @click="anotherBtnClick(it.prop, 'iconType')"
-              >
-              </el-button>
-            </component>
-          </div>
+            </el-button>
+            <!-- 当一个组件上存在第二个icon的时候使用 -->
+            <el-button
+              v-show="it.anotherIcon"
+              :slot="it.anotherSlotPosition"
+              :icon="it.anotherIconType"
+              @click="anotherBtnClick(it.prop, 'iconType')"
+            >
+            </el-button>
+          </component>
         </el-form-item>
         <slot v-else name="bySelf"> </slot>
       </el-col>
@@ -230,6 +229,7 @@ export default {
     },
     /* 点击带图标的input 触发事件 ， iconType 设置触发icon点击事件类型  */
     btnClick(keyName, iconType) {
+      // console.log(232, keyName, iconType);
       if (iconType === "inputSearch") {
         this.focus({}, keyName);
       }
@@ -273,10 +273,11 @@ export default {
 .div-box {
   width: calc(100%-18px);
   outline: 5px solid red;
+  /* float: left; */
 }
 .dymForm {
   /* display: inline-block; */
-  vertical-align: middle;
   float: left;
+  vertical-align: middle;
 }
 </style>

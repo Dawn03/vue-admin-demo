@@ -3,7 +3,7 @@
     <div class="current-type clearfix">
       <div class="fl">
         <i class="el-icon-user"></i>
-      
+
         <span>菜单管理</span>
       </div>
       <div class="fr">
@@ -175,8 +175,14 @@ export default {
   },
   mounted() {
     this.init(this.pageNation);
+    this.getIcons();
   },
   methods: {
+    getIcons() {
+      sysApi.getIcons().then((res) => {
+        console.log(183, res)
+      })
+    },
     initPage() {
       this.reload();
     },
