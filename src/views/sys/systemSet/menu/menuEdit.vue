@@ -386,9 +386,7 @@ export default {
       return selectTypeData[type];
     },
     focusIt(keyName) {
-      console.log(338, keyName);
-      // this.userForm.companyName = data.label;
-      // this.userForm.companyCode = data.id;
+      // console.log(338, keyName);
       if (keyName === "menuNameOrig") {
         this.getMenuTree();
       }
@@ -400,26 +398,8 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           const obj = {};
-          //           sysCode: default
-          // menuCode: 1265831542859640832
-          // parent.menuNameOrig: 人员管理
-          // parent.id: 1265831298675650560
-          // menuType: 1
-          // menuNameOrig: 人员花名册
-          // moduleCodes: bpm
-          // !moduleCodes:
-          // menuHref: /ydyx/ydyxUserRoster/list
-          // menuTarget: 标(Target)
-          // treeSort: 30
-          // permission: ydyx:ydyxUserRoster:view,ydyx:ydyxUserRoster:edit
-          // menuIcon: icon-people
-          // menuColor:
-          // menuTitle: 页签标题
-          // isShow: 1
-          // weight: 40
-          // remarks:
-
-          obj.sysCode = "default"; // :filterNokeyVal();
+          obj.sysCode = "default"; 
+          obj["!moduleCodes"] = ""; // 不加这个键会变成新增
           for (const key in this.extend) {
             obj["extend." + key] = this.extend[key];
           }

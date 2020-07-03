@@ -103,10 +103,13 @@
               size="small"
               @click="menuEdit(scope.row, '编辑')"
             >
-              <i class="el-icon-edit" title="编辑"></i>
+              <i class="el-icon-edit" title="编辑菜单"></i>
             </el-button>
             <el-button type="text" size="small" @click="deleteMenu(scope.row)">
-              <i style="color:red;" class="el-icon-delete" title="删除"></i>
+              <i style="color:red;" class="el-icon-delete" title="删除菜单"></i>
+            </el-button>
+            <el-button type="text" size="small" @click="addNew(scope.row, '新增下级')">
+              <i class="fa fa-plus-square" title="新增下级菜单"></i>
             </el-button>
           </template>
         </el-table-column>

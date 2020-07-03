@@ -32,8 +32,10 @@
               :table-head="tableHead"
               :table-data="tableData"
               :slot-columns="slotColumns"
+              :page-nation="pageNation"
               @rowClick="rowClick"
               @rowDblclick="rowDblclick"
+              @currentChange="currentChange"
             >
               <!-- <template slot="chechbox">
                 <el-table-column type="selection" width="40"></el-table-column>
@@ -48,11 +50,6 @@
                 </span>
               </template>
             </TableTree>
-            <Pagination
-              :total="pageNation.total"
-              :page-size="pageNation.pageSize"
-              @currentChange="currentChange"
-            ></Pagination>
           </el-col>
           <el-col :span="6">
             <div class="choosed-data">
@@ -96,7 +93,7 @@
 import DailogPanel from "@/components/dailogPanel/frame";
 import InputFliter from "@/components/inputFliter";
 import TableTree from "@/components/tableTree";
-import Pagination from "@/components/pagination";
+
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
 import { orgApi } from "@/api/organization";
 import { roleApi } from "@/api/role";
@@ -106,15 +103,14 @@ export default {
   components: {
     DailogPanel,
     InputFliter,
-    TableTree,
-    Pagination
+    TableTree
   },
   data() {
     return {
       showDailog: false,
       titleName: "用户选择",
       pageNation: {
-        total: null,
+        total: 0,
         pageNo: 1,
         pageSize: 20,
         ctrlPermi: 2,
@@ -169,7 +165,7 @@ export default {
   },
   methods: {
     show(row, type) {
-      console.log(172, type);
+      // console.log(172, type);
       this.currentRow = row;
       this.init(this.pageNation);
       this.showDailog = true;
@@ -198,7 +194,7 @@ export default {
       this.tableCheckBoxValue.push(row);
     },
     rowDblclick(row) {
-      this.saveBtn()
+      this.saveBtn();
     },
     /*  关闭当前选中 跳转到 编辑页 */
     saveBtn() {
