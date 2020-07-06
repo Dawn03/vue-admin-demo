@@ -22,10 +22,15 @@
         >
           新增
         </el-button>
+        <el-button size="mini" type="primary" @click="saveSort">
+          <i class="fa fa-sort-amount-asc"></i>
+          保存排序
+        </el-button>
       </div>
     </div>
     <div>
       <InputFilter
+        v-show="btnText == '隐藏'"
         :form-item="formInline"
         class="search"
         @searchBtn="searchBtn"
@@ -68,8 +73,12 @@
           {{ scope.row.moduleCodes }}
         </span>
       </template>
-      <template slot="treeSort" slot-scope="scope">
-        <el-input v-model="scope.row.treeSort" class="tree-sort"></el-input>
+      <template slot="Func" slot-scope="scope">
+        <el-input
+          v-model="scope.row.treeSort"
+          class="tree-sort"
+          @blur="treeSortFunc(scope.row)"
+        ></el-input>
       </template>
       <template slot="weight" slot-scope="scope">
         <span v-if="scope.row.weight == '80'" style="color:#c243d6">
@@ -108,7 +117,11 @@
             <el-button type="text" size="small" @click="deleteMenu(scope.row)">
               <i style="color:red;" class="el-icon-delete" title="删除菜单"></i>
             </el-button>
-            <el-button type="text" size="small" @click="addNew(scope.row, '新增下级')">
+            <el-button
+              type="text"
+              size="small"
+              @click="addNew(scope.row, '新增下级')"
+            >
               <i class="fa fa-plus-square" title="新增下级菜单"></i>
             </el-button>
           </template>
@@ -127,6 +140,7 @@ import AddUser from "./addUser";
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
 // import { orgApi } from "@/api/organization";
 import { sysApi } from "../../../../api/systemSet";
+import { returnReg } from "@/utils/validate";
 export default {
   name: "Menu",
   inject: ["reload"],
@@ -140,6 +154,11 @@ export default {
     return {
       btnText: "查询",
       stopOrStart: null,
+      sortVal: {},
+      TableTreeData: {
+        ids: [],
+        sorts: []
+      },
       formInline: [
         {
           type: "input",
@@ -155,7 +174,7 @@ export default {
       slotColumns: [
         "menuName",
         "moduleCodes",
-        "treeSort",
+        "Func",
         "isShow",
         "menuType",
         "weight"
@@ -164,31 +183,26 @@ export default {
         menuName: "菜单名称",
         moduleCodes: "归属模块",
         menuHref: "链接",
-        treeSort: "排序",
+        Func: "排序",
         menuType: "类型", // 1 菜单 2权限
         isShow: "可见", // 0 隐藏 1可见
         permission: "权限标志",
         weight: "菜单权重"
       },
       tableData: [],
-      pageNation: {},
+      pageNation: {
+        pageSize: 20,
+        pageNo: 1
+      },
       tableFit: true
     };
   },
   mounted() {
     this.init(this.pageNation);
-    // this.getIcons();
   },
   methods: {
-    getIcons() {
-      sysApi.getIcons().then(res => {
-        console.log(183, res);
-      });
-    },
     initPage() {
       this.reload();
-      console.log(187);
-      // this.init(this.pageNation);
     },
     init(param) {
       // console.log(2222, param);
@@ -196,6 +210,8 @@ export default {
         for (let i = 0, len = res.length; i < len; i++) {
           if (res[i].isTreeLeaf === false) {
             res[i].hasChildren = true;
+            this.TableTreeData.ids.push(res[i].id);
+            this.TableTreeData.sorts.push(res[i].treeSort);
           }
         }
         this.tableData = res;
@@ -214,12 +230,38 @@ export default {
       };
       sysApi.getMenu(obj).then(res => {
         for (let i = 0, len = res.length; i < len; i++) {
+          this.TableTreeData.ids.push(res[i].id);
+          this.TableTreeData.sorts.push(res[i].treeSort);
           if (!res[i].isTreeLeaf) {
             res[i].hasChildren = true;
           }
         }
         param.resolve(res);
       });
+    },
+    saveSort() {
+      const obj = {
+        ids: this.TableTreeData.ids, //, JSON.stringify(this.sortVal.id),
+        sorts: this.TableTreeData.sorts //, JSON.stringify(this.sortVal.treeSort + "")
+      };
+      sysApi.updateTreeSort(obj).then(res => {
+        if (res.result === "true") {
+          this.$message.success(res.message);
+          this.reload();
+        } else {
+          this.$message.error(res.message);
+        }
+      });
+    },
+    treeSortFunc(val) {
+      this.sortVal = val;
+      for (let i = 0, len = this.TableTreeData.ids.length; i < len; i++) {
+        if (this.TableTreeData.ids[i] === val.id) {
+          this.TableTreeData.sorts[i] = val.treeSort;
+        }
+      }
+      // if(!returnReg("positiveInteger").test(val)) {
+      // }
     },
     /* 列表文本转义 */
     swichText(type, val, other) {
@@ -242,62 +284,19 @@ export default {
       );
       return selectTypeData[type];
     },
-    stopUsePost(row) {
-      if (row.status === "0") {
-        this.stopOrStart = "disable";
-        this.stopOrStartText = "停用";
-      } else {
-        this.stopOrStart = "enable";
-        this.stopOrStartText = "起用";
-      }
-      // this.$alertMsgBox(`确定要${this.stopOrStartText}该用户吗`, "信息")
-      //   .then(() => {
-      //     orgApi
-      //       .stopUsePost({
-      //         stopOrStart: this.stopOrStart,
-      //         postCode: row.postCode
-      //       })
-      //       .then(res => {
-      //         if (res.result === "true") {
-      //           this.init(this.pageNation);
-      //           this.$message.success(res.message);
-      //         } else {
-      //           this.$message.warning(res.message);
-      //         }
-      //       });
-      //   })
-      //   .catch(() => {
-      //     this.$message.info("取消");
-      //   });
-    },
-    deleteBtn(row) {
-      this.$alertMsgBox(`此操作将永久删除该文件, 是否继续?`, "提示")
-        .then(() => {
-          // orgApi
-          //   .deleteSecAdmin({
-          //     userCode: row.userCode
-          //   })
-          //   .then(res => {
-          //     if (res.result === "true") {
-          //       this.init(this.pageNation);
-          //       this.$message.success(res.message);
-          //     }
-          //   });
-        })
-        .catch(() => {
-          this.$message.info("取消");
-        });
-    },
     /* 获取填入输入框的值  */
     searchBtn(data = {}) {
-      // this.pageNation
+      // menuNameOrig 和 formInline 中的键名不一样 单独写
       const obj = {
         pageSize: this.pageNation.pageSize,
         pageNo: 1,
-        status: ""
+        sysCode: "default",
+        moduleCodes: "",
+        menuNameOrig: this.formInline[0].value
       };
-      const valObj = Object.assign(obj, getInputVal(this.formInline));
-      this.init(valObj);
+      console.log(297, this.formInline);
+      // const valObj = Object.assign(obj, getInputVal(this.formInline));
+      this.init(obj);
     },
     /* 清除输入框内的值 */
     resetForm() {
@@ -317,11 +316,11 @@ export default {
       this.$refs.secAdminEditPanel.show(row, type);
     },
     addNew(row, type) {
-      this.$refs.secAdminAddUser.show(row, type);
+      this.$refs.secAdminEditPanel.show(row, type);
     },
     /* 选中的用户 */
     addUserVal(row) {
-      this.$refs.secAdminEditPanel.show(row[0], "编辑");
+      // this.$refs.secAdminEditPanel.show(row[0], "编辑");
     },
     deleteMenu(row) {
       this.$alertMsgBox("确认要删除该菜单及所有子菜单吗？", "信息")

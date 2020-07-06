@@ -81,6 +81,7 @@ export default {
       titleName: "编辑菜单",
       editModel: "E",
       currentRow: {},
+      currentType: {},
       superMenuName: "",
       menuForm: {
         loginCode: "",
@@ -128,11 +129,11 @@ export default {
         },
         {
           label: "菜单名称：",
-          prop: "menuName",
+          prop: "menuNameOrig",
           labelWidth: "120px",
           componentName: "el-input",
           cols: [12, 12, 12, 12],
-          value: "menuName"
+          value: "menuNameOrig"
         },
         {
           label: "归属模块：",
@@ -143,6 +144,8 @@ export default {
           value: "moduleCodes",
           options: [],
           questionIcon: true,
+          width: "calc(100% - 28px)",
+          inline: "inline-block",
           questionText: "指定菜单所属的模块，在开启和禁用模块的时候停用所属菜单"
         },
         {
@@ -282,7 +285,8 @@ export default {
       ],
       menuFormRules: {
         menuType: [{ required: true, message: "必填信息", trigger: "blur" }],
-        moduleCodes: [{ required: true, message: "必填信息", trigger: "blur" }]
+        moduleCodes: [{ required: true, message: "必填信息", trigger: "blur" }],
+        menuNameOrig: [{ required: true, message: "必填信息", trigger: "blur" }]
       },
       innerDialogVisible: false,
       menuTreeTitle: "上级菜单",
@@ -316,12 +320,30 @@ export default {
   },
   methods: {
     show(row, type) {
+      console.log("319", type, row);
+      this.currentType = type;
+      const param = {
+        key: "",
+        value: ""
+      };
+      if (type === "新增下级") {
+        param.key = "parentCode";
+        param.value = row.id;
+      }
+      if (type === "新增") {
+        param.key = "sysCode";
+        param.value = "default";
+      }
+      if (type === "编辑") {
+        param.key = "menuCode";
+        param.value = row.menuCode;
+      }
+      this.init(row, param);
       this.currentRow = row;
-      this.init(row);
     },
-    init(row) {
+    init(row, param) {
       Promise.all([
-        this.initMenuCodeEdit(row)
+        this.initMenuCodeEdit(row, param)
         // this.getOfficeMenuTree(),
       ]).then(res => {
         const initData = res[0];
@@ -339,40 +361,43 @@ export default {
       this.componentList[8].anotherIconType = iconName;
     },
     /* 获取初始化页面数据 */
-    initMenuCodeEdit(row) {
-      /* "Company" "Office"  "Role"*/
+    initMenuCodeEdit(row, param) {
       return new Promise((resolve, reject) => {
-        sysApi.initMenuCodeEdit({ menuCode: row.menuCode }).then(res => {
-          // for (let i = 0, len = res.userDataScopeList.length; i < len; i++) {
-          // }
-          const tempMenuNameOrig = row.treeNames.split("/");
-          this.menuForm.parent.id =
-            row.parentCode !== "0" ? row.parentCode : "";
-          this.menuForm.parent.menuNameOrig =
-            tempMenuNameOrig[tempMenuNameOrig.length - 2] || "";
-          this.menuForm.superMenuName =
-            tempMenuNameOrig[tempMenuNameOrig.length - 2] || "";
-          for (const key in res.menu.extend) {
-            if (res.menu.extend[key]) {
-              this.extend[key] = res.menu.extend[key];
+        sysApi.initMenuCodeEdit(param).then(res => {
+          if (this.currentType === "新增下级") {
+            this.menuForm.parent.id = row.id;
+            this.menuForm.parent.menuNameOrig = row.menuNameOrig;
+            this.menuForm.superMenuName = row.menuNameOrig;
+          } else if (this.currentType === "编辑") {
+            const tempMenuNameOrig = row.treeNames.split("/");
+            this.menuForm.parent.id =
+              row.parentCode !== "0" ? row.parentCode : "";
+            this.menuForm.parent.menuNameOrig =
+              tempMenuNameOrig[tempMenuNameOrig.length - 2] || "";
+            this.menuForm.superMenuName =
+              tempMenuNameOrig[tempMenuNameOrig.length - 2] || "";
+            for (const key in res.menu.extend) {
+              if (res.menu.extend[key]) {
+                this.extend[key] = res.menu.extend[key];
+              }
             }
           }
-          this.menuForm.menuNameOrig = res.menu.menuNameOrig;
-          this.menuForm.menuType = res.menu.menuType;
-          this.menuForm.menuName = res.menu.menuName;
-          this.menuForm.menuCode = res.menu.menuCode;
+          this.menuForm.menuNameOrig = res.menu.menuNameOrig || "";
+          this.menuForm.menuType = res.menu.menuType || "";
+          this.menuForm.menuName = res.menu.menuName || "";
+          this.menuForm.menuCode = res.menu.menuCode || "";
           this.menuForm.moduleCodes = res.menu.moduleCodes.split(",");
-          this.menuForm.menuHref = res.menu.menuHref;
-          this.menuForm.menuTarget = res.menu.menuTarget;
-          this.menuForm.treeSort = res.menu.treeSort;
-          this.menuForm.permission = res.menu.permission;
-          this.menuForm.menuIcon = res.menu.menuIcon;
+          this.menuForm.menuHref = res.menu.menuHref || "";
+          this.menuForm.menuTarget = res.menu.menuTarget || "";
+          this.menuForm.treeSort = res.menu.treeSort || "";
+          this.menuForm.permission = res.menu.permission || "";
+          this.menuForm.menuIcon = res.menu.menuIcon || "";
           this.menuForm.menuColor = res.menu.menuColor || "#DDD";
-          this.menuForm.menuTitle = res.menu.menuTitle;
+          this.menuForm.menuTitle = res.menu.menuTitle || "";
           this.menuForm.isShow = res.menu.isShow + "";
           this.menuForm.weight = res.menu.weight + "";
-          this.menuForm.remarks = res.menu.remarks;
-          this.componentList[8].anotherIconType = res.menu.menuIcon;
+          this.menuForm.remarks = res.menu.remarks || "";
+          this.componentList[8].anotherIconType = res.menu.menuIcon || "";
           this.showDailog = true;
           resolve(res);
         });
@@ -387,7 +412,7 @@ export default {
     },
     focusIt(keyName) {
       // console.log(338, keyName);
-      if (keyName === "menuNameOrig") {
+      if (keyName === "superMenuName") {
         this.getMenuTree();
       }
       if (keyName === "menuIcon") {
@@ -398,7 +423,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           const obj = {};
-          obj.sysCode = "default"; 
+          obj.sysCode = "default";
           obj["!moduleCodes"] = ""; // 不加这个键会变成新增
           for (const key in this.extend) {
             obj["extend." + key] = this.extend[key];
@@ -425,7 +450,7 @@ export default {
             } else {
               this.$message.success(res.message);
               this.closeDialog();
-              this.$emit("initListPage");
+              this.$emit("initPage");
             }
           });
         } else {
