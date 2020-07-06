@@ -127,9 +127,13 @@ export default {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
+          const Base64 = require("js-base64").Base64; // 还是require
+          const obj = {};
+          obj.username = Base64.encode(this.loginForm.username);
+          obj.password = Base64.encode(this.loginForm.password);
           this.loading = true;
           this.$store
-            .dispatch("user/login", this.loginForm)
+            .dispatch("user/login", obj)
             .then(res => {
               this.afterRun();
               this.loading = false;
