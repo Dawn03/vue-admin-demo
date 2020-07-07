@@ -1,46 +1,19 @@
 <template>
   <div class="post  wrapper_content">
-    <div class="current-type clearfix">
-      <div class="fl">
-        <i class="el-icon-user"></i>
-        <span>二级管理员</span>
-      </div>
-      <div class="fr">
-        <el-button
-          type="primary"
-          icon="el-icon-view"
-          size="mini"
-          @click="showOrHidden"
-        >
-          {{ btnText }}
-        </el-button>
-        <el-button
-          type="primary"
-          icon="el-icon-plus"
-          size="mini"
-          @click="addNew({}, '新增')"
-        >
-          新增
-        </el-button>
-      </div>
-    </div>
+    <TopBtns
+      :btn-arr="btnArr"
+      :left-mg="leftMg"
+      @showSearch="showSearch"
+      @handlerName="handlerName"
+    ></TopBtns>
     <div>
       <InputFilter
+        v-show="showSearchVal"
         :form-item="formInline"
-        class="search"
+        @statusValChange="statusValChange"
         @searchBtn="searchBtn"
+        @resetForm="resetForm"
       >
-        <template slot="btnGroups">
-          <el-button
-            type="primary"
-            icon="el-icon-search"
-            size="mini"
-            @click="searchBtn"
-          >
-            查询
-          </el-button>
-          <el-button size="mini" @click="resetForm"> 重置 </el-button>
-        </template>
       </InputFilter>
     </div>
 
@@ -88,6 +61,8 @@ import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
 import SecAdminEdit from "./secAdminEdit";
 import AddUser from "./addUser";
+import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
+
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
 // import { orgApi } from "@/api/organization";
 import { roleApi } from "../../../../api/role";
@@ -95,6 +70,7 @@ export default {
   name: "UserManage",
   inject: ["reload"],
   components: {
+    TopBtns,
     TableTree,
     InputFilter,
     SecAdminEdit,
@@ -103,6 +79,23 @@ export default {
   data() {
     return {
       btnText: "查询",
+      showSearchVal: false,
+      leftMg: {
+        icon: "fa icon-user-female",
+        text: "二级管理员"
+      },
+      btnArr: [
+        {
+          handlerName: "View",
+          btnText: "查询",
+          class: "fa fa-search"
+        },
+        {
+          handlerName: "AddNew",
+          btnText: "新增",
+          class: "fa fa-plus"
+        }
+      ],
       stopOrStart: null,
       formInline: [
         {
@@ -179,6 +172,12 @@ export default {
     this.init(this.pageNation);
   },
   methods: {
+    showSearch(val) {
+      this.showSearchVal = val;
+    },
+    handlerName(funcName) {
+      this[funcName]();
+    },
     initPage() {
       this.reload();
     },
@@ -189,9 +188,7 @@ export default {
         this.tableData = res.list;
       });
     },
-    showOrHidden() {
-      this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
-    },
+
     /* 获取岗位下拉框数据 */
     getPostOption(type) {
       const selectTypeData = JSON.parse(
@@ -285,8 +282,8 @@ export default {
     secAdminEdit(row, type) {
       this.$refs.secAdminEditPanel.show(row, type);
     },
-    addNew(row, type) {
-      this.$refs.secAdminAddUser.show(row, type);
+    AddNew() {
+      this.$refs.secAdminAddUser.show({}, "新增");
     },
     /* 选中的用户 */
     addUserVal(row) {
@@ -297,13 +294,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 .post {
-  .current-type {
-    height: 45px;
-    line-height: 45px;
-    // width: calc(100% -200px);
-    // margin-right: 200px;
-    border-bottom: 1px solid #eee;
-  }
   .top-search {
     width: 100%;
     padding: 10px 10px 0;

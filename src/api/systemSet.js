@@ -53,6 +53,11 @@ export const sysApi = {
     return httpRequestor.get(`a/sys/menu/form.json?parentCode=${param.parentCode}&sysCode=default`).catch(err => {
       Message.error(err)
     })
+  },
+  /* 系统设置 模块管理 */
+  getModule: (param) => {
+    return httpRequestor.get(`a/sys/module/listData`, param).catch(err => {
+      Message.error(err)
+    })
   }
-
 }

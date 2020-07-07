@@ -1,44 +1,19 @@
 <template>
   <div class="role-table">
-    <div class="current-type clearfix">
-      <div class="fl">
-        <i class="el-icon-user"></i>
-        <span>角色管理</span>
-      </div>
-      <div class="fr">
-        <el-button
-          type="primary"
-          icon="el-icon-view"
-          size="mini"
-          @click="showOrHidden"
-        >
-          {{ btnText }}
-        </el-button>
-        <el-button
-          type="primary"
-          icon="el-icon-plus"
-          size="mini"
-          @click="addNew({}, '新增角色')"
-        >
-          新增
-        </el-button>
-      </div>
-    </div>
-    <div>
-      <InputFilter
-        v-show="btnText == '隐藏'"
-        :form-item="formInline"
-        @searchBtn="searchBtn"
-        @statusValChange="statusValChange"
-      >
-        <template slot="btnGroups">
-          <el-button type="primary" size="mini" @click="searchBtn">
-            查询
-          </el-button>
-          <el-button size="mini" @click="resetForm"> 重置 </el-button>
-        </template>
-      </InputFilter>
-    </div>
+    <TopBtns
+      :btn-arr="btnArr"
+      :left-mg="leftMg"
+      @showSearch="showSearch"
+      @handlerName="handlerName"
+    ></TopBtns>
+    <InputFilter
+      v-show="showSearchVal"
+      :form-item="formInline"
+      @searchBtn="searchBtn"
+      @resetForm="resetForm"
+      @statusValChange="statusValChange"
+    >
+    </InputFilter>
     <TableTree
       ref="theTable"
       :table-head="tableHead"
@@ -176,6 +151,7 @@
   </div>
 </template>
 <script>
+import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
 import RoleEditPanel from "./roleEditPanel";
@@ -191,6 +167,7 @@ import { toTreeData } from "@/utils/pubFunc";
 export default {
   name: "RoleTable",
   components: {
+    TopBtns,
     TableTree,
     InputFilter,
     RoleEditPanel,
@@ -200,9 +177,25 @@ export default {
   },
   data() {
     return {
+      showSearchVal: false,
+      leftMg: {
+        icon: "fa icon-people",
+        text: "角色管理"
+      },
+      btnArr: [
+        {
+          handlerName: "View",
+          btnText: "查询",
+          class: "fa fa-search"
+        },
+        {
+          handlerName: "AddNew",
+          btnText: "新增",
+          class: "fa fa-plus"
+        }
+      ],
       changeArrowDirection: false,
       currentId: null,
-      btnText: "查询",
       total: "",
       pageNation: {
         total: 0,
@@ -315,6 +308,12 @@ export default {
     });
   },
   methods: {
+    showSearch(val) {
+      this.showSearchVal = val;
+    },
+    handlerName(funcName) {
+      this[funcName]();
+    },
     async init(obj) {
       /* 获取角色状态 */
       await this.dictTypeFunc({
@@ -373,9 +372,7 @@ export default {
       return dictTypeMap(type, val, other);
       // console.log(99, dictTypeMap(type, val, other));
     },
-    showOrHidden() {
-      this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
-    },
+
     statusValChange(item) {
       this.searchBtn();
     },
@@ -396,9 +393,9 @@ export default {
       });
       clearFilterVal(this.formInline);
     },
-    addNew(row, type) {
+    AddNew() {
       // console.log(row, type);
-      this.$refs.RoleEditPanel.show(row, type);
+      this.$refs.RoleEditPanel.show({}, "新增角色");
     },
     moreHandleClick(row) {
       this.currentId = row.id;
@@ -512,13 +509,7 @@ export default {
 <style lang="scss" scoped>
 .role-table {
   margin: 0 10px;
-  .current-type {
-    height: 45px;
-    line-height: 45px;
-    // width: calc(100% -200px);
-    // margin-right: 200px;
-    border-bottom: 1px solid #eee;
-  }
+
   .td-color {
     color: #1890ff;
     cursor: pointer;

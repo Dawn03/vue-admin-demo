@@ -1,48 +1,19 @@
 <template>
-  <div class="corp-admin">
-    <div class="current-type clearfix">
-      <div class="fl">
-        <i class="el-icon-user"></i>
-        <span>系统管理员</span>
-      </div>
-      <div class="fr">
-        <el-button
-          type="primary"
-          icon="el-icon-view"
-          size="mini"
-          @click="showOrHidden"
-        >
-          {{ btnText }}
-        </el-button>
-        <el-button
-          type="primary"
-          icon="el-icon-plus"
-          size="mini"
-          @click="editHandleClick({}, '新增')"
-        >
-          新增租户管理
-        </el-button>
-      </div>
-    </div>
-
+  <div class="corp-admin wrapper_content">
+    <TopBtns
+      :btn-arr="btnArr"
+      :left-mg="leftMg"
+      @showSearch="showSearch"
+      @handlerName="handlerName"
+    ></TopBtns>
     <div>
       <InputFilter
-        v-show="btnText == '隐藏'"
+        v-show="showSearchVal"
         :form-item="formInline"
         @statusValChange="statusValChange"
         @searchBtn="searchBtn"
+        @resetForm="resetForm"
       >
-        <template slot="btnGroups">
-          <el-button
-            type="primary"
-            icon="el-icon-search"
-            size="mini"
-            @click="searchBtn"
-          >
-            查询
-          </el-button>
-          <el-button size="mini" @click="resetForm"> 重置 </el-button>
-        </template>
       </InputFilter>
     </div>
 
@@ -140,6 +111,7 @@
   </div>
 </template>
 <script>
+import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
 import CorpAdminEditAndAddPanel from "./corpAdminEditAndAddPanel";
@@ -152,6 +124,7 @@ import { statusMap } from "@/utils/pubFunc";
 export default {
   name: "CorpAdmin",
   components: {
+    TopBtns,
     TableTree,
     InputFilter,
     CorpAdminEditAndAddPanel
@@ -166,7 +139,23 @@ export default {
   },
   data() {
     return {
-      btnText: "查询",
+      showSearchVal: false,
+      leftMg: {
+        icon: "fa icon-badge",
+        text: "系统管理员"
+      },
+      btnArr: [
+        {
+          handlerName: "View",
+          btnText: "查询",
+          class: "fa fa-search"
+        },
+        {
+          handlerName: "AddNew",
+          btnText: "新增管理员",
+          class: "fa fa-plus"
+        }
+      ],
       sys_user_status: [], // 用户状态键值存储
       changeArrowDirection: false,
       currentId: null,
@@ -255,6 +244,12 @@ export default {
     // console.log(397, '刚刚启动时进入页面')
   },
   methods: {
+    showSearch(val) {
+      this.showSearchVal = val;
+    },
+    handlerName(funcName) {
+      this[funcName]();
+    },
     init(param) {
       roleApi
         .getCorpAdminList(param)
@@ -285,9 +280,7 @@ export default {
         status: ""
       });
     },
-    showOrHidden() {
-      this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
-    },
+
     // select
     statusValChange(item) {
       this.searchBtn(item);
@@ -314,6 +307,9 @@ export default {
     /* 编辑表格 */
     editHandleClick(row, type) {
       this.$refs.corpAdminEditPanel.show(row, type);
+    },
+    AddNew() {
+      this.$refs.corpAdminEditPanel.show({}, "新增");
     },
     /* 行点击添加*/
     addClick(row, type) {
@@ -414,14 +410,6 @@ export default {
   width: 100%;
   height: calc(100vh - 100px);
   // display: flex;
-  margin: 0 10px;
-  .current-type {
-    height: 45px;
-    line-height: 45px;
-    // width: calc(100% -200px);
-    // margin-right: 200px;
-    border-bottom: 1px solid #eee;
-  }
   .td-color {
     color: #1890ff;
     cursor: pointer;

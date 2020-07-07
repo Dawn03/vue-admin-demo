@@ -1,30 +1,15 @@
 <template>
   <div class="user-right-box">
-    <div class="current-type clearfix">
-      <div class="fl">
-        <i class="el-icon-user"></i>
-        <span>用户管理</span>
-      </div>
-      <div class="fr">
-        <el-button
-          type="primary"
-          icon="el-icon-view"
-          size="mini"
-          @click="showOrHidden"
-        >
-          {{ btnText }}
-        </el-button>
-        <el-button
-          type="primary"
-          icon="el-icon-plus"
-          size="mini"
-          @click="editHandleClick({}, '新增')"
-        >
-          新增
-        </el-button>
+    <TopBtns
+      :btn-arr="btnArr"
+      :left-mg="leftMg"
+      @showSearch="showSearch"
+      @handlerName="handlerName"
+    >
+      <template slot="more">
         <el-dropdown size="mini" @click="showImportAndExport">
-          <el-button type="primary" size="mini">
-            更多
+          <el-button type="primary" size="mini" title="更多">
+            <i class="fa fa-navicon"></i>
             <i class="el-icon-arrow-down el-icon--right"></i>
           </el-button>
           <el-dropdown-menu slot="dropdown" size="mini">
@@ -32,31 +17,23 @@
             <el-dropdown-item>导出</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-      </div>
-    </div>
+      </template>
+    </TopBtns>
     <div>
       <InputFilter
-        v-show="btnText == '隐藏'"
+        v-show="showSearchVal"
         :form-item="formInline"
         @statusValChange="statusValChange"
         @searchBtn="searchBtn"
       >
         <template slot="btnGroups">
-          <el-button
-            type="primary"
-            icon="el-icon-search"
-            size="mini"
-            @click="searchBtn"
-          >
-            查询
-          </el-button>
-          <el-button size="mini" @click="resetForm"> 重置 </el-button>
           <el-button size="mini" @click="getMore"> 更多 </el-button>
         </template>
       </InputFilter>
       <InputFilter
         v-show="showMore"
         :form-item="moreFormItem"
+        :show-search-btn="false"
         @filterPanel="showFilterPanel"
         @statusValChange="statusValChange"
       />
@@ -189,6 +166,7 @@
 <script>
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
+import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
 import UserEditPanel from "./userEditPanel";
 import AssignRole from "./assignRole";
 import DataRights from "./dataRights";
@@ -208,6 +186,7 @@ export default {
   components: {
     TableTree,
     InputFilter,
+    TopBtns,
     UserEditPanel,
     AssignRole,
     DataRights,
@@ -223,6 +202,28 @@ export default {
   },
   data() {
     return {
+      showSearchVal: false,
+      leftMg: {
+        icon: "fa icon-user",
+        text: "用户管理"
+      },
+      btnArr: [
+        {
+          handlerName: "View",
+          btnText: "查询",
+          class: "fa fa-search"
+        },
+        {
+          handlerName: "AddNew",
+          btnText: "新增",
+          class: "fa fa-plus"
+        }
+        // {
+        //   handlerName: "More",
+        //   btnText: "更多",
+        //   class: "fa fa-navicon"
+        // }
+      ],
       btnText: "查询",
       sys_user_status: [], // 用户状态键值存储
       changeArrowDirection: false,
@@ -235,24 +236,28 @@ export default {
           type: "input",
           label: "账号",
           key: "loginCode",
-          value: ""
+          value: "",
+          width: 90
         },
         {
           type: "input",
           label: "昵称",
           key: "userName",
-          value: ""
+          value: "",
+          width: 90
         },
         {
           type: "input",
           label: "姓名",
           key: "refName",
+          width: 90,
           value: ""
         },
         {
           type: "input",
           label: "手机",
           key: "mobile",
+          width: 90,
           value: ""
         },
         {
@@ -260,6 +265,7 @@ export default {
           label: "状态",
           options: this.getStatusOption("sys_user_status"),
           key: "status",
+          width: 90,
           value: ""
         }
       ],
@@ -270,18 +276,21 @@ export default {
           type: "searchInput",
           label: "机构",
           key: "institution",
+          width: 90,
           value: ""
         },
         {
           type: "searchInput",
           label: "公司",
           key: "company",
+          width: 90,
           value: ""
         },
         {
           type: "input",
           label: "邮箱",
           key: "email",
+          width: 90,
           value: ""
         },
         {
@@ -289,12 +298,14 @@ export default {
           label: "岗位",
           key: "employee.postCode",
           options: [],
+          width: 90,
           value: ""
         },
         {
           type: "input",
           label: "电话",
           key: "phone",
+          width: 90,
           value: ""
         }
       ],
@@ -360,6 +371,12 @@ export default {
     // console.log(397, '刚刚启动时进入页面')
   },
   methods: {
+    showSearch(val) {
+      this.showSearchVal = val;
+    },
+    handlerName(funcName) {
+      this[funcName]();
+    },
     async init(param) {
       await this.$store.dispatch("user/getUserMapFeild", "sys_user_status");
       await this.getPost();
@@ -405,9 +422,6 @@ export default {
     swichText(type, val, other) {
       return dictTypeMap(type, val, other);
       // console.log(99, dictTypeMap(type, val, other));
-    },
-    showOrHidden() {
-      this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
     },
     // select
     statusValChange(val) {
@@ -471,6 +485,9 @@ export default {
         this.searchVal["employee.company.companyCode"] = val.id;
         this.searchVal["employee.company.companyName"] = val.label;
       }
+    },
+    AddNew() {
+      this.$refs.userEditPanel.show({}, "新增");
     },
     /* 编辑表格 */
     editHandleClick(row, type) {

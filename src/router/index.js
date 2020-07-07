@@ -152,6 +152,14 @@ export const constantRoutes = [{
             meta: {
               title: '菜单管理'
             }
+          },
+          {
+            path: 'module',
+            component: () => import('@/views/sys/systemSet/module'),
+            name: 'module',
+            meta: {
+              title: '模块管理'
+            }
           }
           // {
           //   path: 'module',

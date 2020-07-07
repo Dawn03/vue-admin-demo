@@ -12,18 +12,8 @@
           :form-item="formInline"
           style="margin-bottom: 10px;"
           @searchBtn="searchBtn"
+          @resetForm="resetForm"
         >
-          <template slot="btnGroups">
-            <el-button
-              type="primary"
-              icon="el-icon-search"
-              size="mini"
-              @click="searchBtn"
-            >
-              查询
-            </el-button>
-            <el-button size="mini" @click="resetForm"> 重置 </el-button>
-          </template>
         </InputFliter>
         <el-row type="flex" :gutter="10">
           <el-col :span="18">

@@ -31,6 +31,7 @@
               :default-height="150"
               :show-index="true"
               @tableCheckBox="tableCheckBox"
+              :showPage="false"
             >
               <template slot="chechbox">
                 <el-table-column type="selection" width="40"></el-table-column>

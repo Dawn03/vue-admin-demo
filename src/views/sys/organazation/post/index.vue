@@ -1,49 +1,19 @@
 <template>
-  <div class="post  wrapper_content">
-    <div class="current-type clearfix">
-      <div class="fl">
-        <i class="el-icon-user"></i>
-        <span>岗位管理</span>
-      </div>
-      <div class="fr">
-        <el-button
-          type="primary"
-          icon="el-icon-view"
-          size="mini"
-          @click="showOrHidden"
-        >
-          {{ btnText }}
-        </el-button>
-        <el-button
-          type="primary"
-          icon="el-icon-plus"
-          size="mini"
-          @click="addNew({}, '新增')"
-        >
-          新增
-        </el-button>
-      </div>
-    </div>
-    <div>
-      <InputFilter
-        :form-item="formInline"
-        class="search"
-        @statusValChange="statusValChange"
-        @searchBtn="searchBtn"
-      >
-        <template slot="btnGroups">
-          <el-button
-            type="primary"
-            icon="el-icon-search"
-            size="mini"
-            @click="searchBtn"
-          >
-            查询
-          </el-button>
-          <el-button size="mini" @click="resetForm"> 重置 </el-button>
-        </template>
-      </InputFilter>
-    </div>
+  <div class="wrapper_content">
+    <TopBtns
+      :btn-arr="btnArr"
+      :left-mg="leftMg"
+      @showSearch="showSearch"
+      @handlerName="handlerName"
+    ></TopBtns>
+    <InputFilter
+      v-show="showSearchVal"
+      :form-item="formInline"
+      @resetForm="resetForm"
+      @statusValChange="statusValChange"
+      @searchBtn="searchBtn"
+    >
+    </InputFilter>
 
     <TableTree
       :table-head="tableHead"
@@ -107,22 +77,40 @@
   </div>
 </template>
 <script>
+import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
 import AddAndEdit from "./addAndEdit";
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
 import { orgApi } from "@/api/organization";
 export default {
-  name: "UserManage",
+  name: "PostManage",
   inject: ["reload"],
   components: {
+    TopBtns,
     TableTree,
     InputFilter,
     AddAndEdit
   },
   data() {
     return {
-      btnText: "查询",
+      showSearchVal: false,
+      leftMg: {
+        icon: "fa icon-trophy",
+        text: "岗位管理"
+      },
+      btnArr: [
+        {
+          handlerName: "View",
+          btnText: "查询",
+          class: "fa fa-search"
+        },
+        {
+          handlerName: "AddNew",
+          btnText: "新增",
+          class: "fa fa-plus"
+        }
+      ],
       stopOrStart: null,
       formInline: [
         {
@@ -180,6 +168,12 @@ export default {
     this.init(this.pageNation);
   },
   methods: {
+    showSearch(val) {
+      this.showSearchVal = val;
+    },
+    handlerName(funcName) {
+      this[funcName]();
+    },
     initPage() {
       this.reload();
     },
@@ -190,9 +184,7 @@ export default {
         this.tableData = res.list;
       });
     },
-    showOrHidden() {
-      this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
-    },
+
     /* 获取岗位下拉框数据 */
     getPostOption(type) {
       const selectTypeData = JSON.parse(
@@ -289,28 +281,10 @@ export default {
     postEdit(row, type) {
       this.$refs.postEditPanel.show(row, type);
     },
-    addNew(row, type) {
-      this.$refs.postEditPanel.show(row, type);
+    AddNew() {
+      this.$refs.postEditPanel.show({}, "新增");
     }
   }
 };
 </script>
-<style lang="scss" scoped>
-.post {
-  .current-type {
-    height: 45px;
-    line-height: 45px;
-    // width: calc(100% -200px);
-    // margin-right: 200px;
-    border-bottom: 1px solid #eee;
-  }
-  .top-search {
-    width: 100%;
-    padding: 10px 10px 0;
-  }
-  .search {
-    padding: 0 10px;
-    // outline: 1px solid red;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

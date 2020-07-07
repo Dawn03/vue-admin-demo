@@ -6,12 +6,26 @@
       @showSearch="showSearch"
       @handlerName="handlerName"
     ></TopBtns>
-    <InputFilter
-      :form-item="formInline"
-      @searchBtn="searchBtn"
-      @resetForm="resetForm"
-    >
-    </InputFilter>
+    <div>
+      <InputFilter
+        v-show="showSearchVal"
+        :form-item="formInline"
+        class="search"
+        @searchBtn="searchBtn"
+      >
+        <template slot="btnGroups">
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            size="mini"
+            @click="searchBtn"
+          >
+            查询
+          </el-button>
+          <el-button size="mini" @click="resetForm"> 重置 </el-button>
+        </template>
+      </InputFilter>
+    </div>
 
     <TableTree
       :table-head="tableHead"
@@ -24,48 +38,30 @@
       :page-nation="pageNation"
       :show-page="false"
       @currentChange="currentChange"
-      @requstLazyLoad="requstLazyLoad"
     >
-      <template slot="menuName" slot-scope="scope">
-        <i :class="scope.row.menuIcon"></i>
+      <template slot="indx">
+        <el-table-column
+          fixed
+          label="序号"
+          type="index"
+          align="center"
+          width="50"
+        ></el-table-column>
+      </template>
+
+      <template slot="moduleName" slot-scope="scope">
         <span class="td-color tl" @click="menuEditAdd(scope.row, '编辑')">
-          {{ scope.row.menuName }}
+          {{ scope.row.moduleName }}
         </span>
       </template>
-      <template slot="moduleCodes" slot-scope="scope">
-        <span class="td-color">
-          {{ scope.row.moduleCodes }}
+      <template slot="isLoader" slot-scope="scope">
+        <span v-if="scope.row.isLoader">
+          正常
+          <!-- {{ swichText("sys_status", scope.row.status, "未安装") }} -->
         </span>
-      </template>
-      <template slot="Func" slot-scope="scope">
-        <el-input
-          v-model="scope.row.treeSort"
-          class="tree-sort"
-          @blur="treeSortFunc(scope.row)"
-        ></el-input>
-      </template>
-      <template slot="weight" slot-scope="scope">
-        <span v-if="scope.row.weight == '80'" style="color:#c243d6">
-          {{ swichText("sys_menu_weight", scope.row.weight, "未设置") }}
-        </span>
-        <span v-else>
-          {{ swichText("sys_menu_weight", scope.row.weight, "未设置") }}
-        </span>
-      </template>
-      <template slot="menuType" slot-scope="scope">
-        <span v-if="scope.row.menuType == '2'" style="color:#c243d6">
-          {{ swichText("sys_menu_type", scope.row.menuType, "未设置") }}
-        </span>
-        <span v-else>
-          {{ swichText("sys_menu_type", scope.row.menuType, "未设置") }}
-        </span>
-      </template>
-      <template slot="isShow" slot-scope="scope">
-        <span v-if="scope.row.isShow === '0'" style="color:#aaa">
-          {{ swichText("sys_show_hide", scope.row.isShow, "未设置") }}
-        </span>
-        <span v-else>
-          {{ swichText("sys_show_hide", scope.row.isShow, "未设置") }}
+        <span v-else style="color:#f00;">
+          未安装
+          <!-- {{ swichText("sys_status", scope.row.status, "未安装") }} -->
         </span>
       </template>
       <template slot="operate">
@@ -78,30 +74,29 @@
             >
               <i class="el-icon-edit" title="编辑菜单"></i>
             </el-button>
-            <el-button type="text" size="small" @click="deleteMenu(scope.row)">
-              <i style="color:red;" class="el-icon-delete" title="删除菜单"></i>
-            </el-button>
             <el-button
               type="text"
               size="small"
               @click="menuEditAdd(scope.row, '新增下级')"
             >
-              <i class="fa fa-plus-square" title="新增下级菜单"></i>
+              <i class="fa fa-plus-square" title="停用启用"></i>
+            </el-button>
+            <el-button type="text" size="small" @click="deleteMenu(scope.row)">
+              <i style="color:red;" class="el-icon-delete" title="删除菜单"></i>
             </el-button>
           </template>
         </el-table-column>
       </template>
     </TableTree>
-    <menuEdit ref="secAdminEditPanel" @initPage="initPage"></menuEdit>
+    <!-- <menuEdit ref="secAdminEditPanel" @initPage="initPage"></menuEdit> -->
   </div>
 </template>
 <script>
-import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
 import menuEdit from "./menuEdit";
+import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
-// import { orgApi } from "@/api/organization";
 import { sysApi } from "../../../../api/systemSet";
 import { returnReg } from "@/utils/validate";
 export default {
@@ -117,8 +112,8 @@ export default {
     return {
       showSearchVal: false,
       leftMg: {
-        icon: "fa icon-book-open",
-        text: "菜单管理"
+        icon: "fa icon-grid f14",
+        text: "模块管理"
       },
       btnArr: [
         {
@@ -126,33 +121,15 @@ export default {
           btnText: "查询",
           class: "fa fa-search"
         },
-        {
-          handlerName: "Reload",
-          btnText: "刷新",
-          class: "fa fa-refresh"
-        },
-        {
-          handlerName: "Expand",
-          btnText: "展开",
-          class: "fa fa-angle-double-down"
-        },
-        {
-          handlerName: "Folding",
-          btnText: "折叠",
-          class: "fa fa-angle-double-down"
-        },
+
         {
           handlerName: "AddNew",
           btnText: "新增",
           class: "fa fa-plus"
-        },
-        {
-          handlerName: "Sort",
-          btnText: "保存排序",
-          class: "fa fa-sort-amount-asc"
         }
       ],
 
+      stopOrStart: null,
       sortVal: {},
       TableTreeData: {
         ids: [],
@@ -161,37 +138,43 @@ export default {
       formInline: [
         {
           type: "input",
-          label: "菜单名称",
+          label: "模块名称",
           key: "menuName",
+          value: ""
+        },
+        {
+          type: "input",
+          label: "主类全名",
+          key: "menuName",
+          value: ""
+        },
+        {
+          type: "select",
+          label: "状态",
+          options: this.getStatusOption("sys_search_status"),
+          key: "status",
           value: ""
         }
       ],
       columnTextPostion: {
         menuName: "left"
       },
-      columnWidths: {},
-      slotColumns: [
-        "menuName",
-        "moduleCodes",
-        "Func",
-        "isShow",
-        "menuType",
-        "weight"
-      ],
+      columnWidths: {
+        description: 400
+      },
+      slotColumns: ["moduleName", "isLoader"],
       tableHead: {
-        menuName: "菜单名称",
-        moduleCodes: "归属模块",
-        menuHref: "链接",
-        Func: "排序",
-        menuType: "类型", // 1 菜单 2权限
-        isShow: "可见", // 0 隐藏 1可见
-        permission: "权限标志",
-        weight: "菜单权重"
+        moduleName: "模块名称",
+        moduleCode: "模块编码",
+        description: "模块描述",
+        currentVersion: "版本",
+        isLoader: "状态" // 1 菜单 2权限
       },
       tableData: [],
       pageNation: {
         pageSize: 20,
-        pageNo: 1
+        pageNo: 1,
+        total: 0
       },
       tableFit: true
     };
@@ -210,38 +193,10 @@ export default {
       this.reload();
     },
     init(param) {
-      console.log(2222, param);
-      sysApi.getMenu(param).then(res => {
-        for (let i = 0, len = res.length; i < len; i++) {
-          if (res[i].isTreeLeaf === false) {
-            res[i].hasChildren = true;
-            this.TableTreeData.ids.push(res[i].id);
-            this.TableTreeData.sorts.push(res[i].treeSort);
-          }
-        }
-        this.tableData = res;
-      });
-    },
-    // tree 懒加载
-    requstLazyLoad(param) {
-      console.log(204, param);
-      const obj = {
-        nodeid: param.tree.id,
-        parentCode: param.tree.id,
-        parentid: param.tree.parentCode,
-        _search: false,
-        pageSize: "",
-        pageNo: 1
-      };
-      sysApi.getMenu(obj).then(res => {
-        for (let i = 0, len = res.length; i < len; i++) {
-          this.TableTreeData.ids.push(res[i].id);
-          this.TableTreeData.sorts.push(res[i].treeSort);
-          if (!res[i].isTreeLeaf) {
-            res[i].hasChildren = true;
-          }
-        }
-        param.resolve(res);
+      // console.log(2222, param);
+      sysApi.getModule(param).then(res => {
+        this.tableData = res.list;
+        this.pageNation.total = res.count;
       });
     },
     Sort() {
@@ -257,17 +212,6 @@ export default {
           this.$message.error(res.message);
         }
       });
-    },
-    /* 排序 */
-    treeSortFunc(val) {
-      this.sortVal = val;
-      for (let i = 0, len = this.TableTreeData.ids.length; i < len; i++) {
-        if (this.TableTreeData.ids[i] === val.id) {
-          this.TableTreeData.sorts[i] = val.treeSort;
-        }
-      }
-      // if(!returnReg("positiveInteger").test(val)) {
-      // }
     },
     /* 列表文本转义 */
     swichText(type, val, other) {
@@ -355,4 +299,22 @@ export default {
   }
 }
 </style>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.post {
+  .current-type {
+    height: 45px;
+    line-height: 45px;
+    // width: calc(100% -200px);
+    // margin-right: 200px;
+    border-bottom: 1px solid #eee;
+  }
+  .top-search {
+    width: 100%;
+    padding: 10px 10px 0;
+  }
+  .search {
+    padding: 0 10px;
+    // outline: 1px solid red;
+  }
+}
+</style>

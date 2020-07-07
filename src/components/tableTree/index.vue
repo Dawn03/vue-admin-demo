@@ -21,6 +21,7 @@
     >
       >
       <slot name="chechbox"></slot>
+      <slot name="index"></slot>
       <!-- <el-table-column
         fixed
         label="序号"
@@ -38,7 +39,6 @@
         :align="columnTextPostion[key] ? columnTextPostion[key] : 'center'"
         :show-overflow-tooltip="showOverflow"
       >
-        xsssssssssssssssss{{ columnTextPostion[key] }}
         <template slot-scope="scope">
           <slot v-if="slotColumns.indexOf(key) > -1" :name="key" v-bind="scope">
           </slot>

@@ -1,67 +1,18 @@
 <template>
   <div class="user-right-box">
-    <div class="current-type clearfix">
-      <div class="fl">
-        <i class="el-icon-user"></i>
-        <span>机构管理</span>
-      </div>
-      <div class="fr">
-        <el-button
-          type="primary"
-          icon="el-icon-view"
-          size="mini"
-          @click="showOrHidden"
-        >
-          {{ btnText }}
-        </el-button>
-        <el-button
-          type="primary"
-          icon="el-icon-refresh"
-          size="mini"
-          @click="refreshPage"
-        >
-          刷新
-        </el-button>
-        <el-button
-          type="primary"
-          icon="el-icon-arrow-down"
-          size="mini"
-          @click="expandTable"
-        >
-          展开
-        </el-button>
-        <el-button
-          type="primary"
-          icon="el-icon-arrow-up"
-          size="mini"
-          @click="foldTable"
-        >
-          折叠
-        </el-button>
-        <el-button
-          type="primary"
-          icon="el-icon-plus"
-          size="mini"
-          @click="addNew({}, '新增机构')"
-        >
-          新增
-        </el-button>
-      </div>
-    </div>
-    <div>
-      <InputFilter
-        v-show="btnText == '隐藏'"
-        :form-item="formInline"
-        @searchBtn="searchBtn"
-      >
-        <template slot="btnGroups">
-          <el-button type="primary" size="mini" @click="searchBtn">
-            查询
-          </el-button>
-          <el-button size="mini" @click="resetForm"> 重置 </el-button>
-        </template>
-      </InputFilter>
-    </div>
+    <TopBtns
+      :btn-arr="btnArr"
+      :left-mg="leftMg"
+      @showSearch="showSearch"
+      @handlerName="handlerName"
+    ></TopBtns>
+    <InputFilter
+      v-show="showSearchVal"
+      :form-item="formInline"
+      @searchBtn="searchBtn"
+      @resetForm="resetForm"
+    >
+    </InputFilter>
     <TableTree
       ref="theTable"
       :table-head="tableHead"
@@ -139,6 +90,7 @@
   </div>
 </template>
 <script>
+import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
 import DailogFrame from "@/components/dailogPanel/frame";
@@ -150,6 +102,7 @@ import { pubApi } from "@/api/public_request";
 export default {
   name: "UserRight",
   components: {
+    TopBtns,
     TableTree,
     InputFilter,
     DailogFrame,
@@ -157,7 +110,38 @@ export default {
   },
   data() {
     return {
-      btnText: "查询",
+      showSearchVal: false,
+      leftMg: {
+        icon: "fa icon-grid",
+        text: "机构管理"
+      },
+      btnArr: [
+        {
+          handlerName: "View",
+          btnText: "查询",
+          class: "fa fa-search"
+        },
+        {
+          handlerName: "Reload",
+          btnText: "刷新",
+          class: "fa fa-refresh"
+        },
+        {
+          handlerName: "Expand",
+          btnText: "展开",
+          class: "fa fa-angle-double-down"
+        },
+        {
+          handlerName: "Folding",
+          btnText: "折叠",
+          class: "fa fa-angle-double-down"
+        },
+        {
+          handlerName: "AddNew",
+          btnText: "新增",
+          class: "fa fa-plus"
+        }
+      ],
       showDailog: false,
       titleName: "",
       officeOptions: [], // 机构类型
@@ -239,6 +223,12 @@ export default {
     });
   },
   methods: {
+    showSearch(val) {
+      this.showSearchVal = val;
+    },
+    handlerName(funcName) {
+      this[funcName]();
+    },
     init(param) {
       orgApi.getOfficeList(param).then(res => {
         // console.log(231, res);
@@ -263,9 +253,7 @@ export default {
           this.officeOptions = res || [];
         });
     },
-    showOrHidden() {
-      this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
-    },
+
     /* 获取填入输入框的值  */
     searchBtn(data = {}) {
       // console.log(214, data);
@@ -284,14 +272,17 @@ export default {
         ctrlPermi: 2
       });
     },
-    refreshPage() {
-      this.$refs.theTable.expandFolodTable(this.tableData, false);
+    initPage() {
+      this.$refs.theTable.expandFoldTable(this.tableData, false);
     },
-    expandTable() {
-      this.$refs.theTable.expandFolodTable(this.tableData, true);
+    Expand() {
+      this.$refs.theTable.expandFoldTable(this.tableData, true);
     },
-    foldTable() {
-      this.$refs.theTable.expandFolodTable(this.tableData, false);
+    Folding() {
+      this.$refs.theTable.expandFoldTable(this.tableData, false);
+    },
+    AddNew(row, type) {
+      this.$refs.institutionEditPanel.show({}, "新增机构");
     },
     forArr(arr, isExpand) {
       arr.forEach(i => {
@@ -301,9 +292,7 @@ export default {
         }
       });
     },
-    addNew(row, type) {
-      this.$refs.institutionEditPanel.show(row, type);
-    },
+
     // 显示对话框选择
     showFilterPanel(item) {
       this.showDailog = true;
@@ -390,18 +379,9 @@ export default {
 <style lang="scss" scoped>
 .user-right-box {
   margin: 0 10px;
-  .current-type {
-    height: 45px;
-    line-height: 45px;
-    // width: calc(100% -200px);
-    // margin-right: 200px;
-    border-bottom: 1px solid #eee;
-  }
   .td-color {
     color: #1890ff;
     cursor: pointer;
-  }
-  .table-witth {
   }
 }
 </style>

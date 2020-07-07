@@ -1,6 +1,6 @@
 <template>
   <div class="company wrapper_content">
-    <div class="current-type clearfix">
+    <!-- <div class="current-type clearfix">
       <div class="fl">
         <i class="el-icon-user"></i>
         <span>公司管理</span>
@@ -47,19 +47,20 @@
           新增
         </el-button>
       </div>
-    </div>
+    </div> -->
+    <TopBtns
+      :btn-arr="btnArr"
+      :left-mg="leftMg"
+      @showSearch="showSearch"
+      @handlerName="handlerName"
+    ></TopBtns>
     <InputFilter
-      v-show="btnText == '隐藏'"
+      v-show="showSearchVal"
       :form-item="formInline"
       @searchBtn="searchBtn"
       @statusValChange="statusValChange"
+      @resetForm="resetForm"
     >
-      <template slot="btnGroups">
-        <el-button type="primary" size="mini" @click="searchBtn">
-          查询
-        </el-button>
-        <el-button size="mini" @click="resetForm"> 重置 </el-button>
-      </template>
     </InputFilter>
     <TableTree
       ref="theTable"
@@ -78,7 +79,7 @@
         </span>
       </template>
       <template slot="area" slot-scope="scope">
-        {{ scope.row.area.treeNames }}
+        {{ scope.row.area !== undefined ? scope.row.area.treeNames : "" }}
       </template>
       <template slot="status" slot-scope="scope">
         <span :style="[{ color: scope.row.status === '0' ? '#000' : '#f00' }]">
@@ -133,6 +134,7 @@
   </div>
 </template>
 <script>
+import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
 import AddAndEdit from "./addAndEdit";
@@ -141,17 +143,49 @@ import { getInputVal, dictTypeMap, clearFilterVal } from "@/utils/pubFunc";
 export default {
   name: "Company",
   components: {
+    TopBtns,
     TableTree,
     InputFilter,
     AddAndEdit
   },
   data() {
     return {
+      showSearchVal: false,
+      leftMg: {
+        icon: "fa icon-fire",
+        text: "公司管理"
+      },
+      btnArr: [
+        {
+          handlerName: "View",
+          btnText: "查询",
+          class: "fa fa-search"
+        },
+        {
+          handlerName: "Reload",
+          btnText: "刷新",
+          class: "fa fa-refresh"
+        },
+        {
+          handlerName: "Expand",
+          btnText: "展开",
+          class: "fa fa-angle-double-down"
+        },
+        {
+          handlerName: "Folding",
+          btnText: "折叠",
+          class: "fa fa-angle-double-down"
+        },
+        {
+          handlerName: "AddNew",
+          btnText: "新增",
+          class: "fa fa-plus"
+        }
+      ],
       params: {
         status: "",
         ctrlPermi: 2
       },
-      btnText: "查询",
       formInline: [
         {
           type: "input",
@@ -202,6 +236,12 @@ export default {
     this.init(this.params);
   },
   methods: {
+    showSearch(val) {
+      this.showSearchVal = val;
+    },
+    handlerName(funcName) {
+      this[funcName]();
+    },
     initPage() {
       this.reload();
     },
@@ -251,9 +291,6 @@ export default {
       );
       return selectTypeData[type];
     },
-    showOrHidden() {
-      this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
-    },
     statusValChange(item) {
       this.searchBtn(item);
     },
@@ -272,14 +309,10 @@ export default {
       clearFilterVal(this.formInline);
       this.reload();
     },
-    refreshPage() {
-      this.reload();
-      // this.$refs.theTable.expandFoldTable(this.tableData, false);
-    },
-    expandTable() {
+    Expand() {
       this.$refs.theTable.expandFoldTable(this.tableData, true, true);
     },
-    foldTable() {
+    Folding() {
       this.$refs.theTable.expandFoldTable(this.tableData, false);
     },
     forArr(arr, isExpand) {
@@ -290,8 +323,8 @@ export default {
         }
       });
     },
-    addNew(row, type) {
-      this.$refs.companyEditPanel.show(row, type);
+    AddNew() {
+      this.$refs.companyEditPanel.show({}, "新增公司");
     },
     /* 编辑表格 */
     companyEdit(row, type) {

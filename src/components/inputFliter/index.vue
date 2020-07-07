@@ -51,8 +51,17 @@
           ></el-button>
         </el-input>
       </el-form-item>
-      <el-form-item style="margin-left: -12px;">
+      <el-form-item v-show="showSearchBtn" style="margin-left: -12px;">
         <!-- 各页面按钮 -->
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="searchBtn"
+        >
+          查询
+        </el-button>
+        <el-button size="mini" @click="resetForm"> 重置 </el-button>
         <slot name="btnGroups"></slot>
       </el-form-item>
     </el-form>
@@ -66,6 +75,10 @@ export default {
     formItem: {
       type: Array,
       default: () => []
+    },
+    showSearchBtn: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -80,8 +93,14 @@ export default {
     }
   },
   methods: {
+    /* 查询 */
     searchBtn() {
+      console.log("searchBtn");
       this.$emit("searchBtn");
+    },
+    /* 重置 */
+    resetForm() {
+      this.$emit("resetForm");
     },
     changeResult(val, item) {
       // console.log(83, val, item);

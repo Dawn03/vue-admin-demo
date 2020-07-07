@@ -359,26 +359,33 @@ export default {
       }
     },
     focusIt(keyName) {
+      console.log(362, keyName);
       // this.innerDialogVisible = true;
-      this.innerDialogVisible = true;
+
       this.$nextTick(() => {
         if (keyName === "superCompanyName") {
+          this.menuTreeTitle = "上级公司";
           this.showCheckbox = false;
           this.getCompanyMenuTree();
           this.chooseTypePanel = "superCompanyName";
+          this.innerDialogVisible = true;
         } else if (keyName === "areaName") {
           // this.innerDialogVisible = true;
+          this.menuTreeTitle = "区域选择";
           this.showCheckbox = false;
           this.getAreaMenuTree();
           this.chooseTypePanel = "areaName";
+          this.innerDialogVisible = true;
         } else if (keyName === "companyOfficeListJson") {
           // this.innerDialogVisible = true;
+          this.menuTreeTitle = "机构选择";
           this.showCheckbox = true;
           this.getOfficeMenuTree();
           this.chooseTypePanel = "companyOfficeListJson";
           this.$refs.chooseMenuTree.setDefaultChecked(
             this.companyForm.companyOfficeListJsonId
           );
+          this.innerDialogVisible = true;
         }
       });
     },
@@ -411,7 +418,7 @@ export default {
         id: "id",
         parentId: "pId",
         label: "name",
-        rootId: "YD"
+        rootId: "0"
       };
       pubApi.getOfficeMenuTree({ ctrlPermi: 2, excludeCode: "" }).then(res => {
         this.menuData = toTreeData(res, attributes);

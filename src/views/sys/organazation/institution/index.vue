@@ -81,7 +81,7 @@ export default {
           id: "id",
           parentId: "pId",
           label: "name",
-          rootId: "YD"
+          rootId: "0"
         };
         const treeData = toTreeData(res, attributes);
         this.instMenuData = treeData;
