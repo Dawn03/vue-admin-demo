@@ -50,29 +50,22 @@ export default {
       const btn = document.getElementById("btn");
       const userLeft = document.getElementById("userLeft");
       const userRight = document.getElementById("userRight");
-      // const bar = document.getElementById("bar");
+      const bar = document.getElementById("bar");
       btn.addEventListener(
         "click",
         function() {
           _this.arrow = !_this.arrow;
-          // const display = bar.style.display;
-          // if (display != "none") {
-          //   bar.style.display = "none";
-          // } else {
-          //   bar.style.display = "block";
-          // }
           const elWidth = userLeft.style.width;
-          if (elWidth != "0px") {
+          if (elWidth !== "0px") {
+            bar.style.display = "none";
             userLeft.style.width = "0px";
             userRight.style.width = "100%";
-
-            setTimeout(function() {
-              bar.style.display = "none";
-            }, 1000);
           } else {
             userLeft.style.width = "200px";
             userRight.style.width = "calc(100% - 200px)";
-            bar.style.display = "block";
+            setTimeout(function() {
+              bar.style.display = "block";
+            }, 800); //
           }
         },
         false

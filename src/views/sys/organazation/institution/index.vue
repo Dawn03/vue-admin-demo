@@ -54,22 +54,22 @@ export default {
       const btn = document.getElementById("btn");
       const institutionLeft = document.getElementById("institutionLeft");
       const institutionRight = document.getElementById("institutionRight");
-      // const bar = document.getElementById("bar");
+      const bar = document.getElementById("bar");
       btn.addEventListener(
         "click",
         function() {
           _this.arrow = !_this.arrow;
           const elWidth = institutionLeft.style.width;
           if (elWidth !== "0px") {
+            bar.style.display = "none";
             institutionLeft.style.width = "0px";
             institutionRight.style.width = "100%";
-            setTimeout(function() {
-              // bar.style.display = "none";
-            }, 1000);
           } else {
             institutionLeft.style.width = "200px";
             institutionRight.style.width = "calc(100% - 200px)";
-            // bar.style.display = "block";
+            setTimeout(function() {
+              bar.style.display = "block";
+            }, 800); //
           }
         },
         false
