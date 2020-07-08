@@ -402,9 +402,9 @@ export default {
     };
   },
   mounted() {
-    console.log(404);
     getOffceList().then(res => {
       this.offceList = res;
+      console.log(404, res);
     });
 
     getCompanyList().then(res => {

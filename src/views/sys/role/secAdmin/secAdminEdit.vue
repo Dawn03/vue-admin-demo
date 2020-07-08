@@ -249,6 +249,7 @@ export default {
       roleApi.saveSecAdmin(obj).then(res => {
         if (res.result === "true") {
           this.$message.success(res.message);
+          this.$emit("initPage");
           this.showDailog = false;
         } else {
           this.$message.error(res.message);
@@ -366,7 +367,9 @@ export default {
         pubApi.getCompanyMenuTree().then(res => {
           this.companyMenuDataSource = JSON.parse(JSON.stringify(res));
           this.companyMenuData = toTreeData(res, attributes);
-          if (this.companyCheckedArr.length === this.companyMenuDataSource.length) {
+          if (
+            this.companyCheckedArr.length === this.companyMenuDataSource.length
+          ) {
             this.isIndeterminate2 = false;
             this.checkAll2 = true;
           } else if (this.companyMenuData === 0) {

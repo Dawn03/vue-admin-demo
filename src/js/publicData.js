@@ -13,7 +13,7 @@ export const getOffceList = (param) => {
         id: "id",
         parentId: "pId",
         label: "name",
-        rootId: "YD"
+        rootId: "0"
       };
       const c = toTreeData(res, attributes)
       resolve(c);
@@ -29,7 +29,7 @@ export const getCompanyList = (param) => {
         id: "id",
         parentId: "pId",
         label: "name",
-        rootId: "YD"
+        rootId: "0"
       };
       const c = toTreeData(res, attributes)
       resolve(c);

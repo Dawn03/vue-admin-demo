@@ -64,8 +64,7 @@ import AddUser from "./addUser";
 import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
 
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
-// import { orgApi } from "@/api/organization";
-import { roleApi } from "../../../../api/role";
+import { roleApi } from "@/api/role";
 export default {
   name: "UserManage",
   inject: ["reload"],
@@ -213,7 +212,7 @@ export default {
       }
       this.$alertMsgBox(`确定要${this.stopOrStartText}该用户吗`, "信息")
         .then(() => {
-          orgApi
+          roleApi
             .stopUsePost({
               stopOrStart: this.stopOrStart,
               postCode: row.postCode
@@ -231,10 +230,13 @@ export default {
           this.$message.info("取消");
         });
     },
+    statusValChange(item) {
+      this.searchBtn(item);
+    },
     deleteBtn(row) {
       this.$alertMsgBox(`此操作将永久删除该文件, 是否继续?`, "提示")
         .then(() => {
-          orgApi
+          roleApi
             .deleteSecAdmin({
               userCode: row.userCode
             })
