@@ -50,7 +50,7 @@ export default {
 .page-box {
   height: 30px;
   line-height: 30px;
-  margin: 0 0;
+  margin: 8px 0 0;
   // background: hotpink;
 }
 </style>

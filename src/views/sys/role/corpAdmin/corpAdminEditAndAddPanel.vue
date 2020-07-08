@@ -2,14 +2,14 @@
   <div class="user-edit-panel">
     <DailogFrame
       :dialog-visible="showEditDailog"
-      :title-name="`${titleName}租户管理`"
+      :title-name="`${titleName}管理员`"
       @closeDialog="closeEditDialog"
     >
       <template slot="content">
         <div>
           <ColumnBar :column-text="'基本信息'"></ColumnBar>
           <el-form
-            ref="roleForm"
+            ref="form"
             :model="form"
             label-width="140px"
             class="demo-ruleForm"
@@ -30,8 +30,8 @@
               :table-data="roleChooseList"
               :default-height="150"
               :show-index="true"
+              :show-page="false"
               @tableCheckBox="tableCheckBox"
-              :showPage="false"
             >
               <template slot="chechbox">
                 <el-table-column type="selection" width="40"></el-table-column>
@@ -60,7 +60,7 @@
             type="primary"
             icon="el-icon-check"
             size="mini"
-            @click="submitForm('roleForm')"
+            @click="submitForm('form')"
           >
             保存
           </el-button>
@@ -68,7 +68,7 @@
             type="primary"
             icon="el-icon-close"
             size="mini"
-            @click="colseUser('roleForm')"
+            @click="colseUser('form')"
           >
             关闭
           </el-button>
@@ -139,26 +139,26 @@ export default {
         remarks: ""
       },
       componentList: [
-        {
-          label: "租户代码：",
-          prop: "corpCode_",
-          labelWidth: "120px",
-          componentName: "el-input",
-          cols: [12, 12, 12, 12],
-          placeholder: "请输入租户代码",
-          value: "corpCode_",
-          disabled: false
-        },
-        {
-          label: "租户名称：",
-          prop: "corpName_",
-          labelWidth: "120px",
-          componentName: "el-input",
-          cols: [12, 12, 12, 12],
-          placeholder: "请输入租户名称",
-          value: "corpName_",
-          disabled: false
-        },
+        // {
+        //   label: "租户代码：",
+        //   prop: "corpCode_",
+        //   labelWidth: "120px",
+        //   componentName: "el-input",
+        //   cols: [12, 12, 12, 12],
+        //   placeholder: "请输入租户代码",
+        //   value: "corpCode_",
+        //   disabled: false
+        // },
+        // {
+        //   label: "租户名称：",
+        //   prop: "corpName_",
+        //   labelWidth: "120px",
+        //   componentName: "el-input",
+        //   cols: [12, 12, 12, 12],
+        //   placeholder: "请输入租户名称",
+        //   value: "corpName_",
+        //   disabled: false
+        // },
         {
           label: "登录账号：",
           prop: "loginCode",
@@ -184,7 +184,7 @@ export default {
           value: "email",
           addIcon: true,
           slotPosition: "prepend",
-          iconType: "el-icon-message"
+          iconType: "fa fa-fw fa-envelope"
         },
         {
           label: "手机号：",
@@ -195,7 +195,7 @@ export default {
           value: "mobile",
           addIcon: true,
           slotPosition: "prepend",
-          iconType: "el-icon-phone-outline"
+          iconType: "fa fa-fw fa-mobile"
         },
         {
           label: "办公电话：",
@@ -206,7 +206,7 @@ export default {
           value: "phone",
           addIcon: true,
           slotPosition: "prepend",
-          iconType: "el-icon-phone-outline"
+          iconType: "fa fa-fw fa-phone"
         },
         {
           label: "权重（排序）：",
@@ -265,17 +265,17 @@ export default {
       },
       attchCurrentRow: {},
       rules: {
-        corpCode_: [
-          { required: true, message: "请输入租户代码", trigger: "blur" },
-          {
-            pattern: returnReg("letterNumber"),
-            message: "请输入字母数字或下划线",
-            trigger: "blur"
-          }
-        ],
-        corpName_: [
-          { required: true, message: "请输入租户名称", trigger: "blur" }
-        ],
+        // corpCode_: [
+        //   { required: true, message: "请输入租户代码", trigger: "blur" },
+        //   {
+        //     pattern: returnReg("letterNumber"),
+        //     message: "请输入字母数字或下划线",
+        //     trigger: "blur"
+        //   }
+        // ],
+        // corpName_: [
+        //   { required: true, message: "请输入租户名称", trigger: "blur" }
+        // ],
         loginCode: [
           { required: true, message: "请输入登录账号", trigger: "blur" },
           {
@@ -305,13 +305,17 @@ export default {
             trigger: "blur"
           }
         ],
-        phone: [{ validator: validTelNumber, trigger: "change" }],
+        phone: [{ validator: validTelNumber, trigger: "blur" }],
         userWeight: [
           {
             validator: returnReg("positiveInteger"),
             message: "权重越大排名越靠前，请填写数字。",
-            trigger: "blur"
-            // type: "number"
+            trigger: "blur",
+            type: "number",
+            transform(value) {
+              // 用于解决数字非必填函数。如果没有该函数，该字段会在表单提交时候进行触发（形成必填字段）
+              return Number(value);
+            }
           }
         ]
       }
@@ -327,21 +331,21 @@ export default {
         this.roleChooseList = res;
       });
       if (type === "新增") {
-        this.op = "addCorp";
+        this.op = "addAdmin";
         this.showEditDailog = true;
-        this.componentList[0].disabled = false;
-        this.componentList[1].disabled = false;
+        // this.componentList[0].disabled = false;
+        // this.componentList[1].disabled = false;
       } else if (type === "行新增") {
-        this.op = "addCorp";
-        this.form.corpCode_ = row.corpCode_;
-        this.form.corpName_ = row.corpName_;
-        this.componentList[0].disabled = true;
-        this.componentList[1].disabled = true;
+        this.op = "addAdmin";
+        // this.form.corpCode_ = row.corpCode_;
+        // this.form.corpName_ = row.corpName_;
+        // this.componentList[0].disabled = true;
+        // this.componentList[1].disabled = true;
         this.showEditDailog = true;
       } else {
         this.op = "edit";
-        this.componentList[0].disabled = true;
-        this.componentList[1].disabled = true;
+        // this.componentList[0].disabled = true;
+        // this.componentList[1].disabled = true;
         this.oldLoginCode = row.loginCode;
         roleApi
           .getCorpAdminEdit({ op: "edit", userCode: row.userCode })
@@ -436,12 +440,12 @@ export default {
     },
     closeEditDialog() {
       this.showEditDailog = false;
-      this.$refs["roleForm"].resetFields();
+      this.$refs["form"].resetFields();
       for (const key in this.extend) {
         this.extend[key] = "";
       }
-      for (const key in this.rolerForm) {
-        this.rolerForm[key] = "";
+      for (const key in this.form) {
+        this.form[key] = "";
       }
       this.$emit("initListPage");
     },
@@ -457,7 +461,7 @@ export default {
           } else {
             this.loginCodeHad = false;
           }
-          this.$refs.roleForm.validateField("loginCode");
+          this.$refs.form.validateField("loginCode");
         });
     }
   }

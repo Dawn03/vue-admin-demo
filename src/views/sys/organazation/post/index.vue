@@ -23,6 +23,8 @@
       :table-fit="tableFit"
       style="margin-top: 10px;"
       :page-nation="pageNation"
+      :column-sortabel="columnSortabel"
+      @sortChange="sortChange"
       @currentChange="currentChange"
     >
       <template slot="postName" slot-scope="scope">
@@ -144,6 +146,15 @@ export default {
         updateDate: 130
         // email: 170
       },
+      columnSortabel: {
+        postName: true,
+        postCode: true,
+        postSort: true,
+        postType: true,
+        updateDate: true,
+        remarks: true, // 无对应键名
+        status: true // status
+      },
       slotColumns: ["postName", "postType", "status"],
       tableHead: {
         postName: "岗位名称",
@@ -159,6 +170,7 @@ export default {
         total: 0,
         pageSize: 20,
         pageNo: 1,
+        orderBy: "",
         status: ""
       },
       tableFit: true
@@ -267,6 +279,7 @@ export default {
     /* 清除输入框内的值 */
     resetForm() {
       this.pageNation.status = "";
+      this.pageNation.orderBy = "";
       const valObj = Object.assign(
         this.pageNation,
         clearFilterVal(this.formInline)
@@ -275,6 +288,10 @@ export default {
     },
     currentChange(val) {
       this.pageNation.pageNo = val;
+      this.init(this.pageNation);
+    },
+    sortChange(sortVal) {
+      this.pageNation.orderBy = sortVal;
       this.init(this.pageNation);
     },
     /* 编辑表格 */

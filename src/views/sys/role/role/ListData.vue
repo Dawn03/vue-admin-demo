@@ -23,7 +23,9 @@
       :table-fit="tableFit"
       style="margin-top: 10px;"
       :page-nation="pageNation"
+      :column-sortabel="columnSortabel"
       @currentChange="currentChange"
+      @sortChange="sortChange"
     >
       <template slot="roleName" slot-scope="scope">
         <span class="td-color" @click="roleEdit(scope.row, '编辑角色')">
@@ -202,7 +204,8 @@ export default {
         pageNo: 1,
         pageSize: 20,
         ctrlPermi: 2,
-        status: ""
+        status: "",
+        orderBy: ""
       },
       formInline: [
         {
@@ -250,6 +253,18 @@ export default {
         institutionName: 130,
         number: 130,
         format: 130
+      },
+      columnSortabel: {
+        roleName: true,
+        roleCode: true,
+        roleSort: true,
+        isSys: true,
+        userType: true,
+        dataScope: true,
+        bizScope: true,
+        updateDate: true,
+        remarks: true,
+        status: true
       },
       slotColumns: [
         "roleName",
@@ -389,7 +404,8 @@ export default {
       this.init({
         pageSize: this.pageNation.pageSize,
         pageNo: 1,
-        ctrlPermi: this.pageNation.ctrlPermi
+        ctrlPermi: this.pageNation.ctrlPermi,
+        orderBy: ""
       });
       clearFilterVal(this.formInline);
     },
@@ -485,6 +501,10 @@ export default {
     },
     currentChange(val) {
       this.pageNation.pageNo = val;
+      this.init(this.pageNation);
+    },
+    sortChange(sortVal) {
+      this.pageNation.orderBy = sortVal;
       this.init(this.pageNation);
     },
     initPage() {

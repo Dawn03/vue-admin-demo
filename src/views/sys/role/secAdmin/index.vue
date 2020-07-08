@@ -25,7 +25,9 @@
       :table-fit="tableFit"
       style="margin-top: 10px;"
       :page-nation="pageNation"
+      :column-sortabel="columnSortabel"
       @currentChange="currentChange"
+      @sortChange="sortChange"
     >
       <template slot="loginCode" slot-scope="scope">
         <span class="td-color" @click="secAdminEdit(scope.row, '编辑')">
@@ -144,6 +146,15 @@ export default {
       columnWidths: {
         updateDate: 130
       },
+      columnSortabel: {
+        loginCode: true,
+        userName: true,
+        email: true,
+        mobile: true,
+        phone: true,
+        updateDate: true,
+        status: true
+      },
       slotColumns: ["loginCode", "status"],
       tableHead: {
         loginCode: "登录账号",
@@ -159,6 +170,7 @@ export default {
         total: 0,
         pageSize: 20,
         pageNo: 1,
+        orderBy: "",
         status: ""
         // postCode: "",
         // postName_like: "",
@@ -270,6 +282,7 @@ export default {
     /* 清除输入框内的值 */
     resetForm() {
       this.pageNation.status = "";
+      this.pageNation.orderBy = "";
       const valObj = Object.assign(
         this.pageNation,
         clearFilterVal(this.formInline)
@@ -278,6 +291,10 @@ export default {
     },
     currentChange(val) {
       this.pageNation.pageNo = val;
+      this.init(this.pageNation);
+    },
+    sortChange(sortVal) {
+      this.pageNation.orderBy = sortVal;
       this.init(this.pageNation);
     },
     /* 编辑表格 */

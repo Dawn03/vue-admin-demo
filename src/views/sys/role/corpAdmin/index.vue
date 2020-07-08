@@ -25,7 +25,9 @@
       :table-fit="tableFit"
       style="margin-top: 10px;"
       :page-nation="pageNation"
+      :column-sortabel="columnSortabel"
       @currentChange="currentChange"
+      @sortChange="sortChange"
     >
       <template slot="loginCode" slot-scope="scope">
         <span class="td-color" @click="editHandleClick(scope.row, '编辑')">{{
@@ -164,7 +166,8 @@ export default {
         ctrlPermi: 2,
         total: 0,
         pageSize: 20,
-        pageNo: 1
+        pageNo: 1,
+        orderBy: ""
       },
       titleName: "",
       stopOrStartText: "", // 停用或者启用
@@ -206,6 +209,17 @@ export default {
       columnWidths: {
         updateDate: 130
         // email: 170
+      },
+      columnSortabel: {
+        loginCode: true,
+        userName: true,
+        corpCode_: true,
+        corpName_: true,
+        email: true,
+        mobile: true,
+        phone: true,
+        updateDate: true,
+        status: true
       },
       slotColumns: ["loginCode", "userWeight", "status"],
       tableHead: {
@@ -299,7 +313,8 @@ export default {
       const obj = {
         pageSize: this.pageNation.pageSize,
         pageNo: this.pageNation.pageNo,
-        status: ""
+        status: "",
+        orderBy: ""
       };
       this.init(obj);
     },
@@ -392,6 +407,10 @@ export default {
     },
     currentChange(val) {
       this.pageNation.pageNo = val;
+      this.init(this.pageNation);
+    },
+    sortChange(sortVal) {
+      this.pageNation.orderBy = sortVal;
       this.init(this.pageNation);
     }
   }

@@ -154,9 +154,15 @@ export default {
     },
     /* 表格排序 */
     sortChange(column) {
-      const param =
-        "a." + this.toLine(column.prop) + " " + column.order.split("ending")[0];
-      this.$emit("sortChange", param);
+      console.log(157, column);
+      if (column.order) {
+        const param =
+          "a." +
+          this.toLine(column.prop) +
+          " " +
+          column.order.split("ending")[0];
+        this.$emit("sortChange", param);
+      }
     },
     // 驼峰转换下划线
     toLine(name) {

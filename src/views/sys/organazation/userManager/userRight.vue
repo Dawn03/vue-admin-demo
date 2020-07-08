@@ -46,7 +46,9 @@
       :table-fit="tableFit"
       style="margin-top: 10px;"
       :page-nation="pageNation"
+      :column-sortabel="columnSortabel"
       @currentChange="currentChange"
+      @sortChange="sortChange"
     >
       <template slot="loginCode" slot-scope="scope">
         <span class="td-color" @click="editHandleClick(scope.row, '编辑')">{{
@@ -314,6 +316,11 @@ export default {
         updateDate: 130
         // email: 170
       },
+      columnSortabel: {
+        loginCode: true,
+        userName: true
+        // refName: true
+      },
       slotColumns: [
         "loginCode",
         "refName",
@@ -340,7 +347,8 @@ export default {
         total: 0,
         pageSize: 20,
         pageNo: 1,
-        ctrlPermi: 2
+        ctrlPermi: 2,
+        orderBy: ""
       },
       searchVal: {
         loginCode: null,
@@ -363,7 +371,8 @@ export default {
     const obj = {
       pageSize: this.pageNation.pageSize,
       pageNo: this.pageNation.pageNo,
-      status: ""
+      status: "",
+      orderBy: ""
     };
     this.init(obj);
     // 获取用户角色
@@ -394,7 +403,8 @@ export default {
       this.init({
         pageSize: this.pageNation.pageSize,
         pageNo: this.pageNation.pageNo,
-        status: ""
+        status: "",
+        orderBy: ""
       });
     },
     getPost() {
@@ -447,7 +457,8 @@ export default {
       const obj = {
         pageSize: this.pageNation.pageSize,
         pageNo: 1,
-        status: null
+        status: null,
+        orderBy: ""
       };
       this.init(obj);
       console.log(this.searchVal);
@@ -583,6 +594,10 @@ export default {
     },
     currentChange(val) {
       this.pageNation.pageNo = val;
+      this.init(this.pageNation);
+    },
+    sortChange(sortVal) {
+      this.pageNation.orderBy = sortVal;
       this.init(this.pageNation);
     }
   }

@@ -23,8 +23,10 @@
       :slot-columns="slotColumns"
       :table-fit="tableFit"
       style="margin-top: 10px;"
+      :column-sortabel="columnSortabel"
       :page-nation="pageNation"
       @currentChange="currentChange"
+      @sortChange="sortChange"
     >
       <template slot="index">
         <el-table-column
@@ -41,10 +43,10 @@
           {{ scope.row.moduleName }}
         </span>
       </template>
-      <template slot="isLoader" slot-scope="scope">
+      <template slot="status" slot-scope="scope">
         <span v-if="scope.row.isLoader">
           正常
-          <!-- {{ swichText("sys_status", scope.row.status, "未安装") }} -->
+          <!--isLoader {{ swichText("sys_status", scope.row.status, "未安装") }} -->
         </span>
         <span v-else style="color:#f00;">
           未安装
@@ -151,13 +153,20 @@ export default {
       columnWidths: {
         description: 400
       },
-      slotColumns: ["moduleName", "isLoader"],
+      columnSortabel: {
+        moduleName: true,
+        moduleCode: true,
+        description: true,
+        currentVersion: true,
+        status: true
+      },
+      slotColumns: ["moduleName", "status"],
       tableHead: {
         moduleName: "模块名称",
         moduleCode: "模块编码",
         description: "模块描述",
         currentVersion: "版本",
-        isLoader: "状态" // 1 菜单 2权限
+        status: "状态" // 1 菜单 2权限
       },
       tableData: [],
       pageNation: {
@@ -166,7 +175,8 @@ export default {
         status: "",
         pageSize: 20,
         pageNo: 1,
-        total: 0
+        total: 0,
+        orderBy: ""
       },
       tableFit: true
     };
@@ -221,10 +231,15 @@ export default {
       this.pageNation.moduleName = "";
       this.pageNation.mainClassName = "";
       this.pageNation.status = "";
+      this.pageNation.orderBy = "";
       this.init(this.pageNation);
     },
     currentChange(val) {
       this.pageNation.pageNo = val;
+      this.init(this.pageNation);
+    },
+    sortChange(sortVal) {
+      this.pageNation.orderBy = sortVal;
       this.init(this.pageNation);
     },
     /* 编辑/新增下级表格 */

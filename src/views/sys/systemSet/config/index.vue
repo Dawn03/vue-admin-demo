@@ -25,8 +25,8 @@
       style="margin-top: 10px;"
       :page-nation="pageNation"
       :column-sortabel="columnSortabel"
-      @currentChange="currentChange"
       @sortChange="sortChange"
+      @currentChange="currentChange"
     >
       <template slot="index">
         <el-table-column
