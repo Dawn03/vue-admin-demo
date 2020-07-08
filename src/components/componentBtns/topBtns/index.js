@@ -1,15 +1,11 @@
 const mixin = {
   data() {
     return {
-      msg: '哈哈',
       btnText: "查询",
       showSearch: false
     }
   },
   methods: {
-    mixinMethod() {
-      console.log(this.msg + '，这是mixin混入的方法')
-    },
     /* 查询 */
     View() {
       this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
@@ -40,6 +36,10 @@ const mixin = {
     /* 更多 */
     More() {
       this.$emit("handlerName", "More")
+    },
+    /* 清除全部缓存 */
+    ClearAll() {
+      this.$emit("handlerName", "ClearAll")
     }
     //   View() {
     //     console.log(13, 'view')

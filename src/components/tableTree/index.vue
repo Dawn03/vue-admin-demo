@@ -7,6 +7,7 @@
       border
       stripe
       height="200"
+      header-align="center"
       lazy
       :load="load"
       :fit="tableFit"
@@ -18,6 +19,7 @@
       @selection-change="handleSelectionChange"
       @row-click="rowClick"
       @row-dblclick="rowDblclick"
+      @sort-change="sortChange"
     >
       >
       <slot name="chechbox"></slot>
@@ -33,18 +35,21 @@
       <el-table-column
         v-for="(value, key) in tableHead"
         :key="key"
-        :prop="value"
+        header-align="center"
+        :sortable="columnSortabel[key] ? 'custom' : false"
+        :prop="key"
         :label="value"
         :width="columnWidths[key]"
         :align="columnTextPostion[key] ? columnTextPostion[key] : 'center'"
         :show-overflow-tooltip="showOverflow"
       >
         <template slot-scope="scope">
+          <!-- {{key}} -->
           <slot v-if="slotColumns.indexOf(key) > -1" :name="key" v-bind="scope">
           </slot>
           <!-- 用于某一列需要特殊处理  判断slotColumns传进来的值key里边是否存在 给调用他的父级传scope -->
           <template v-else>
-            {{ scope.row[key] }} {{ columnTextPostion[key] }}
+            {{ scope.row[key] }}
           </template>
         </template>
       </el-table-column>
@@ -64,11 +69,11 @@
   </div>
 </template>
 <script>
-import TableButton from "@/components/tableButton";
+// import TableButton from "@/components/tableButton";
 import Pagination from "@/components/pagination";
 export default {
   components: {
-    TableButton,
+    // TableButton,
     Pagination
   },
   props: {
@@ -89,6 +94,10 @@ export default {
       default: () => ({})
     },
     columnTextPostion: {
+      type: Object,
+      default: () => ({})
+    },
+    columnSortabel: {
       type: Object,
       default: () => ({})
     },
@@ -142,6 +151,16 @@ export default {
     /* row单击  */
     rowClick(row, column, event) {
       this.$emit("rowClick", row);
+    },
+    /* 表格排序 */
+    sortChange(column) {
+      const param =
+        "a." + this.toLine(column.prop) + " " + column.order.split("ending")[0];
+      this.$emit("sortChange", param);
+    },
+    // 驼峰转换下划线
+    toLine(name) {
+      return name.replace(/([A-Z])/g, "_$1").toLowerCase();
     },
     /* row双击  */
     rowDblclick(row, column, event) {

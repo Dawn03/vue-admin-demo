@@ -61,7 +61,7 @@
         </span>
       </template>
       <template slot="isShow" slot-scope="scope">
-        <span v-if="scope.row.isShow === '0'" style="color:#aaa">
+        <span v-if="scope.row.isShow === '0'" class="no-color">
           {{ swichText("sys_show_hide", scope.row.isShow, "未设置") }}
         </span>
         <span v-else>

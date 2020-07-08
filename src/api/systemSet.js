@@ -56,7 +56,67 @@ export const sysApi = {
   },
   /* 系统设置 模块管理 */
   getModule: (param) => {
-    return httpRequestor.get(`a/sys/module/listData`, param).catch(err => {
+    return httpRequestor.postFormData(`a/sys/module/listData`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统设置 获取模块编辑初始化数据 */
+  initModuleEdit: (param) => {
+    return httpRequestor.get(`a/sys/module/form.json?moduleCode=${param.moduleCode}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统设置 获取模块编辑初始化数据 */
+  initModuleAdd: (param) => {
+    return httpRequestor.get(`a/sys/module/form.json`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统设置 模块管理新增/编辑保存 */
+  saveModule: (param) => {
+    return httpRequestor.postFormData(`a/sys/module/save`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统设置 模块管理删除 */
+  deleteModule: (param) => {
+    return httpRequestor.post(`a/sys/module/delete?moduleCode=${param.moduleCode}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统设置 模块管理停启用 */
+  setModuleStart: (param) => {
+    return httpRequestor.post(`a/sys/module/${param.type}?moduleCode=${param.moduleCode}`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统设置  参数设置*/
+  getConfig: (param) => {
+    return httpRequestor.postFormData(`a/sys/config/listData`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统设置  获取编辑参数初始化数据*/
+  initConfigEdit: (param) => {
+    return httpRequestor.get(`a/sys/config/form.json?id=${param.id}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统设置  获取编辑参数初始化数据*/
+  saveConfig: (param) => {
+    return httpRequestor.postFormData(`a/sys/config/save`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统设置  参数设置 删除*/
+  deleteConfig: (param) => {
+    return httpRequestor.post(`a/sys/config/delete?id=${param.id}`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统设置  参数设置 清除全部缓存*/
+  clearAll: (param) => {
+    return httpRequestor.post(`a/sys/cache/clearAll`, param).catch(err => {
       Message.error(err)
     })
   }

@@ -2,8 +2,14 @@
   <div>
     <div class="current-type clearfix">
       <div class="fl">
-        <i :class="leftMg.icon" class="color"></i>
+        <i :class="leftMg.icon" class="color pos"></i>
         <span> {{ leftMg.text }} </span>
+        <i
+          v-show="leftMg.showQuestIcon"
+          :class="leftMg.class"
+          class="color"
+          :title="leftMg.title"
+        ></i>
       </div>
       <div class="fr">
         <el-button
@@ -105,13 +111,10 @@ export default {
         }
       });
     },
-    /* 隐藏/查询 */
+    /* emit触发事件类型 */
     handlerClick(btnType) {
-      console.log(87, btnType);
       this[btnType]();
-    },
-    showOrHidden() {},
-    saveSort() {}
+    }
   }
 };
 </script>
@@ -123,12 +126,9 @@ export default {
   // margin-right: 200px;
   border-bottom: 1px solid #eee;
 }
-.top-search {
-  width: 100%;
-  padding: 10px 10px 0;
-}
-.search {
-  padding: 0 10px;
-  // outline: 1px solid red;
+.pos {
+  vertical-align: middle;
+  font-size: 14px;
+  margin-right: 5px;
 }
 </style>

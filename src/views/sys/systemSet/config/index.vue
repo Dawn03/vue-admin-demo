@@ -24,7 +24,9 @@
       :table-fit="tableFit"
       style="margin-top: 10px;"
       :page-nation="pageNation"
+      :column-sortabel="columnSortabel"
       @currentChange="currentChange"
+      @sortChange="sortChange"
     >
       <template slot="index">
         <el-table-column
@@ -36,19 +38,17 @@
         ></el-table-column>
       </template>
 
-      <template slot="moduleName" slot-scope="scope">
+      <template slot="configName" slot-scope="scope">
         <span class="td-color tl" @click="menuEditAdd(scope.row, '编辑')">
-          {{ scope.row.moduleName }}
+          {{ scope.row.configName }}
         </span>
       </template>
-      <template slot="isLoader" slot-scope="scope">
-        <span v-if="scope.row.isLoader">
-          正常
-          <!-- {{ swichText("sys_status", scope.row.status, "未安装") }} -->
+      <template slot="isSys" slot-scope="scope">
+        <span v-if="scope.row.isSys === '0'" class="no-color">
+          {{ swichText("sys_yes_no", scope.row.isSys, "未安装") }}
         </span>
-        <span v-else style="color:#f00;">
-          未安装
-          <!-- {{ swichText("sys_status", scope.row.status, "未安装") }} -->
+        <span v-else>
+          {{ swichText("sys_yes_no", scope.row.isSys, "未安装") }}
         </span>
       </template>
       <template slot="operate">
@@ -61,23 +61,10 @@
             >
               <i class="el-icon-edit" title="编辑菜单"></i>
             </el-button>
-            <el-button type="text" size="small" @click="stopOrStart(scope.row)">
-              <i
-                :class="[
-                  scope.row.status === '0'
-                    ? 'el-icon-video-pause'
-                    : 'el-icon-circle-check'
-                ]"
-                :style="{
-                  color: [scope.row.status === '0' ? '#f00' : '#69aa46']
-                }"
-                :title="scope.row.status === '0' ? '停用模块' : '启用模块'"
-              ></i>
-            </el-button>
             <el-button
               type="text"
               size="small"
-              @click="deleteModule(scope.row)"
+              @click="deleteConfig(scope.row)"
             >
               <i style="color:red;" class="el-icon-delete" title="删除菜单"></i>
             </el-button>
@@ -85,31 +72,36 @@
         </el-table-column>
       </template>
     </TableTree>
-    <ModuleEdit ref="moduleEditPanel" @initPage="initPage"></ModuleEdit>
+    <ConfigEdit ref="configEditPanel" @initPage="initPage"></ConfigEdit>
   </div>
 </template>
 <script>
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
-import ModuleEdit from "./moduleEdit";
+import ConfigEdit from "./configEdit";
 import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
 import { sysApi } from "../../../../api/systemSet";
+// import { returnReg } from "@/utils/validate";
 export default {
-  name: "Menu",
+  name: "Config",
   inject: ["reload"],
   components: {
     TableTree,
     InputFilter,
-    ModuleEdit,
+    ConfigEdit,
     TopBtns
   },
   data() {
     return {
       showSearchVal: false,
       leftMg: {
-        icon: "fa icon-grid f14",
-        text: "模块管理"
+        icon: "fa icon-wrench",
+        text: "参数设置",
+        class: "fa icon-question f14",
+        showQuestIcon: true,
+        title:
+          "读取顺序：Environment --> JVM中启动的参数 --> application.yml --> 本参数设置中的参数，读取参数方法：Global.getConfig('参数键名')"
       },
       btnArr: [
         {
@@ -117,55 +109,64 @@ export default {
           btnText: "查询",
           class: "fa fa-search"
         },
-
         {
           handlerName: "AddNew",
           btnText: "新增",
           class: "fa fa-plus"
+        },
+        {
+          handlerName: "ClearAll",
+          btnText: "清理全部缓存",
+          class: "fa fa-refresh"
         }
       ],
       formInline: [
         {
           type: "input",
-          label: "模块名称",
-          key: "moduleName",
+          label: "参数名称",
+          key: "configName",
           value: ""
         },
         {
           type: "input",
-          label: "主类全名",
-          key: "mainClassName",
+          label: "参数键名",
+          key: "configKey_like",
           value: ""
         },
         {
           type: "select",
-          label: "状态",
-          options: this.getStatusOption("sys_search_status"),
-          key: "status",
+          label: "系统参数",
+          options: this.getStatusOption("sys_yes_no"),
+          key: "isSys",
           value: ""
         }
       ],
       columnTextPostion: {
-        description: "left"
+        configName: "left"
       },
       columnWidths: {
         description: 400
       },
-      slotColumns: ["moduleName", "isLoader"],
+      columnSortabel: {
+        configName: true,
+        configKey: true,
+        isSys: true
+      },
+      slotColumns: ["configName", "isSys"],
       tableHead: {
-        moduleName: "模块名称",
-        moduleCode: "模块编码",
-        description: "模块描述",
-        currentVersion: "版本",
-        isLoader: "状态" // 1 菜单 2权限
+        configName: "参数名称",
+        configKey: "参数键名",
+        configValue: "参数键值",
+        isSys: "系统参数"
       },
       tableData: [],
       pageNation: {
-        moduleName: "",
-        mainClassName: "",
-        status: "",
+        configName: "",
+        configKey_like: "",
+        isSys: "",
         pageSize: 20,
         pageNo: 1,
+        orderBy: "",
         total: 0
       },
       tableFit: true
@@ -186,12 +187,11 @@ export default {
     },
     init(param) {
       // console.log(2222, param);
-      sysApi.getModule(param).then(res => {
+      sysApi.getConfig(param).then(res => {
         this.tableData = res.list;
         this.pageNation.total = res.count;
       });
     },
-
     /* 列表文本转义 */
     swichText(type, val, other) {
       return dictTypeMap(type, val, other);
@@ -218,50 +218,43 @@ export default {
     resetForm() {
       clearFilterVal(this.formInline);
       this.pageNation.pageNo = 1;
-      this.pageNation.moduleName = "";
-      this.pageNation.mainClassName = "";
-      this.pageNation.status = "";
+      this.pageNation.configName = "";
+      this.pageNation.configKey_like = "";
+      this.pageNation.isSys = "";
+      this.pageNation.orderBy = "";
       this.init(this.pageNation);
     },
     currentChange(val) {
       this.pageNation.pageNo = val;
       this.init(this.pageNation);
     },
+    sortChange(sortVal) {
+      this.pageNation.orderBy = sortVal;
+      this.init(this.pageNation);
+    },
     /* 编辑/新增下级表格 */
     menuEditAdd(row, type) {
-      this.$refs.moduleEditPanel.show(row, type);
+      this.$refs.configEditPanel.show(row, type);
     },
     AddNew() {
-      this.$refs.moduleEditPanel.show({}, "新增");
+      this.$refs.configEditPanel.show({}, "新增");
     },
-    stopOrStart(row) {
-      const typeText = row.isLoader ? "停用" : "启用";
-      this.$alertMsgBox(`确认要${typeText}该模块吗?`, "信息")
+    ClearAll() {
+      sysApi.clearAll().then(res => {
+        if (res.result === "true") {
+          this.init(this.params);
+          this.$message.success(res.message);
+        } else {
+          this.$message.waring(res.message);
+        }
+      });
+    },
+    deleteConfig(row) {
+      this.$alertMsgBox("确认要删除该参数吗？", "信息")
         .then(() => {
           sysApi
-            .setModuleStart({
-              type: row.status === "0" ? "disable" : "enable",
-              moduleCode: row.moduleCode
-            })
-            .then(res => {
-              if (res.result === "true") {
-                this.$message.success(res.message);
-                this.init(this.pageNation);
-              } else {
-                this.$message.waring(res.message);
-              }
-            });
-        })
-        .catch(() => {
-          this.$message.info("取消");
-        });
-    },
-    deleteModule(row) {
-      this.$alertMsgBox("确认要删除该模块吗？", "信息")
-        .then(() => {
-          sysApi
-            .deleteModule({
-              moduleCode: row.moduleCode
+            .deleteConfig({
+              id: row.id
             })
             .then(res => {
               if (res.result === "true") {

@@ -62,8 +62,8 @@ import FontChoose from "./fontsIcon/index";
 import ExtentionFeild from "@/components/extentionFeild";
 import { toTreeData, dictTypeMap, resetVal } from "@/utils/pubFunc";
 import { sysApi } from "@/api/systemSet";
-import { pubApi } from "@/api/public_request";
-import { returnReg } from "../../../../utils/validate";
+// import { pubApi } from "@/api/public_request";
+// import { returnReg } from "@/utils/validate";
 
 export default {
   name: "",

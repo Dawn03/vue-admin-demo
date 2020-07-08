@@ -160,15 +160,15 @@ export const constantRoutes = [{
             meta: {
               title: '模块管理'
             }
+          },
+          {
+            path: 'config',
+            component: () => import('@/views/sys/systemSet/config'),
+            name: 'config',
+            meta: {
+              title: '参数设置'
+            }
           }
-          // {
-          //   path: 'module',
-          //   component: () => import('@/views/sys/role/secAdmin'),
-          //   name: 'module',
-          //   meta: {
-          //     title: '模块管理'
-          //   }
-          // },
           // {
           //   path: 'config',
           //   component: () => import('@/views/sys/role/corpAdmin'),
