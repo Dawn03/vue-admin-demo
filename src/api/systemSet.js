@@ -175,5 +175,17 @@ export const sysApi = {
     return httpRequestor.post(`a/sys/dictData/treeData?${param}`).catch(err => {
       Message.error(err)
     })
+  },
+  /* 字典管理 字典数据  停启用 */
+  setDictDataStart: (param) => {
+    return httpRequestor.post(`a/sys/dictData/${param.type}?dictCode=${param.dictCode}`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 字典管理 字典数据  删除 */
+  deleteDictData: (param) => {
+    return httpRequestor.post(`a/sys/dictData/delete?id=${param.id}`, param).catch(err => {
+      Message.error(err)
+    })
   }
 }

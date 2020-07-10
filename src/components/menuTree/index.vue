@@ -130,7 +130,7 @@ export default {
         } else {
           _this.$emit("clickNodeReslut", { data: param, type: "click" });
         }
-        console.log(param, this.clickCount);
+        // console.log(param, this.clickCount);
         _this.clickCount = 0;
       }, 500);
       fnEmitDblClick();

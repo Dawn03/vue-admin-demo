@@ -176,15 +176,15 @@ export const constantRoutes = [{
             meta: {
               title: '字典管理'
             }
+          },
+          {
+            path: 'area',
+            component: () => import('@/views/sys/systemSet/area'),
+            name: 'area',
+            meta: {
+              title: '行政区划'
+            }
           }
-          // {
-          //   path: 'dictType',
-          //   component: () => import('@/views/sys/systemSet/dictType'),
-          //   name: 'dictType',
-          //   meta: {
-          //     title: '参数设置'
-          //   }
-          // }
         ]
       }
     ]

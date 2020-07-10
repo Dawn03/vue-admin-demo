@@ -96,7 +96,7 @@
                 <el-button
                   type="text"
                   size="small"
-                  @click="deleteDictData(scope.row)"
+                  @click="deleteDictType(scope.row)"
                 >
                   <i
                     style="color:red;"
@@ -241,7 +241,7 @@ export default {
   },
   methods: {
     show(row) {
-      // console.log(222, row);
+      console.log(222, row);
       this.leftMg.dictType = row.dictType;
       this.searchVal.dictType = row.dictType;
       this.initDictType(this.searchVal);
@@ -250,6 +250,7 @@ export default {
     initDictType(row) {
       this.tableData = [];
       sysApi.getDictTypeList(row).then(res => {
+        console.log(236, res);
         for (let i = 0, len = res.length; i < len; i++) {
           if (res[i].isTreeLeaf === false) {
             res[i].hasChildren = true;
@@ -261,7 +262,7 @@ export default {
     },
     // tree 懒加载
     requstLazyLoad(param) {
-      // console.log(204, param);
+      console.log(204, param);
       const obj = {
         nodeid: param.tree.id,
         parentCode: param.tree.id,
@@ -283,16 +284,9 @@ export default {
       /* reload 的是整个单页 而不是这个组件 */
       this.initDictType(this.searchVal);
     },
-    AddNewSub(row, type) {
-      // console.log(294, row, type);
-      this.$refs.addDictTypeDataPanel.show(row, type);
-    },
-    AddNew() {
-      this.AddNewSub({ dictType: this.searchVal.dictType }, "新增");
-    },
     setDictDataStart(row) {
       const typeText = row.isLoader ? "停用" : "启用";
-      this.$alertMsgBox(`确认要${typeText}该字典数据吗?`, "信息")
+      this.$alertMsgBox(`确认要${typeText}该字典类型吗?`, "信息")
         .then(() => {
           sysApi
             .setDictDataStart({
@@ -312,26 +306,16 @@ export default {
           this.$message.info("取消");
         });
     },
-    deleteDictData(row) {
-      this.$alertMsgBox("确认要删除该字典数据吗？", "信息")
-        .then(() => {
-          sysApi
-            .deleteDictData({
-              id: row.id
-            })
-            .then(res => {
-              if (res.result === "true") {
-                this.initDictType(this.searchVal);
-                this.$message.success(res.message);
-              } else {
-                this.$message.waring(res.message);
-              }
-            });
-        })
-        .catch(() => {
-          this.$message.info("取消");
-        });
+    AddNewSub(row, type) {
+      // console.log(294, row, type);
+      this.$refs.addDictTypeDataPanel.show(row, type);
     },
+    AddNew() {
+      this.AddNewSub({ dictType: this.searchVal.dictType }, "新增");
+    },
+    // addDictTypeData(type) {
+    //   addDictTypeDataPanel;
+    // },
     showSearch(val) {
       this.showSearchVal = val;
     },
