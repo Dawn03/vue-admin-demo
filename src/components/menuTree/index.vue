@@ -13,6 +13,7 @@
       :filter-node-method="filterNode"
       :default-checked-keys="checkedArr"
       :show-checkbox="showCheckbox"
+      :click-type="clickType"
       @node-click="handleNodeClick"
       @check="clickDeal"
     ></el-tree>
@@ -53,7 +54,7 @@ export default {
     },
     clickType: {
       type: Boolean,
-      default: false
+      default: true
     },
     clickResource: {
       type: String,
@@ -85,7 +86,7 @@ export default {
   watch: {
     clickType: {
       handler(newVal, val) {
-        this.dbIsTrue = newVal;
+        // this.dbIsTrue = newVal;
       },
       immediate: true
     },
@@ -104,41 +105,39 @@ export default {
   methods: {
     /* 当前点击的节点 */
     handleNodeClick(data) {
+      // console.log(108); this.dbIsTrue
       // 发送双击事件
-      if (this.dbIsTrue) {
-        const _this = this;
-        this.clickCount++;
-        const fnEmitDblClick = debounce(() => {
-          if (this.clickCount > 1) {
-            if (this.parentNode) {
-              const selectNode = this.$refs.menuTreeNode.getNode(data.id);
-              const selectedLabelArray = [];
-              const recursionParent = function(node) {
-                if (!node.parent) {
-                  return;
-                }
-                selectedLabelArray.push(node.label);
-                recursionParent(node.parent);
-              };
-              recursionParent(selectNode);
-              const param = {
-                data,
-                parent: selectedLabelArray.join("/")
-              };
-              _this.$emit("clickNodeReslut", param);
-              // console.log("selectedLabelArray", selectedLabelArray);
-            } else {
-              _this.$emit("clickNodeReslut", data);
+      // if (this.dbIsTrue) {
+      const _this = this;
+      this.clickCount++;
+      var param = data;
+      const fnEmitDblClick = debounce(() => {
+        if (this.parentNode) {
+          const selectNode = this.$refs.menuTreeNode.getNode(data.id);
+          const selectedLabelArray = [];
+          const recursionParent = function(node) {
+            if (!node.parent) {
+              return;
             }
-            console.log("dbclick", data);
-          }
-          _this.clickCount = 0;
-        }, 500);
-        fnEmitDblClick();
-      } else {
-        console.log("click", data);
-        this.$emit("clickNodeReslut", data);
-      }
+            selectedLabelArray.push(node.label);
+            recursionParent(node.parent);
+          };
+          recursionParent(selectNode);
+          param.parent = selectedLabelArray.join("/");
+        }
+        if (this.clickCount > 1) {
+          _this.$emit("clickNodeReslut", { data: param, type: "dbclick" });
+        } else {
+          _this.$emit("clickNodeReslut", { data: param, type: "click" });
+        }
+        console.log(param, this.clickCount);
+        _this.clickCount = 0;
+      }, 500);
+      fnEmitDblClick();
+      // } else {
+      //   console.log("click", data);
+      //   this.$emit("clickNodeReslut", data);
+      // }
     },
     // 递归获取父节点
     getParentNode(node) {

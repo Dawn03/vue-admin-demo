@@ -417,7 +417,7 @@ export default {
           });
         }
         this.moreFormItem[3].options = postOptionArr;
-        console.log(400, postOptionArr);
+        // console.log(400, postOptionArr);
         return postOptionArr;
       });
     },
@@ -448,6 +448,7 @@ export default {
         getInputVal(this.moreFormItem)
       );
       this.init(this.searchVal);
+      console.log(666);
     },
     /* 清除输入框内的值 */
     resetForm() {

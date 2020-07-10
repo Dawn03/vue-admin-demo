@@ -225,7 +225,7 @@ export default {
         {
           type: "select",
           label: "用户类型",
-          options: [],
+          options: this.getMenuType("sys_user_type"),
           key: "userType",
           width: 120,
           value: ""
@@ -233,7 +233,7 @@ export default {
         {
           type: "select",
           label: "系统角色",
-          options: [],
+          options: this.getMenuType("sys_yes_no"),
           key: "isSys",
           value: "",
           width: 120
@@ -241,7 +241,7 @@ export default {
         {
           type: "select",
           label: "状态",
-          options: this.getStatusOption("sys_search_status"),
+          options: this.getMenuType("sys_search_status"),
           key: "status",
           width: 120,
           value: ""
@@ -294,22 +294,14 @@ export default {
     };
   },
   mounted() {
-    /* 获取用户类型 */
-    //  this.dictTypeFunc({
-    //     dictType: "sys_user_type",
-    //     status: ""
-    //   });
     this.$nextTick(() => {
+    /* 获取用户类型 */
       this.dictTypeFunc({
         dictType: "sys_user_type",
         status: ""
       });
-      /* 获取是否是系统角色  所有涉及是或否 都用该字段查询 */
-      this.dictTypeFunc({
-        dictType: "sys_yes_no",
-        status: ""
-      });
-      /* 获取 角色分类*/
+
+      // /* 获取 角色分类*/
       this.dictTypeFunc({
         dictType: "sys_role_type",
         status: ""
@@ -356,14 +348,7 @@ export default {
             });
           }
         }
-        if (param.dictType === "sys_user_type") {
-          this.formInline[2].options = userOptions;
-        }
-        if (param.dictType === "sys_yes_no") {
-          this.formInline[3].options = userOptions;
-        }
         if (param.dictType === "sys_search_status") {
-          this.formInline[4].options = userOptions;
           const obj = {};
           for (let i = 0, len = userOptions.length; i < len; i++) {
             obj[userOptions[i].value] = userOptions[i].label;
@@ -376,7 +361,7 @@ export default {
         }
       });
     },
-    getStatusOption(type) {
+    getMenuType(type) {
       const selectTypeData = JSON.parse(
         sessionStorage.getItem("selectDicType")
       );

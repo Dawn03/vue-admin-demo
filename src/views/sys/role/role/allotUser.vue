@@ -38,13 +38,12 @@
               </el-button>
             </div>
           </div>
-          <InputFliter :form-item="formInline" style="margin-bottom: 10px;">
-            <template slot="btnGroups">
-              <el-button type="primary" size="mini" @click="searchBtn">
-                查询
-              </el-button>
-              <el-button size="mini" @click="resetForm"> 重置 </el-button>
-            </template>
+          <InputFliter
+            :form-item="formInline"
+            style="margin-bottom: 10px;"
+            @searchBtn="searchBtn"
+            @resetForm="resetForm"
+          >
           </InputFliter>
           <TableTree
             :table-head="tableHead"

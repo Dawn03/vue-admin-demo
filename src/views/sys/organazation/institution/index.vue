@@ -89,13 +89,15 @@ export default {
         // console.log("treeData", treeData[0].id);
       });
     },
-    // 双击树节点获取数据查询结果
+    // 单击树节点获取数据查询结果
     clickNodeReslut(data) {
       console.log("左侧树节点双击", data);
-      this.$refs.institutionRight.searchBtn({
-        officeCode: data.id,
-        left: "left"
-      });
+      if (data.type === "click") {
+        this.$refs.institutionRight.searchBtn({
+          officeCode: data.data.id,
+          left: "left"
+        });
+      }
     }
   }
 };

@@ -268,7 +268,6 @@ import ChooseMenuTree from "@/components/chooseMenuTree";
 import { returnReg } from "@/utils/validate";
 import { filterNokeyVal, stringVal } from "@/utils/pubFunc";
 import { orgApi } from "@/api/organization";
-import { roleApi } from "@/api/role";
 import { pubApi } from "@/api/public_request";
 import AssignRoleDetail from "./assignRoleDetail";
 import { getOffceList, getCompanyList } from "@/js/publicData";
@@ -398,7 +397,8 @@ export default {
       addCountIndex: 0,
       roleChooseList: [],
       offceList: [],
-      companyList: []
+      companyList: [],
+      nodeData: {}
     };
   },
   mounted() {
@@ -482,7 +482,7 @@ export default {
     },
     /* 获取归属机构列表 */
     getOfficeMenuTree() {
-      console.log(473, this.offceList);
+      // console.log(473, this.offceList);
       this.menuData = this.offceList;
       this.innerDialogVisible = true;
     },
@@ -492,17 +492,29 @@ export default {
       this.menuData = this.companyList;
       this.innerDialogVisible = true;
     },
-    /* 关闭选择归属机构或者归属公司 */
-    closeMuneTreeChoose() {
-      this.innerDialogVisible = false;
-    },
+
     /* changeKeyVal */
     changeKeyVal(val) {
-      console.log(379, val);
+      // console.log(379, val);
       this.keyVal = val;
     },
-    /* 菜单树中当前点击的树节点*/
+    /* 单击只选择节点  双击选择节点 并关闭弹窗 菜单树中当前点击的树节点*/
     clickNodeReslut(data) {
+      this.nodeData = data.data;
+      if (data.type === "dbclick") {
+        this.nodeEvents(data.data);
+      }
+    },
+    /* 关闭选择归属机构或者归属公司 */
+    closeMuneTreeChoose(val) {
+      if (val === "sure") {
+        this.nodeEvents(this.nodeData);
+      }
+      this.innerDialogVisible = false;
+    },
+    /* 根据树节点单双击确定触发事件 */
+    nodeEvents(data) {
+      // console.log(506, data);
       if (this.menuTreeTitle === "机构选择") {
         this.userForm.officeName = data.label;
         this.userForm.officeCode = data.id;
@@ -519,11 +531,11 @@ export default {
           }
         }
       } else {
-        this.userForm.companyName = data.label;
-        this.userForm.companyCode = data.id;
+        this.userForm.companyName = data.data.label;
+        this.userForm.companyCode = data.data.id;
       }
-      this.closeMuneTreeChoose();
       this.keyVal = "";
+      this.innerDialogVisible = false;
     },
     /* 新增 */
     addNew() {
@@ -563,7 +575,7 @@ export default {
     /* 提交 */
     submitForm(formName) {
       // employeePosts
-      console.log(9990, this.officeCodeClick);
+      // console.log(9990, this.officeCodeClick);
       this.$refs[formName].validate(valid => {
         if (valid) {
           const obj = {};
@@ -606,32 +618,6 @@ export default {
               this.$emit("initListPage");
             }
           });
-          /* postFromData 提交方式保存有问题 */
-          //   for (const key in this.extend) {
-          //   obj["extend." + key] = this.extend[key];
-          // }
-          // obj.op = this.userForm.op;
-          // obj.userType = this.userForm.userType;
-          // obj.userCode = this.userForm.userCode;
-          // obj.oldLoginCode = this.userForm.oldLoginCode;
-          // obj.loginCode = this.userForm.loginCode;
-          // obj.userName = this.userForm.userName;
-          // obj.email = this.userForm.email;
-          // obj.mobile = this.userForm.mobile;
-          // obj.phone = this.userForm.phone;
-          // obj.userWeight = this.userForm.userWeight;
-          // obj.remarks = this.userForm.remarks;
-          // obj["employee.office.officeCode"] = this.userForm.officeCode;
-          // obj["employee.office.officeName"] = this.userForm.officeName;
-          // obj["employee.company.companyName"] = this.userForm.companyName;
-          // obj["employee.company.companyCode"] = this.userForm.companyCode;
-          // obj["employee.empNo"] = this.userForm.empNo;
-          // obj["employee.empName"] = this.userForm.empName;
-          // obj["employee.employeePosts"] =
-          //   JSON.stringify(this.employeePosts) || [];
-          // obj["employee.empNameEn"] = this.userForm.empNameEn;
-          // obj["employee.employeeOfficeList"] =
-          //   JSON.stringify(this.employeeOfficeList) || [];
         } else {
           console.log("error submit!!");
           return false;

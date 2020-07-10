@@ -188,7 +188,8 @@ export default {
           options: [], // this.roleType
           cols: [12, 12, 12, 12],
           placeholder: "请选择",
-          value: "userType"
+          value: "userType",
+          width: "100%"
         },
         {
           label: "系统角色：",
@@ -220,7 +221,8 @@ export default {
           //  selectedField: ['id', 'name'],
           cols: [12, 12, 12, 12],
           placeholder: "请选择",
-          value: "roleType"
+          value: "roleType",
+          width: "100%"
         },
         {
           label: "备注信息：",

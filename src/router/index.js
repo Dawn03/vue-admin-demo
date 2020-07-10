@@ -168,11 +168,19 @@ export const constantRoutes = [{
             meta: {
               title: '参数设置'
             }
+          },
+          {
+            path: 'dictType',
+            component: () => import('@/views/sys/systemSet/dictType'),
+            name: 'dictType',
+            meta: {
+              title: '字典管理'
+            }
           }
           // {
-          //   path: 'config',
-          //   component: () => import('@/views/sys/role/corpAdmin'),
-          //   name: 'config',
+          //   path: 'dictType',
+          //   component: () => import('@/views/sys/systemSet/dictType'),
+          //   name: 'dictType',
           //   meta: {
           //     title: '参数设置'
           //   }

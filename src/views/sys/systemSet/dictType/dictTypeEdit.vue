@@ -1,32 +1,32 @@
-/*新增/编辑模块*/
+/*新增/编辑字典数据*/
 <template>
   <div>
     <DailogPanel
       :dialog-visible="showDailog"
       :title-name="titleName"
-      :app-to-body="true"
+      :append-to-body="true"
       @closeDialog="closeDialog"
     >
       <template slot="content">
         <ColumnBar :column-text="'基本信息'"></ColumnBar>
         <el-form
-          ref="configForm"
-          :model="configForm"
+          ref="dictTypeForm"
+          :model="dictTypeForm"
           label-width="100px"
           class="demo-ruleForm"
           size="mini"
-          :rules="menuFormRules"
+          :rules="dictTypeFormRules"
         >
           <DymForm
             :edit-model="editModel"
             :component-list="componentList"
-            :form-value.sync="configForm"
+            :form-value.sync="dictTypeForm"
           >
           </DymForm>
         </el-form>
       </template>
       <template slot="footer">
-        <el-button size="mini" type="primary" @click="saveBtn('configForm')">
+        <el-button size="mini" type="primary" @click="saveBtn('dictTypeForm')">
           保存
         </el-button>
         <el-button size="mini" @click="colseBtn">关闭</el-button>
@@ -51,72 +51,67 @@ export default {
   data() {
     return {
       showDailog: false,
-      titleName: "编辑参数",
+      titleName: "编辑字典类型",
       editModel: "E",
-      configForm: {
+      dictTypeForm: {
         id: "",
-        configName: "",
-        configKey: "",
-        configValue: "",
+        dictName: "",
+        dictType: "",
         isSys: "",
         remarks: "",
         isNewRecord: false
       },
       componentList: [
         {
-          label: "参数名称：",
-          prop: "configName",
+          label: "字典名称：",
+          prop: "dictName",
           componentName: "el-input",
           labelWidth: "120px",
           cols: [24, 24, 24, 24],
-          value: "configName",
+          value: "dictName",
           width: "50%"
         },
-
         {
-          label: "参数键名：",
-          prop: "configKey",
+          label: "字典类型：",
+          prop: "dictType",
           labelWidth: "120px",
           componentName: "el-input",
           cols: [24, 24, 24, 24],
-          width: "50%",
-          value: "configKey"
-        },
-
-        {
-          label: "参数键值：",
-          prop: "configValue",
-          labelWidth: "120px",
-          componentName: "el-input",
-          type: "textarea",
-          rowsSpan: 4,
-          cols: [24, 24, 24, 24],
-          value: "configValue"
+          value: "dictType",
+          width: "50%"
         },
         {
           label: "系统参数：",
           prop: "isSys",
           labelWidth: "120px",
           componentName: "RadioChoose",
-          cols: [12, 12, 12, 12],
+          cols: [24, 24, 24, 24],
           value: "isSys",
+          width: "50%",
           radios: this.getMenuType("sys_yes_no")
         },
         {
-          label: "参数描述：",
+          label: "备注：",
           prop: "remarks",
           labelWidth: "120px",
           componentName: "el-input",
           type: "textarea",
-          rowsSpan: 3,
+          rowsSpan: 4,
           cols: [24, 24, 24, 24],
           value: "remarks"
         }
       ],
-      menuFormRules: {
-        configName: [{ required: true, message: "必填信息", trigger: "blur" }],
-        configKey: [{ required: true, message: "必填信息", trigger: "blur" }],
-        isSys: [{ required: true, message: "必填信息", trigger: "blur" }]
+      dictTypeFormRules: {
+        dictName: [{ required: true, message: "必填信息", trigger: "blur" }],
+        isSys: [{ required: true, message: "必填信息", trigger: "blur" }],
+        dictType: [
+          { required: true, message: "必填信息", trigger: "blur" },
+          {
+            pattern: returnReg("letterNumber"),
+            message: "请输入字母数字或下划线",
+            trigger: "blur"
+          }
+        ]
       }
     };
   },
@@ -124,32 +119,31 @@ export default {
     show(row, type) {
       // console.log("319", type, row);
       if (type === "新增") {
-        this.configForm.isNewRecord = true;
-        this.initConfigEdit("initConfigEdit", { id: "" });
+        this.dictTypeForm.isNewRecord = true;
+        this.initDictTypeEdit("initDictTypeEdit", { id: "" });
       }
       if (type === "编辑") {
-        this.configForm.isNewRecord = false;
-        this.configForm.id = row.id;
-        this.initConfigEdit("initConfigEdit", {
+        this.dictTypeForm.isNewRecord = false;
+        this.initDictTypeEdit("initDictTypeEdit", {
           id: row.id
         });
       }
     },
     /* 获取初始化页面数据 */
-    initConfigEdit(type, row) {
+    initDictTypeEdit(type, row) {
       sysApi[type](row).then(res => {
-        this.configForm.configName = res.config.configName || "";
-        this.configForm.configKey = res.config.configKey || "";
-        this.configForm.configValue = res.config.configValue || "";
-        this.configForm.isSys = res.config.isSys || "";
-        this.configForm.remarks = res.config.remarks || "";
+        this.dictTypeForm.id = res.dictType.id || "";
+        this.dictTypeForm.dictName = res.dictType.dictName || "";
+        this.dictTypeForm.dictType = res.dictType.dictType || "";
+        this.dictTypeForm.isSys = res.dictType.isSys || "";
+        this.dictTypeForm.remarks = res.dictType.remarks || "";
         this.showDailog = true;
       });
     },
     saveBtn(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          sysApi.saveConfig(this.configForm).then(res => {
+          sysApi.saveDictType(this.dictTypeForm).then(res => {
             if (res.result === "false") {
               this.$message.warning(res.message);
             } else {
@@ -164,6 +158,13 @@ export default {
         }
       });
     },
+    /* 列表文本转义 */
+    getMenuType(type) {
+      const selectTypeData = JSON.parse(
+        sessionStorage.getItem("selectDicType")
+      );
+      return selectTypeData[type];
+    },
     colseBtn() {
       this.closeDialog();
     },
@@ -174,18 +175,10 @@ export default {
     },
     /* 清除输表单里的值 */
     resetForm() {
-      this.configForm.configName = "";
-      this.configForm.configKey = "";
-      this.configForm.configValue = "";
-      this.configForm.isSys = "";
-      this.configForm.remarks = "";
-    },
-    /* 列表文本转义 */
-    getMenuType(type) {
-      const selectTypeData = JSON.parse(
-        sessionStorage.getItem("selectDicType")
-      );
-      return selectTypeData[type];
+      this.dictTypeForm.dictName = "";
+      this.dictTypeForm.dictType = "";
+      this.dictTypeForm.isSys = "";
+      this.dictTypeForm.currentVersion = "";
     }
   }
 };

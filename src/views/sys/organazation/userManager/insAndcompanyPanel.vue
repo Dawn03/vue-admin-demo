@@ -17,7 +17,7 @@
         :menu-data="menuData"
         :key-val="keyVal"
         :default-expand="defaultExpand"
-        :click-type="true"
+        :click-type="clickType"
         @closeInnerDialog="closeMuneTreeChoose"
         @on-change-keyVal="changeKeyVal"
         @clickNodeReslut="clickNodeReslut"
@@ -32,6 +32,12 @@ export default {
   components: {
     DailogFrame,
     MenuTree
+  },
+  props: {
+    clickType: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {

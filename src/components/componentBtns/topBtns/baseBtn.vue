@@ -4,6 +4,7 @@
       <div class="fl">
         <i :class="leftMg.icon" class="color pos"></i>
         <span> {{ leftMg.text }} </span>
+        <span v-show="leftMg.dictType"> ({{ leftMg.dictType }})</span>
         <i
           v-show="leftMg.showQuestIcon"
           :class="leftMg.class"

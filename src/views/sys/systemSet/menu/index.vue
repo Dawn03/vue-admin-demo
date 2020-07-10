@@ -210,7 +210,7 @@ export default {
       this.reload();
     },
     init(param) {
-      console.log(2222, param);
+      // console.log(2222, param);
       sysApi.getMenu(param).then(res => {
         for (let i = 0, len = res.length; i < len; i++) {
           if (res[i].isTreeLeaf === false) {

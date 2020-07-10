@@ -85,11 +85,12 @@ export default {
         // console.log("treeData", this.defaultExpand, treeData);
       });
     },
-    // 双击树节点获取数据查询结果
+    // 单击树节点获取数据查询结果
     clickNodeReslut(data) {
-      console.log(222);
-      this.$refs.userRight.searchBtn(data);
-      console.log("左侧树节点双击", data);
+      if (data.type === "click") {
+        this.$refs.userRight.searchBtn(data.data);
+        // console.log("左侧树节点双击", data);
+      }
     }
   }
 };

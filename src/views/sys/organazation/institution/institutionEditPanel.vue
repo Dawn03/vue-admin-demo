@@ -168,6 +168,7 @@ import ChooseMenuTree from "@/components/chooseMenuTree";
 import { returnReg } from "@/utils/validate";
 import { orgApi } from "../../../../api/organization";
 import { pubApi } from "@/api/public_request";
+import { toTreeData } from "@/utils/pubFunc";
 export default {
   name: "UserEdit",
   components: {
@@ -195,11 +196,13 @@ export default {
       }
     };
     const phoneValidator = (rule, value, callback) => {
-      console.log(124, value)
+      console.log(124, value);
       if (value && !returnReg("mobile").test(value)) {
-        callback(new Error(
-          "sdsd 请正确填写您的电话号码，固话为区号(3-4位)号码(7-9位),手机为13,14,15,16,17,18,19号段"
-        ));
+        callback(
+          new Error(
+            "sdsd 请正确填写您的电话号码，固话为区号(3-4位)号码(7-9位),手机为13,14,15,16,17,18,19号段"
+          )
+        );
       } else if (value && !returnReg("phone").test(value)) {
         callback(
           new Error(
@@ -289,7 +292,8 @@ export default {
         weight: [{ message: "请选择活动资源", trigger: "change" }],
         desc: [{ message: "请填写活动形式", trigger: "blur" }]
       },
-      officeSource: []
+      officeSource: [],
+      nodeData: {}
     };
   },
   created() {
@@ -336,8 +340,15 @@ export default {
       }
     },
     getOfficeMenuTree() {
+      const attributes = {
+        id: "id",
+        parentId: "pId",
+        label: "name",
+        rootId: "0"
+      };
       pubApi.getOfficeMenuTree().then(res => {
-        this.officeSource = res;
+        this.officeSource = JSON.parse(JSON.stringify(res));
+        this.menuData = toTreeData(res, attributes);
       });
     },
     /* 关闭编辑对话框 */
@@ -347,15 +358,9 @@ export default {
     },
     /* 触发选择上级机构 */
     institutionChoose() {
-      this.$nextTick(() => {
-        this.menuData = this.$store.state.publicData.officeList;
-        this.innerDialogVisible = true;
-      });
+      this.innerDialogVisible = true;
     },
-    /* 关闭上级机构选择 */
-    closeMuneTreeChoose() {
-      this.innerDialogVisible = false;
-    },
+
     /* changeKeyVal */
     changeKeyVal(val) {
       // console.log(379, val);
@@ -363,10 +368,25 @@ export default {
     },
     /* 菜单树中当前点击的树节点*/
     clickNodeReslut(data) {
+      this.nodeData = data.data;
+      if (data.type === "dbclick") {
+        this.nodeEvents(data.data);
+      }
+    },
+    /* 根据树节点单双击确定触发事件 */
+    nodeEvents(data) {
+      // console.log(378, data);
       this.institutionForm.parent.id = data.id;
       this.institutionForm.parent.officeName = data.label;
-      this.closeMuneTreeChoose();
       this.keyVal = "";
+      this.innerDialogVisible = false;
+    },
+    /* 关闭上级机构选择 */
+    closeMuneTreeChoose(val) {
+      if (val === "sure") {
+        this.nodeEvents(this.nodeData);
+      }
+      this.innerDialogVisible = false;
     },
     /* 新增 */
     addNew() {
@@ -424,8 +444,6 @@ export default {
         this.$refs[formName].resetFields(); // 清空表单
         this.showEditDailog = false;
       });
-      // this.institutionForm.parent.id = "";
-      // this.institutionForm.parent.officeName = "";
     }
   }
 };

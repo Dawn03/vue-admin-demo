@@ -119,5 +119,61 @@ export const sysApi = {
     return httpRequestor.post(`a/sys/cache/clearAll`, param).catch(err => {
       Message.error(err)
     })
+  },
+
+  /* 系统设置  字典管理*/
+  dictType: (param) => {
+    return httpRequestor.postFormData(`a/sys/dictType/listData`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统 设置  获取字典管理初始化数据*/
+  initDictTypeEdit: (param) => {
+    return httpRequestor.get(`a/sys/dictType/form.json?id=${param.id}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统设置  保存 字典管理*/
+  saveDictType: (param) => {
+    return httpRequestor.postFormData(`a/sys/dictType/save`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+
+  /* 系统设置  参数设置 删除*/
+  deleteDictType: (param) => {
+    return httpRequestor.post(`a/sys/dictType/delete?id=${param.id}`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 字典管理停启用 */
+  setDictTypeStart: (param) => {
+    return httpRequestor.post(`a/sys/dictType/${param.type}?id=${param.id}`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统设置  字典管理 字典数据 获取*/
+  getDictTypeList: (param) => {
+    return httpRequestor.postFormData(`a/sys/dictData/listData`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统设置  字典管理 字典数据 新增初始胡化 dictType=${param.dictType} parentCode=1277155218515828736*/
+  initDictTypeAdd: (param) => {
+    return httpRequestor.postFormData(`a/sys/dictData/form.json?${param}`).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统设置  字典管理 字典数据 新增*/
+  saveDictTypeData: (param) => {
+    return httpRequestor.postFormData(`a/sys/dictData/save`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统设置  字典管理 字典数据 新增 获取上级字典选择数据*/
+  getDictTypeTreeData: (param) => {
+    return httpRequestor.post(`a/sys/dictData/treeData?${param}`).catch(err => {
+      Message.error(err)
+    })
   }
 }

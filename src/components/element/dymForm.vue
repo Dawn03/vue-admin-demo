@@ -38,6 +38,7 @@
             v-model="newFormValue[it.value]"
             :show-alpha="it.showAlpha"
             class="dymForm"
+            
             :style="[{ width: it.width, display: it.inline }]"
             :placeholder="''"
             :clearable="it.clearable"

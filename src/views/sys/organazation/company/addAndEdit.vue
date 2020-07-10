@@ -271,7 +271,8 @@ export default {
         ]
       },
       chooseTypePanel: "",
-      companyListOrg: []
+      companyListOrg: [],
+      nodeData: {}
     };
   },
   created() {
@@ -359,33 +360,25 @@ export default {
       }
     },
     focusIt(keyName) {
-      console.log(362, keyName);
-      // this.innerDialogVisible = true;
-
+      this.chooseTypePanel = keyName;
+      this.innerDialogVisible = false;
       this.$nextTick(() => {
         if (keyName === "superCompanyName") {
           this.menuTreeTitle = "上级公司";
           this.showCheckbox = false;
           this.getCompanyMenuTree();
-          this.chooseTypePanel = "superCompanyName";
-          this.innerDialogVisible = true;
         } else if (keyName === "areaName") {
-          // this.innerDialogVisible = true;
           this.menuTreeTitle = "区域选择";
           this.showCheckbox = false;
           this.getAreaMenuTree();
-          this.chooseTypePanel = "areaName";
-          this.innerDialogVisible = true;
         } else if (keyName === "companyOfficeListJson") {
-          // this.innerDialogVisible = true;
           this.menuTreeTitle = "机构选择";
           this.showCheckbox = true;
           this.getOfficeMenuTree();
-          this.chooseTypePanel = "companyOfficeListJson";
           this.$refs.chooseMenuTree.setDefaultChecked(
             this.companyForm.companyOfficeListJsonId
           );
-          this.innerDialogVisible = true;
+          // this.innerDialogVisible = true;
         }
       });
     },
@@ -397,9 +390,9 @@ export default {
         rootId: "0"
       };
       pubApi.getCompanyMenuTree().then(res => {
+        this.innerDialogVisible = true;
         this.menuData = toTreeData(res, attributes);
         this.companyListOrg = toTreeData(res, attributes);
-        // this.innerDialogVisible = true;
       });
     },
     getAreaMenuTree() {
@@ -411,6 +404,7 @@ export default {
       };
       pubApi.getAreaMenuTree().then(res => {
         this.menuData = toTreeData(res, attributes);
+        this.innerDialogVisible = true;
       });
     },
     getOfficeMenuTree() {
@@ -422,6 +416,7 @@ export default {
       };
       pubApi.getOfficeMenuTree({ ctrlPermi: 2, excludeCode: "" }).then(res => {
         this.menuData = toTreeData(res, attributes);
+        this.innerDialogVisible = true;
       });
     },
     /* 复选框中的值 */
@@ -442,20 +437,10 @@ export default {
     },
     /* 菜单树中当前点击的树节点*/
     clickNodeReslut(data) {
-      // console.log(555, data);
-      if (this.chooseTypePanel === "superCompanyName") {
-        this.companyForm.superCompanyName = data.data.label;
-        this.companyForm.parent.id = data.data.id;
-        this.companyForm.parent.companyName = data.data.label;
-      } else if (this.chooseTypePanel === "areaName") {
-        this.companyForm.areaName = data.parent;
-        this.companyForm.area.areaName = data.parent;
-        this.companyForm.area.areaCode = data.data.id;
-      } else if (this.chooseTypePanel === "includeOffice") {
-        this.companyForm.area.areaCode = data.data.id;
+      this.nodeData = data.data;
+      if (data.type === "dbclick") {
+        this.nodeEvents(data.data);
       }
-      this.closeMuneTreeChoose();
-      this.keyVal = "";
     },
     /* 关闭编辑对话框 */
     closeEditDialog() {
@@ -463,8 +448,27 @@ export default {
       this.showEditDailog = false;
     },
     /* 关闭上级机构选择 */
-    closeMuneTreeChoose() {
+    closeMuneTreeChoose(val) {
+      if (val === "sure") {
+        this.nodeEvents(this.nodeData);
+      }
       this.innerDialogVisible = false;
+    },
+    nodeEvents(data) {
+      // console.log(333344, data);
+      if (this.chooseTypePanel === "superCompanyName") {
+        this.companyForm.superCompanyName = data.label;
+        this.companyForm.parent.id = data.id;
+        this.companyForm.parent.companyName = data.label;
+      } else if (this.chooseTypePanel === "areaName") {
+        this.companyForm.areaName = data.parent;
+        this.companyForm.area.areaName = data.parent;
+        this.companyForm.area.areaCode = data.id;
+      } else if (this.chooseTypePanel === "includeOffice") {
+        this.companyForm.area.areaCode = data.id;
+      }
+      this.innerDialogVisible = false;
+      this.keyVal = "";
     },
     /* changeKeyVal */
     changeKeyVal(val) {

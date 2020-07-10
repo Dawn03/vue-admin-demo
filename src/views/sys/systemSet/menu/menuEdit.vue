@@ -1,6 +1,6 @@
-/*新增用户*/
+/*新增/编辑 菜单*/
 <template>
-  <div class="add-user-box">
+  <div>
     <DailogPanel
       :dialog-visible="showDailog"
       :title-name="titleName"
@@ -82,13 +82,13 @@ export default {
       editModel: "E",
       currentRow: {},
       currentType: {},
-      superMenuName: "",
       menuForm: {
         loginCode: "",
         parent: {
           menuNameOrig: "",
           id: ""
         },
+        superMenuName: "",
         menuNameOrig: "",
         menuType: "",
         menuName: "",
@@ -315,7 +315,8 @@ export default {
         extendD2: "",
         extendD3: "",
         extendD4: ""
-      }
+      },
+      nodeData: {}
     };
   },
   methods: {
@@ -482,24 +483,34 @@ export default {
     /* 菜单树中当前点击的树节点*/
     clickNodeReslut(data) {
       console.log(411, data);
-      this.menuForm.menuNameOrig = data.label;
+      this.nodeData = data.data;
+      if (data.type === "dbclick") {
+        this.nodeEvents(data.data);
+      }
+    },
+    /* 关闭选择归属机构或者归属公司 */
+    closeMuneTreeChoose(val) {
+      if (val === "sure") {
+        this.nodeEvents(this.nodeData);
+      }
+      this.innerDialogVisible = false;
+    },
+    /* 根据树节点单双击确定触发事件 */
+    nodeEvents(data) {
+      this.menuForm.superMenuName = data.label;
       this.menuForm.parent.menuNameOrig = data.label;
       this.menuForm.parent.id = data.id;
-      this.closeMuneTreeChoose();
       this.keyVal = "";
+      this.innerDialogVisible = false;
     },
     /* changeKeyVal */
     changeKeyVal(val) {
-      console.log(379, val);
       this.keyVal = val;
     },
-    /* 关闭选择上级菜单 */
-    closeMuneTreeChoose() {
-      this.innerDialogVisible = false;
-    },
+
     /* 获取上级菜单 数据 */
     getMenuTree() {
-      console.log(435, this.currentRow);
+      // console.log(435, this.currentRow);
       sysApi
         .getMenuTree({
           excludeCode: this.currentRow.id,
@@ -520,13 +531,4 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.choosed-data {
-  border: 1px solid #eee;
-  height: 100%;
-  padding: 10px;
-  border-radius: 4px;
-}
-.add-user-box {
-}
-</style>
+<style lang="scss" scoped></style>
