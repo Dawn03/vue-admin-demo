@@ -39,6 +39,7 @@
         <el-input
           v-if="item.type === 'searchInput'"
           v-model="item.value"
+          class="search-input"
           :style="{
             width: item.width ? `${item.width}px` : `${defaultWidth}px`
           }"
@@ -50,8 +51,19 @@
             @click="showChoosePanel(item)"
           ></el-button>
         </el-input>
+        <el-date-picker
+          v-if="item.type === 'daterange'"
+          v-model="item.value"
+          type="daterange"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions"
+          style="vertical-align:middle;"
+        >
+        </el-date-picker>
       </el-form-item>
-      <el-form-item v-show="showSearchBtn" style="margin-left: -12px;">
+      <el-form-item v-show="showSearchBtn">
         <!-- 各页面按钮 -->
         <el-button
           type="primary"
@@ -84,7 +96,61 @@ export default {
   data() {
     return {
       defaultWidth: "140",
-      selectOptions: []
+      selectOptions: [],
+      pickerOptions: {
+        shortcuts: [
+          {
+            text: "今日",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              // start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit("pick", [start, end]);
+            }
+          },
+          {
+            text: "本周",
+            onClick(picker) {
+              const now = new Date();
+              const nowDayOfWeek = now.getDay(); // 当前日
+              const temp = nowDayOfWeek - 1; // 当前日和周一差几天
+              const start = now - temp * 3600 * 1000 * 24;
+              const end = start + 3600 * 1000 * 24 * 6;
+              // start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit("pick", [start, end]);
+            }
+          },
+          {
+            text: "本月",
+            onClick(picker) {
+              const now = new Date();
+              const date = now.getDate(); // 当前日 14
+              const temp = date - 1;
+              const start = now - temp * 3600 * 1000 * 24;
+              const end = start * 3600 * 1000 * 24 * 10;
+              picker.$emit("pick", [start, end]);
+            }
+          },
+          {
+            text: "本季度",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit("pick", [start, end]);
+            }
+          },
+          {
+            text: "本季上月度",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit("pick", [start, end]);
+            }
+          }
+        ]
+      }
     };
   },
   watch: {
@@ -113,9 +179,20 @@ export default {
   }
 };
 </script>
+<style lang="scss">
+.input-filter {
+  .el-range-separator {
+    line-height: 26px;
+  }
+}
+</style>
 <style lang="scss" scoped>
 .input-filter {
-  display: inline-block;
+  // display: inline-block;
+  display: block;
   margin-top: 10px;
+  .search-input {
+    vertical-align: middle;
+  }
 }
 </style>

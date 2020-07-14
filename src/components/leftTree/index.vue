@@ -1,14 +1,14 @@
 <template>
   <div class="left-tree ">
     <div class="part-left">
-      <i class="el-icon-menu"></i>
+      <i class="fa icon-grid"></i>
       <span>{{ titleName }}</span>
       <i v-show="showEditBtn" class="el-icon-edit" @click="goTo"></i>
       <i
-        :class="[expandAll ? 'el-icon-arrow-up' : 'el-icon-arrow-down']"
+        :class="[expandAll ? 'fa fa-chevron-up' : 'fa fa-chevron-down']"
         @click="switchStatus"
       ></i>
-      <i class="el-icon-refresh" @click="reSwitchStatus"></i>
+      <i class="fa fa-refresh" @click="reSwitchStatus"></i>
     </div>
     <MenuTree
       ref="menuTreeDom"

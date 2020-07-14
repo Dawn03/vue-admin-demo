@@ -46,10 +46,13 @@
           >
           </InputFliter>
           <TableTree
+            ref="tableDomTree"
             :table-head="tableHead"
             :table-data="tableData"
             :slot-columns="slotColumns"
+            :page-nation="pageNation"
             @tableCheckBox="tableCheckBox"
+            @currentChange="currentChange"
           >
             <template slot="chechbox">
               <el-table-column type="selection" width="40"></el-table-column>
@@ -79,11 +82,6 @@
                 </template>
               </el-table-column>
             </template>
-            <Pagination
-              :total="pageNation.total"
-              :page-size="pageNation.pageSize"
-              @currentChange="currentChange"
-            ></Pagination>
           </TableTree>
           <AddUserPanel
             ref="showAddUserPanel"
@@ -100,7 +98,6 @@ import TableTree from "@/components/tableTree";
 import InputFliter from "@/components/inputFliter";
 import AddUserPanel from "./addUserPanel";
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
-import Pagination from "@/components/pagination";
 import { roleApi } from "@/api/role";
 export default {
   name: "AssignRole",
@@ -108,8 +105,7 @@ export default {
     DailogFrame,
     TableTree,
     InputFliter,
-    AddUserPanel,
-    Pagination
+    AddUserPanel
   },
   data() {
     return {
@@ -193,6 +189,7 @@ export default {
       const obj = Object.assign(param, searchObj);
       roleApi.getFormAuthUser(obj).then(res => {
         this.tableData = res.list;
+        this.pageNation.total = res.count;
       });
     },
     // 多选操作

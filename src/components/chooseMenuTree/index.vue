@@ -89,6 +89,10 @@ export default {
       type: Boolean,
       default: false
     },
+    expandAll: {
+      type: Boolean,
+      default: true
+    },
     menuData: {
       type: Array,
       default: () => {
@@ -124,7 +128,7 @@ export default {
     return {
       showKeyVal: true,
       display: "block",
-      expandAll: true
+      // expandAll: true
     };
   },
   computed: {

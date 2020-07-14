@@ -218,6 +218,10 @@ export default {
 .el-table--medium th {
   padding: 8px 0;
 }
+/* .el-table td,
+.el-table th {
+  padding: 8px 0;
+} */
 .el-table--medium td {
   padding: 2px 0;
 }

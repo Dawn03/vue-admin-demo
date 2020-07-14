@@ -22,7 +22,9 @@
               :table-head="tableHead"
               :table-data="tableData"
               :slot-columns="slotColumns"
+              :page-nation="pageNation"
               @tableCheckBox="tableCheckBox"
+              @currentChange="currentChange"
             >
               <template slot="chechbox">
                 <el-table-column type="selection" width="40"></el-table-column>
@@ -37,11 +39,6 @@
                 </span>
               </template>
             </TableTree>
-            <Pagination
-              :total="pageNation.total"
-              :page-size="pageNation.pageSize"
-              @currentChange="currentChange"
-            ></Pagination>
           </el-col>
           <el-col :span="6">
             <div class="choosed-data">
@@ -85,7 +82,6 @@
 import DailogPanel from "@/components/dailogPanel/frame";
 import InputFliter from "@/components/inputFliter";
 import TableTree from "@/components/tableTree";
-import Pagination from "@/components/pagination";
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
 import { orgApi } from "@/api/organization";
 import { roleApi } from "@/api/role";
@@ -95,8 +91,7 @@ export default {
   components: {
     DailogPanel,
     InputFliter,
-    TableTree,
-    Pagination
+    TableTree
   },
   data() {
     return {

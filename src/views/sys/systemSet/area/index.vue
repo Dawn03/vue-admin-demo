@@ -26,30 +26,16 @@
       :column-sortabel="columnSortabel"
       :page-nation="pageNation"
       @currentChange="currentChange"
-      @sortChange="sortChange"
+      @requstLazyLoad="requstLazyLoad"
     >
-      <template slot="index">
-        <el-table-column
-          fixed
-          label="序号"
-          type="index"
-          align="center"
-          width="50"
-        ></el-table-column>
-      </template>
-
-      <template slot="dictName" slot-scope="scope">
-        <span class="td-color tl" @click="dictTypeEditAdd(scope.row, '编辑')">
-          {{ scope.row.dictName }}
+      <template slot="areaName" slot-scope="scope">
+        <span> （{{ scope.row.areaCode }}）</span>
+        <span class="td-color tl" @click="areaEditAdd(scope.row, '编辑')">
+          {{ scope.row.areaName }}
         </span>
       </template>
-      <template slot="dictType" slot-scope="scope">
-        <span class="td-color tl" @click="dictTypeView(scope.row)">
-          {{ scope.row.dictType }}
-        </span>
-      </template>
-      <template slot="isSys" slot-scope="scope">
-        {{ swichText("sys_yes_no", scope.row.isSys, "未安装") }}
+      <template slot="areaType" slot-scope="scope">
+        {{ swichText("sys_area_type", scope.row.areaType, "未设置") }}
       </template>
 
       <template slot="status" slot-scope="scope">
@@ -66,22 +52,15 @@
             <el-button
               type="text"
               size="small"
-              @click="dictTypeEditAdd(scope.row, '编辑')"
+              @click="areaEditAdd(scope.row, '编辑')"
             >
-              <i class="el-icon-edit" title="编辑菜单"></i>
-            </el-button>
-            <el-button
-              type="text"
-              size="small"
-              @click="dictTypeView(scope.row)"
-            >
-              <i class="fa fa-navicon" title="字典数据"></i>
+              <i class="el-icon-edit" title="编辑区域"></i>
             </el-button>
             <!-- 正常使用中0，已被停用2 -->
             <el-button
               type="text"
               size="small"
-              @click="setDictTypeStart(scope.row)"
+              @click="setAreaStart(scope.row)"
             >
               <i
                 :class="[
@@ -92,38 +71,34 @@
                 :style="{
                   color: [scope.row.status === '0' ? '#f00' : '#69aa46']
                 }"
-                :title="
-                  scope.row.status === '0' ? '停用字典类型' : '启用字典类型'
-                "
+                :title="scope.row.status === '0' ? '停用区域' : '启用区域'"
+              ></i>
+            </el-button>
+            <el-button type="text" size="small" @click="deleteArea(scope.row)">
+              <i
+                style="color:red;"
+                class="el-icon-delete"
+                title="删除行政区划"
               ></i>
             </el-button>
             <el-button
               type="text"
               size="small"
-              @click="deleteDictType(scope.row)"
+              @click="AddNew(scope.row, '新增下级')"
             >
-              <i
-                style="color:red;"
-                class="el-icon-delete"
-                title="删除字典类型"
-              ></i>
+              <i class="fa fa-plus-square" title="新增下级区域"></i>
             </el-button>
           </template>
         </el-table-column>
       </template>
     </TableTree>
-    <DictTypeEdit ref="dictTypeEditPanel" @initPage="initPage"></DictTypeEdit>
-    <DicTypeDataPanel
-      ref="dicTypeDataPanel"
-      @initPage="initPage"
-    ></DicTypeDataPanel>
+    <AreaEdit ref="areaEditPanel" @initPage="initPage"></AreaEdit>
   </div>
 </template>
 <script>
 import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
-import DictTypeEdit from "./dictTypeEdit.vue";
-import DicTypeDataPanel from "./dicTypeDataPanel";
+import AreaEdit from "./areaEdit.vue";
 import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
 import { sysApi } from "../../../../api/systemSet";
@@ -133,8 +108,7 @@ export default {
   components: {
     TableTree,
     InputFilter,
-    DictTypeEdit,
-    DicTypeDataPanel,
+    AreaEdit,
     TopBtns
   },
   data() {
@@ -175,13 +149,13 @@ export default {
         {
           type: "input",
           label: "区域代码",
-          key: "dictName",
+          key: "areaCode",
           value: ""
         },
         {
           type: "input",
           label: "区域名称",
-          key: "dictType_like",
+          key: "areaName",
           value: ""
         },
         {
@@ -193,39 +167,29 @@ export default {
         }
       ],
       columnTextPostion: {
-        dictName: "left",
-        dictType: "left"
+        areaName: "left"
       },
       columnWidths: {
-        isSys: 100,
+        treeSort: 100,
         status: 80
       },
-      columnSortabel: {
-        dictName: true,
-        dictType: true,
-        isSys: true,
-        updateDate: true,
-        remarks: true,
-        status: true
-      },
-      slotColumns: ["dictName", "dictType", "isSys", "status"],
+      columnSortabel: {},
+      slotColumns: ["areaName", "areaType", "status"],
       tableHead: {
-        dictName: "区域名称",
-        dictType: "区域类型",
+        areaName: "区域名称",
+        areaType: "区域类型",
         remarks: "备注信息",
-        updateDate: "排序号",
+        treeSort: "排序号",
         status: "状态", // 1 菜单 2权限
-        updataTime: "更新时间" // 1 菜单 2权限
+        updateDate: "更新时间" // 1 菜单 2权限
       },
       tableData: [],
       pageNation: {
-        dictName: "",
-        dictType_like: "",
-        isSys: "",
+        areaCode: "",
+        areaName: "",
         status: "",
-        pageSize: 20,
         pageNo: 1,
-        total: 0,
+        pageSize: 20,
         orderBy: ""
       },
       tableFit: true
@@ -246,12 +210,36 @@ export default {
     },
     init(param) {
       // console.log(2222, param);
-      sysApi.dictType(param).then(res => {
-        this.tableData = res.list;
+      sysApi.getAreaList(param).then(res => {
+        const resList = res.list;
+        for (let i = 0, len = resList.length; i < len; i++) {
+          if (resList[i].isTreeLeaf === false) {
+            resList[i].hasChildren = true;
+          }
+        }
+        this.tableData = resList;
         this.pageNation.total = res.count;
       });
     },
-
+    // tree 懒加载
+    requstLazyLoad(param) {
+      const obj = {
+        nodeid: param.tree.id,
+        parentCode: param.tree.id,
+        parentid: param.tree.parentCode,
+        _search: false,
+        pageSize: "",
+        pageNo: 1
+      };
+      sysApi.getAreaList(obj).then(res => {
+        for (let i = 0, len = res.list.length; i < len; i++) {
+          if (!res.list[i].isTreeLeaf) {
+            res.list[i].hasChildren = true;
+          }
+        }
+        param.resolve(res.list);
+      });
+    },
     /* 列表文本转义 */
     swichText(type, val, other) {
       return dictTypeMap(type, val, other);
@@ -278,40 +266,30 @@ export default {
     resetForm() {
       clearFilterVal(this.formInline);
       this.pageNation.pageNo = 1;
-      this.pageNation.dictName = "";
-      this.pageNation.mainClassName = "";
+      this.pageNation.areaCode = "";
+      this.pageNation.areaName = "";
       this.pageNation.status = "";
-      this.pageNation.orderBy = "";
-      this.pageNation.dictType_like = "";
       this.init(this.pageNation);
     },
     currentChange(val) {
       this.pageNation.pageNo = val;
       this.init(this.pageNation);
     },
-    sortChange(sortVal) {
-      this.pageNation.orderBy = sortVal;
-      this.init(this.pageNation);
-    },
     /* 编辑/新增下级表格 */
-    dictTypeEditAdd(row, type) {
-      this.$refs.dictTypeEditPanel.show(row, type);
+    areaEditAdd(row, type) {
+      this.$refs.areaEditPanel.show(row, type);
     },
-    AddNew() {
-      this.$refs.dictTypeEditPanel.show({}, "新增");
+    AddNew(row = {}, type = "新增") {
+      this.$refs.areaEditPanel.show(row, type);
     },
-    /* 字典类型 查看字典数据 */
-    dictTypeView(row) {
-      this.$refs.dicTypeDataPanel.show(row);
-    },
-    setDictTypeStart(row) {
+    setAreaStart(row) {
       const typeText = row.isLoader ? "停用" : "启用";
-      this.$alertMsgBox(`确认要${typeText}该字典类型吗?`, "信息")
+      this.$alertMsgBox(`确认要${typeText}该区域吗?`, "信息")
         .then(() => {
           sysApi
-            .setDictTypeStart({
+            .setAreaStart({
               type: row.status === "0" ? "disable" : "enable",
-              id: row.id
+              areaCode: row.id
             })
             .then(res => {
               if (res.result === "true") {
@@ -326,16 +304,16 @@ export default {
           this.$message.info("取消");
         });
     },
-    deleteDictType(row) {
-      this.$alertMsgBox("确认要删除该字典类型吗？", "信息")
+    deleteArea(row) {
+      this.$alertMsgBox("确认要删除该行政区划吗？", "信息")
         .then(() => {
           sysApi
-            .deleteDictType({
+            .deleteArea({
               id: row.id
             })
             .then(res => {
               if (res.result === "true") {
-                this.init(this.params);
+                this.init(this.pageNation);
                 this.$message.success(res.message);
               } else {
                 this.$message.waring(res.message);

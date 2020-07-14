@@ -30,12 +30,12 @@ import Layout from '@/layout'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
-export const constantRoutes = [{
+export const constantRoutes = [
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true
   },
-
   {
     path: '/404',
     component: () => import('@/views/404'),
@@ -66,14 +66,16 @@ export const constantRoutes = [{
       title: '系统管理',
       icon: 'dashboard'
     },
-    children: [{
+    children: [
+      {
         path: 'organazation',
         component: () => import('@/views/sys/organazation'), // Parent router-view
         name: 'organazation',
         meta: {
           title: '组织管理'
         },
-        children: [{
+        children: [
+          {
             path: 'userManager',
             component: () => import('@/views/sys/organazation/userManager'),
             name: 'userManager',
@@ -113,7 +115,8 @@ export const constantRoutes = [{
         meta: {
           title: '系统设置'
         },
-        children: [{
+        children: [
+          {
             path: 'listData',
             component: () => import('@/views/sys/role/role'),
             name: 'role',
@@ -145,7 +148,8 @@ export const constantRoutes = [{
         meta: {
           title: '系统设置'
         },
-        children: [{
+        children: [
+          {
             path: 'menu',
             component: () => import('@/views/sys/systemSet/menu'),
             name: 'menu',
@@ -184,8 +188,75 @@ export const constantRoutes = [{
             meta: {
               title: '行政区划'
             }
+          },
+          {
+            path: 'licence',
+            component: () => import('@/views/sys/systemSet/licence'),
+            name: 'licence',
+            meta: {
+              title: '产品许可信息'
+            }
           }
         ]
+
+      },
+      {
+        path: 'systemMonitor',
+        component: () => import('@/views/sys/systemMonitor/index'),
+        meta: {
+          title: '系统监控'
+        },
+        children: [
+          {
+            path: 'log',
+            component: () => import('@/views/sys/systemMonitor/log'),
+            name: 'log',
+            meta: {
+              title: '访问日志'
+            }
+          }
+          // {
+          //   path: 'module',
+          //   component: () => import('@/views/sys/systemSet/module'),
+          //   name: 'module',
+          //   meta: {
+          //     title: '模块管理'
+          //   }
+          // },
+          // {
+          //   path: 'config',
+          //   component: () => import('@/views/sys/systemSet/config'),
+          //   name: 'config',
+          //   meta: {
+          //     title: '参数设置'
+          //   }
+          // },
+          // {
+          //   path: 'dictType',
+          //   component: () => import('@/views/sys/systemSet/dictType'),
+          //   name: 'dictType',
+          //   meta: {
+          //     title: '字典管理'
+          //   }
+          // },
+          // {
+          //   path: 'area',
+          //   component: () => import('@/views/sys/systemSet/area'),
+          //   name: 'area',
+          //   meta: {
+          //     title: '行政区划'
+          //   }
+          // },
+          // {
+          //   path: 'licence',
+          //   component: () => import('@/views/sys/systemSet/licence'),
+          //   name: 'licence',
+          //   meta: {
+          //     title: '产品许可信息'
+          //   }
+          // }
+        ]
+
       }
     ]
   },
