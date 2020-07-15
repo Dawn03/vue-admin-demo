@@ -7,6 +7,7 @@
       @handlerName="handlerName"
     ></TopBtns>
     <InputFilter
+      v-show="showSearchVal"
       :form-item="formInline"
       @searchBtn="searchBtn"
       @resetForm="resetForm"
