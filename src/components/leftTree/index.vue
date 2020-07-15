@@ -1,5 +1,5 @@
 <template>
-  <div class="left-tree ">
+  <div class="left-tree">
     <div class="part-left">
       <i class="fa icon-grid"></i>
       <span>{{ titleName }}</span>
@@ -111,9 +111,10 @@ export default {
   line-height: 45px;
   text-align: left;
   text-indent: 5px;
+  // outline: 1px solid red;
   .part-left {
     border-bottom: 1px solid #eee;
-    width: 220px;
+    width: 200px;
   }
 }
 </style>

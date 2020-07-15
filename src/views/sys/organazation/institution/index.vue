@@ -112,7 +112,7 @@ export default {
     position: relative;
     display: inline-block;
     height: 100%;
-    border-right: 5px solid #fafafa;
+    border-right: 10px solid #fafafa;
     transition: width 1s;
     -webkit-transition: width 1s;
     .bar {

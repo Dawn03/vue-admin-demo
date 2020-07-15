@@ -105,7 +105,7 @@ export default {
     position: relative;
     display: inline-block;
     height: 100%;
-    // border-right: 1px solid #fafafa;
+    border-right: 10px solid #fafafa;
     transition: width 1s;
     -webkit-transition: width 1s;
     .bar {
@@ -135,8 +135,6 @@ export default {
   .td-color {
     color: #1890ff;
     cursor: pointer;
-  }
-  .table-witth {
   }
 }
 </style>

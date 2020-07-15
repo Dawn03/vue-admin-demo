@@ -30,12 +30,12 @@
           <div id="userRight" class="user-right">
             <InputFliter
               :form-item="formInline"
-              style="margin-bottom: 10px;"
+              style="margin: 0 0 10px 5px;"
               @searchBtn="searchBtn"
               @resetForm="resetForm"
             >
             </InputFliter>
-            <el-row type="flex" :gutter="10">
+            <el-row type="flex" :gutter="10" style=" margin-left: 0;">
               <el-col :span="18">
                 <TableTree
                   ref="tableDomTree"
@@ -79,14 +79,14 @@
         </div>
       </template>
       <template slot="footer">
-        <div style="text-indent: 100px;">
-          <!-- <el-button
+        <div style="text-align:right;margin-top: 10px;">
+          <el-button
             type="primary"
             icon="el-icon-check"
             size="mini"
             @click="saveDataRights('userForm')"
           >
-            保存
+            确定
           </el-button>
           <el-button
             type="primary"
@@ -95,7 +95,7 @@
             @click="closeDialog('userForm')"
           >
             关闭
-          </el-button> -->
+          </el-button>
         </div>
       </template>
     </DailogFrame>
@@ -106,12 +106,13 @@ import DailogFrame from "@/components/dailogPanel/frame";
 import LeftTree from "@/components/leftTree";
 import InputFliter from "@/components/inputFliter";
 import TableTree from "@/components/tableTree";
-
+import { orgApi } from "@/api/organization";
 import {
   clearFilterVal,
   toTreeData,
   resetVal,
-  getInputVal
+  getInputVal,
+  dictTypeMap
 } from "@/utils/pubFunc";
 export default {
   name: "DataRights",
@@ -189,36 +190,33 @@ export default {
         ctrlPermi: 2,
         status: "0"
       },
+      searchVal: {
+        loginCode: null,
+        refName: null,
+        mobile: null,
+        status: null,
+        "employee.office.officeName": null, // 企管部
+        "employee.office.officeCode": null, // SDJN01
+        "employee.company.companyName": null, // 济南公司
+        "employee.company.companyCode": null, // SDJN
+        email: null, // 邮箱
+        "employee.postCode": null, // ceo
+        phone: null, // 08277648513
+        orderBy: null //
+      },
       tableCheckBoxValue: []
     };
   },
-  mounted() {},
+  mounted() {
+    this.getInsMenuTree();
+    this.getUserList(this.pageNation);
+  },
   methods: {
     show() {
       this.showUserChoose = true;
       this.$nextTick(() => {
         this.showOrHidden();
       });
-      //   console.log(164, this.$store.state.publicData);
-      //   this.formDetail = JSON.parse(JSON.stringify(res));
-      //   Promise.all([this.getCompanyMenuTree(), this.getOfficeMenuTree()]).then(
-      //     res => {
-      //       // 已经选择的 默认的
-      //       const temp = this.formDetail.userDataScopeList;
-      //       for (let i = 0, len = temp.length; i < len; i++) {
-      //         if (temp[i]["ctrlType"] === "Company") {
-      //           this.companyCheckedArr.push(temp[i].ctrlData);
-      //         } else if (temp[i]["ctrlType"] === "Office") {
-      //           this.officeCheckedArr.push(temp[i].ctrlData);
-      //         }
-      //       }
-      //       this.showDataRights = true;
-      //       this.$nextTick(() => {
-      //         this.$refs.menuTreeDom1.expandFirst(this.officeMenuData);
-      //         this.$refs.menuTreeDom2.expandFirst(this.companyMenuData);
-      //       });
-      //     }
-      //   );
     },
     showOrHidden() {
       const _this = this;
@@ -229,6 +227,7 @@ export default {
       btn.addEventListener(
         "click",
         function() {
+          console.log(230);
           _this.arrow = !_this.arrow;
           const elWidth = userLeft.style.width;
           if (elWidth !== "0px") {
@@ -246,12 +245,16 @@ export default {
         false
       );
     },
-    searchBtn() {
+    searchBtn(data = {}) {
       // const temp = this.formInline.concat(this.moreFormItem);
-      const valObj = getInputVal(this.formInline);
-      const searchObj = Object.assign(valObj, this.pageNation);
-      this.init(searchObj);
-      console.log(searchObj);
+      this.searchVal["employee.office.officeName"] = data.label;
+      this.searchVal["employee.office.officeCode"] = data.id;
+      this.searchVal = Object.assign(
+        this.searchVal,
+        this.pageNation,
+        getInputVal(this.formInline)
+      );
+      this.getUserList(this.searchVal);
     },
     rowClick(row) {
       this.tableCheckBoxValue = [];
@@ -260,6 +263,10 @@ export default {
     rowDblclick(row) {
       this.saveBtn();
     },
+    currentChange(val) {
+      this.pageNation.pageNo = val;
+      this.getUserList(this.pageNation);
+    },
     /*  关闭当前选中 跳转到 编辑页 */
     saveBtn() {
       this.$emit("addUserVal", this.tableCheckBoxValue);
@@ -267,8 +274,9 @@ export default {
     },
     // 单击树节点获取数据查询结果
     clickNodeReslut(data) {
+      console.log(297, data);
       if (data.type === "click") {
-        this.$refs.userRight.searchBtn(data.data);
+        this.searchBtn(data.data);
         // console.log("左侧树节点双击", data);
       }
     },
@@ -280,8 +288,38 @@ export default {
     /* 清除输入框内的值 */
     resetForm() {
       this.pageNo = 1;
-      this.init(this.pageNation);
+      this.searchVal = {};
+      this.getUserList(this.pageNation);
       clearFilterVal(this.formInline);
+    },
+    getUserList(param) {
+      orgApi
+        .getUserList(param)
+        .then(res => {
+          this.pageNation.total = res.count;
+          this.tableData = res.list;
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    getInsMenuTree() {
+      orgApi.getInstitutionMenuTree({ ctrlPermi: 2 }).then(res => {
+        const attributes = {
+          id: "id",
+          parentId: "pId",
+          label: "name",
+          rootId: "0"
+        };
+        const treeData = toTreeData(res, attributes);
+        this.instMenuData = treeData;
+        this.defaultExpand = treeData[0].id;
+        // console.log("treeData", this.defaultExpand, treeData);
+      });
+    },
+    /* 列表文本转义 */
+    swichText(type, val, other) {
+      return dictTypeMap(type, val, other);
     },
     /* 获取全部机构 */
     getOfficeMenuTree() {
@@ -317,6 +355,7 @@ export default {
     // border-right: 1px solid #fafafa;
     transition: width 1s;
     -webkit-transition: width 1s;
+    border-right: 10px solid #fafafa;
     .bar {
       width: 220px;
       height: 100%;
@@ -332,6 +371,7 @@ export default {
       height: 70px;
       width: 10px;
       line-height: 70px;
+      cursor: pointer;
       .icon-position {
         margin-left: -3px;
       }
@@ -339,13 +379,7 @@ export default {
   }
   .user-right {
     display: inline-block;
-    width: calc(100% - 220px);
-    .choosed-data {
-      border: 1px solid #eee;
-      height: 100%;
-      padding: 10px;
-      border-radius: 4px;
-    }
+    width: calc(100% - 250px);
   }
   .td-color {
     color: #1890ff;
