@@ -199,64 +199,35 @@ export const constantRoutes = [
           }
         ]
 
+      }
+
+    ]
+  },
+  {
+    path: '/sysM',
+    component: Layout,
+    redirect: '/sysM/systemMonitor',
+    name: 'sysM',
+    meta: {
+      title: '系统监控',
+      icon: 'dashboard'
+    },
+    children: [
+      {
+        path: 'log',
+        component: () => import('@/views/sys/systemMonitor/log'),
+        name: 'log',
+        meta: {
+          title: '访问日志'
+        }
       },
       {
-        path: 'systemMonitor',
-        component: () => import('@/views/sys/systemMonitor/index'),
+        path: 'cache',
+        component: () => import('@/views/sys/systemMonitor/cache'),
+        name: 'cache',
         meta: {
-          title: '系统监控'
-        },
-        children: [
-          {
-            path: 'log',
-            component: () => import('@/views/sys/systemMonitor/log'),
-            name: 'log',
-            meta: {
-              title: '访问日志'
-            }
-          }
-          // {
-          //   path: 'module',
-          //   component: () => import('@/views/sys/systemSet/module'),
-          //   name: 'module',
-          //   meta: {
-          //     title: '模块管理'
-          //   }
-          // },
-          // {
-          //   path: 'config',
-          //   component: () => import('@/views/sys/systemSet/config'),
-          //   name: 'config',
-          //   meta: {
-          //     title: '参数设置'
-          //   }
-          // },
-          // {
-          //   path: 'dictType',
-          //   component: () => import('@/views/sys/systemSet/dictType'),
-          //   name: 'dictType',
-          //   meta: {
-          //     title: '字典管理'
-          //   }
-          // },
-          // {
-          //   path: 'area',
-          //   component: () => import('@/views/sys/systemSet/area'),
-          //   name: 'area',
-          //   meta: {
-          //     title: '行政区划'
-          //   }
-          // },
-          // {
-          //   path: 'licence',
-          //   component: () => import('@/views/sys/systemSet/licence'),
-          //   name: 'licence',
-          //   meta: {
-          //     title: '产品许可信息'
-          //   }
-          // }
-        ]
-
+          title: '缓存监控'
+        }
       }
     ]
   },

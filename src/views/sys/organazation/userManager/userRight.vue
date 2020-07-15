@@ -313,12 +313,26 @@ export default {
       ],
       tableFit: true,
       columnWidths: {
-        updateDate: 130
-        // email: 170
+        loginCode: 130,
+        userName: 130,
+        "employee.empName": 130,
+        "employee.company.companyName": 130,
+        "employee.office.officeName": 130,
+        email: 130,
+        mobile: 130,
+        updateDate: 130,
+        status: 100
       },
       columnSortabel: {
         loginCode: true,
-        userName: true
+        userName: true,
+        "employee.empName": true,
+        "employee.company.companyName": true,
+        "employee.office.officeName": true,
+        email: true,
+        mobile: true,
+        updateDate: true,
+        status: true
         // refName: true
       },
       slotColumns: [

@@ -174,7 +174,6 @@ export default {
       const valObj = getInputVal(this.formInline);
       const searchObj = Object.assign(valObj, this.pageNation);
       this.init(searchObj);
-      console.log(searchObj);
     },
     tableCheckBox(row) {
       this.tableCheckBoxValue = row;
@@ -212,10 +211,8 @@ export default {
           this.$message.error(res.message);
         }
       });
-      console.log(this.tableCheckBoxValue);
     },
     currentChange(val) {
-      console.log(220, this.pageNation.stauts);
       this.pageNation.pageNo = val;
       this.init(this.pageNation);
     },
@@ -243,6 +240,5 @@ export default {
   padding: 10px;
   border-radius: 4px;
 }
-.add-user-box {
-}
+
 </style>

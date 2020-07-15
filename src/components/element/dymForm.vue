@@ -38,7 +38,6 @@
             v-model="newFormValue[it.value]"
             :show-alpha="it.showAlpha"
             class="dymForm"
-            
             :style="[{ width: it.width, display: it.inline }]"
             :placeholder="''"
             :clearable="it.clearable"
@@ -95,14 +94,15 @@
               :icon="it.iconType"
               @click="btnClick(it.prop, 'inputSearch')"
             >
+              {{ it.iconText }}
             </el-button>
             <!-- 当一个组件上存在第二个icon的时候使用 -->
             <el-button
               v-show="it.anotherIcon"
               :slot="it.anotherSlotPosition"
-              :icon="it.anotherIconType"
               @click="anotherBtnClick(it.prop, 'iconType')"
             >
+              {{ it.anotherIconText }}
             </el-button>
           </component>
         </el-form-item>

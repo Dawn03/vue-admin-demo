@@ -200,6 +200,5 @@ export default {
   padding: 10px;
   border-radius: 4px;
 }
-.add-user-box {
-}
+
 </style>

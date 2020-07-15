@@ -40,7 +40,7 @@
       </template>
 
       <template slot="logTitle" slot-scope="scope">
-        <span class="td-color tl" @click="menuEditAdd(scope.row, '编辑')">
+        <span class="td-color tl" @click="logEdit(scope.row, '编辑')">
           {{ scope.row.logTitle }}
         </span>
       </template>
@@ -59,7 +59,9 @@
     <UserChoosePanel
       ref="userChoosePanel"
       @initPage="initPage"
+      @logTypeFunc="logTypeFunc"
     ></UserChoosePanel>
+    <LogEdit ref="logEditPanel" @initPage="initPage"></LogEdit>
   </div>
 </template>
 <script>
@@ -67,6 +69,7 @@ import TableTree from "@/components/tableTree";
 import InputFilter from "@/components/inputFliter";
 import UserChoosePanel from "./userChoosePanel";
 import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
+import LogEdit from "./logEdit";
 import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
 import { sysApi } from "../../../../api/systemMonitor";
 export default {
@@ -76,7 +79,8 @@ export default {
     TableTree,
     InputFilter,
     UserChoosePanel,
-    TopBtns
+    TopBtns,
+    LogEdit
   },
   data() {
     return {
@@ -201,7 +205,7 @@ export default {
       },
       tableData: [],
       pageNation: {
-        moduleName: "",
+        selectData: "",
         mainClassName: "",
         status: "",
         pageSize: 20,
@@ -249,18 +253,9 @@ export default {
     },
     // 显示带搜索图标的对话框
     showFilterPanel(item) {
-      console.log(282, item);
+      // console.log(282, item);
       if (item.key === "logType") {
-        // sysApi.getCompanyMenuTree({ ctrlPermi: 2 }).then(res => {
-        //   const attributes = {
-        //     id: "id",
-        //     parentId: "pId",
-        //     label: "name",
-        //     rootId: "YD"
-        //   };
-        //   const treeData = toTreeData(res, attributes);
         this.$refs.userChoosePanel.show();
-        // });
       }
     },
     /* 获取填入输入框的值  */
@@ -270,6 +265,13 @@ export default {
         getInputVal(this.formInline)
       );
       this.init(valObj);
+    },
+    logTypeFunc(refName) {
+      this.formInline[3].value = refName;
+      this.pageNation.selectData = refName;
+    },
+    logEdit(row, type) {
+      this.$refs.logEditPanel.show(row, type);
     },
     /* 清除输入框内的值 */
     resetForm() {
@@ -286,6 +288,7 @@ export default {
       this.pageNation.remoteAddr = "";
       this.pageNation.deviceName = "";
       this.pageNation.browserName = "";
+      this.pageNation.selectData = "";
       this.init(this.pageNation);
     },
     currentChange(val) {
