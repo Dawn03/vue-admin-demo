@@ -169,7 +169,7 @@ export const asyncRoutes = [
       title: 'licence'
     }
   },
-  {
+    {
     path: `${baseFontURl}/a/sys/log/list`,
     component: () => import('@/views/sys/systemMonitor/log'),
     name: 'log',

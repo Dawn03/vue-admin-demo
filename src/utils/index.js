@@ -45,9 +45,7 @@ export function parseTime(time, cFormat) {
   const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
     const value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') {
-      return ['日', '一', '二', '三', '四', '五', '六'][value]
-    }
+    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
     return value.toString().padStart(2, '0')
   })
   return time_str
@@ -362,10 +360,10 @@ export function removeClass(ele, cls) {
  * @param {Object} item 检查的对象
  * @param {String} keyname 子元素的 keyname
  */
-export function hasChildren(item = {}, keyname = 'childList') {
+export function hasChildren (item = {}, keyname = 'childList') {
   return item[keyname] && Array.isArray(item[keyname]) && item[keyname].length > 0
 }
 
-export function getParentPath(datas, path) {
-  return datas[0].path
+export function getParentPath(datas,path){
+  return datas[0].path;
 }

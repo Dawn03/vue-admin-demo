@@ -130,7 +130,7 @@ export function matchingInputRule(rule, CheckValue, errorfunc, suceesfunc) {
     assiginPassWordCantIsEmpty: /^(?!\s*$)/g, // 不能为空字符串
     hotelNameCantIsEmpty: /^(?!\s*$)/g, // 不能为空字符串
     hotelNameLength: /^\S{2,40}$/ // 用户名长度为4~20位
-  }
+  };
   const errCodeName = {
     phoneNumber: '请输入正确的手机号码',
     userName: '用户名只由英文字母及数字组成',
@@ -146,14 +146,14 @@ export function matchingInputRule(rule, CheckValue, errorfunc, suceesfunc) {
     hotelNameCantIsEmpty: '请输入客栈名称',
     hotelNameLength: '客栈名长度为2~40位'
 
-  }
+  };
   for (const key in rightExpression) {
     try {
       if (key === rule) {
         if (errorfunc && suceesfunc) {
-          return rightExpression[key].test(CheckValue) ? suceesfunc : errorfunc
+          return rightExpression[key].test(CheckValue) ? suceesfunc : errorfunc;
         } else {
-          return rightExpression[key].test(CheckValue) ? true : errCodeName[key]
+          return rightExpression[key].test(CheckValue) ? true : errCodeName[key];
         }
       }
     } catch (error) {
@@ -163,9 +163,9 @@ export function matchingInputRule(rule, CheckValue, errorfunc, suceesfunc) {
 }
 /* 返回日期时间 */
 export const timestampToTime = (timestamp) => {
-  const date = new Date(timestamp * 1000) // 时间戳为10位需*1000，时间戳为13位的话不需乘1000
-  const Y = date.getFullYear() + '-'
-  const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
-  const D = date.getDate() + ' '
-  return Y + M + D
+  const date = new Date(timestamp * 1000); // 时间戳为10位需*1000，时间戳为13位的话不需乘1000
+  const Y = date.getFullYear() + '-';
+  const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+  const D = date.getDate() + ' ';
+  return Y + M + D;
 }

@@ -1,10 +1,10 @@
 /* 页面需要多处公用的store 状态 */
 import {
   pubApi
-} from '@/api/public_request'
+} from "@/api/public_request";
 import {
   toTreeData
-} from '@/utils/pubFunc'
+} from "@/utils/pubFunc";
 
 const state = {
   officeList: [],
@@ -13,29 +13,29 @@ const state = {
   companyListOrg: [],
   employeePosts: [],
   leftMenuList: [],
-  allDicType: '',
-  selectDicType: ''
+  allDicType: "",
+  selectDicType: ""
 }
 const mutations = {
   GET_OFFICE_TREE_LIST: (state, data) => {
     // state.officeList = data
     const attributes = {
-      id: 'id',
-      parentId: 'pId',
-      label: 'name',
-      rootId: '0'
-    }
+      id: "id",
+      parentId: "pId",
+      label: "name",
+      rootId: "0"
+    };
     const officeList = toTreeData(data, attributes)
     sessionStorage.setItem('officeList', JSON.stringify(officeList))
   },
   GET_COMPANY_TREE_LIST: (state, data) => {
     // state.companyList = data
     const attributes = {
-      id: 'id',
-      parentId: 'pId',
-      label: 'name',
-      rootId: 'YD'
-    }
+      id: "id",
+      parentId: "pId",
+      label: "name",
+      rootId: "YD"
+    };
     const companyList = toTreeData(data, attributes)
     sessionStorage.setItem('companyList', JSON.stringify(companyList))
     sessionStorage.setItem('companyListOrg', JSON.stringify(data))
@@ -87,8 +87,8 @@ const actions = {
     commit
   }) {
     pubApi.getOfficeMenuTree().then(res => {
-      commit('GET_OFFICE_TREE_LIST', res)
-    })
+      commit("GET_OFFICE_TREE_LIST", res)
+    });
   },
   /* 获取公司全部数据 */
   getCompanyMenuTree({
@@ -96,24 +96,24 @@ const actions = {
   }) {
     pubApi.getCompanyMenuTree().then(res => {
       // console.log('GET_COMPANY_TREE_LIST', res);
-      commit('GET_COMPANY_TREE_LIST', res)
-    })
+      commit("GET_COMPANY_TREE_LIST", res)
+    });
   },
   /* 获取岗位全部数据 */
   getEmployeePosts({
     commit
   }) {
     pubApi.getEmployeePosts().then(res => {
-      commit('GET_EMPLOYEE_POSTS_LIST', res)
-      console.log('GET_EMPLOYEE_POSTS_LIST', res)
-    })
+      commit("GET_EMPLOYEE_POSTS_LIST", res)
+      console.log('GET_EMPLOYEE_POSTS_LIST', res);
+    });
   },
   /* 获取字典全部数据 */
   getAllDicType({
     commit
   }) {
     pubApi.dictTypeFunc().then(res => {
-      commit('GET_ALL_DIC_TYPE', res)
+      commit("GET_ALL_DIC_TYPE", res)
       console.log(82, res)
     })
   },
@@ -121,8 +121,8 @@ const actions = {
     commit
   }) {
     pubApi.getLeftMenuTree().then(res => {
-      commit('GET_LEFT_MENU_TREE', res)
-    })
+      commit("GET_LEFT_MENU_TREE", res)
+    });
   }
 }
 export default {

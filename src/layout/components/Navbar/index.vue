@@ -2,16 +2,11 @@
   <div class="navbar">
     <div class="navbar-logo-container">
       <router-link class="navbar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="navbar-logo" />
-        <h1 v-else class="navbar-title">{{ title }}</h1>
+        <img v-if="logo" :src="logo" class="navbar-logo">
+        <h1 v-else class="navbar-title">{{ title }} </h1>
       </router-link>
     </div>
-    <hamburger
-      id="hamburger-container"
-      :is-active="sidebar.opened"
-      class="hamburger-container"
-      @toggleClick="toggleSideBar"
-    />
+    <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <div v-if="$store.state.settings.headerMenu" class="header-menus">
       <!-- <span>菜单区域</span> -->
@@ -19,26 +14,22 @@
     </div>
 
     <div class="right-menu">
-      <template v-if="device !== 'mobile'">
+      <template v-if="device!=='mobile'">
+
         <el-tooltip :content="$t('navbar.fullscreen')" placement="bottom">
           <screenfull id="screenfull" class="right-menu-item hover-effect" />
         </el-tooltip>
         <el-tooltip :content="$t('navbar.theme')" placement="bottom">
-          <theme-panel
-            class="right-menu-item hover-effect"
-            @change="themeChange"
-          />
+          <theme-panel class="right-menu-item hover-effect" @change="themeChange" />
         </el-tooltip>
 
         <lang-select class="right-menu-item hover-effect" />
+
       </template>
 
-      <el-dropdown
-        class="avatar-container right-menu-item hover-effect"
-        trigger="hover"
-      >
+      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="hover">
         <div class="avatar-wrapper">
-          <img :src="avatar" class="user-avatar" />
+          <img :src="avatar" class="user-avatar">
           <span style="vertical-align: top;">{{ name }}</span>
         </div>
         <el-dropdown-menu slot="dropdown">
@@ -76,7 +67,13 @@ export default {
     HeaderMenu
   },
   computed: {
-    ...mapGetters(['sidebar', 'avatar', 'device', 'name', 'user_menus'])
+    ...mapGetters([
+      'sidebar',
+      'avatar',
+      'device',
+      'name',
+      'user_menus'
+    ])
   },
   mounted() {
     if (this.$store.state.settings.headerMenu) {
@@ -122,33 +119,33 @@ export default {
   color: #fff;
   overflow: hidden;
   position: fixed;
-  width: 100%;
-  z-index: 11;
-  top: 0;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  width:100%;
+  z-index:11;
+  top:0;
+  box-shadow: 0 1px 4px rgba(0,21,41,.08);
 
-  .navbar-logo-container {
-    height: 50px;
-    float: left;
-    width: 140px;
-    margin-left: 20px;
-    overflow: hidden;
-  }
-  .navbar-logo-link {
+   .navbar-logo-container{
+      height: 50px;
+      float: left;
+      width:140px;
+      margin-left:20px;
+      overflow: hidden;
+    }
+  .navbar-logo-link{
     display: inline-block;
     height: 100%;
   }
-  .navbar-logo {
+  .navbar-logo{
     height: 40px;
     margin-top: 5px;
   }
-  .navbar-title {
+  .navbar-title{
     display: inline-block;
     margin: 0;
     font-weight: 600;
     line-height: 50px;
     font-size: 20px;
-    font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
+    font-family: Avenir,Helvetica Neue,Arial,Helvetica,sans-serif;
     vertical-align: middle;
   }
   .hamburger-container {
@@ -157,17 +154,17 @@ export default {
     height: 100%;
     float: left;
     cursor: pointer;
-    transition: background 0.3s;
-    -webkit-tap-highlight-color: transparent;
+    transition: background .3s;
+    -webkit-tap-highlight-color:transparent;
 
     &:hover {
-      background: rgba(1, 1, 1, 0.025);
+      background: rgba(1, 1, 1, .025)
     }
   }
-  .header-menus {
-    height: 50px;
-    float: left;
-  }
+    .header-menus{
+        height:50px;
+        float:left;
+    }
 
   .right-menu {
     float: right;
@@ -189,10 +186,10 @@ export default {
 
       &.hover-effect {
         cursor: pointer;
-        transition: background 0.3s;
+        transition: background .3s;
 
         &:hover {
-          background: rgba(0, 0, 0, 0.025);
+          background: rgba(0, 0, 0, .025)
         }
       }
     }

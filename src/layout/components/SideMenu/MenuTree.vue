@@ -29,11 +29,11 @@
 </template>
 <script>
 export default {
-  name: 'ElMenuTree',
+  name: "ElMenuTree",
   props: {
     menus: {
       type: Array
     }
   }
-}
+};
 </script>

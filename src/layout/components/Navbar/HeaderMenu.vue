@@ -10,19 +10,17 @@
     @select="select"
   >
     <el-menu-item
-      v-for="m in menus.slice(0, maxShowHeaderMenu)"
+      v-for="m in menus.slice(0,maxShowHeaderMenu)"
       :key="m.id"
       :index="m.path"
-      ><span>{{ m.title }}</span></el-menu-item
-    >
-    <el-submenu v-if="menus.length > maxShowHeaderMenu" index="/more">
+    ><span>{{ m.title }}</span></el-menu-item>
+    <el-submenu v-if="menus.length>maxShowHeaderMenu" index="/more">
       <template slot="title">更多</template>
       <el-menu-item
         v-for="m in menus.slice(maxShowHeaderMenu)"
         :key="m.id"
         :index="m.path"
-        ><span>{{ m.title }}</span></el-menu-item
-      >
+      ><span>{{ m.title }}</span></el-menu-item>
     </el-submenu>
   </el-menu>
 </template>
