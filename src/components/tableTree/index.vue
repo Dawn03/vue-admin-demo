@@ -153,6 +153,7 @@ export default {
     },
     /* row单击  */
     rowClick(row, column, event) {
+      console.log(999, row)
       this.$emit('rowClick', row)
     },
     /* 表格排序 */

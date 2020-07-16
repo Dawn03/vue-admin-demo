@@ -42,14 +42,30 @@ export const routesOutLayout = [
 
 export function createRoutesInLayout(routes = []) {
   return [
-
     {
       path: '/',
       redirect: '/dashboard',
       component: Layout,
       children: [
-        { path: 'dashboard', name: 'Dashboard', meta: { title: 'dashboard', icon: 'dashboard', affix: true }, component: () => import('@/views/dashboard/index') },
-        { path: '/sys/user/info', name: 'userinfo', meta: { title: 'personalCenter', icon: 'icon-user' }, component: () => import('@/views/sys/user/info') },
+        {
+          path: 'dashboard',
+          name: 'Dashboard',
+          meta: {
+            title: 'dashboard',
+            icon: 'dashboard',
+            affix: true
+          },
+          component: () => import('@/views/dashboard/index')
+        },
+        {
+          path: '/sys/user/info',
+          name: 'userinfo',
+          meta: {
+            title: 'personalCenter',
+            icon: 'icon-user'
+          },
+          component: () => import('@/views/sys/user/info')
+        },
         ...routes
       ]
     }
@@ -169,7 +185,7 @@ export const asyncRoutes = [
       title: 'licence'
     }
   },
-    {
+  {
     path: `${baseFontURl}/a/sys/log/list`,
     component: () => import('@/views/sys/systemMonitor/log'),
     name: 'log',
@@ -177,11 +193,25 @@ export const asyncRoutes = [
       title: 'log'
     }
   },
-  { path: '*', redirect: '/404', hidden: true }
+  {
+    path: `${baseFontURl}/a/state/cache/index`,
+    component: () => import('@/views/sys/systemMonitor/cache'),
+    name: 'cache',
+    meta: {
+      title: 'cache'
+    }
+  },
+  {
+    path: '*',
+    redirect: '/404',
+    hidden: true
+  }
 ]
 
 const createRouter = (routes = []) => new Router({
-  scrollBehavior: () => ({ y: 0 }),
+  scrollBehavior: () => ({
+    y: 0
+  }),
   routes
 })
 

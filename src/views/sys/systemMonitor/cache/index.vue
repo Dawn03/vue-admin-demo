@@ -1,16 +1,30 @@
 <template>
   <div class="cache  wrapper_content">
-    <div id="cacheLeft" ref="cacheLeft" class="cache-left"></div>
+    <div id="cacheLeft" ref="cacheLeft" class="cache-left">
+      <CacheList
+        :cacheMessage="cacheKeyMessage"
+        :tableHead="keyTableHead"
+        :tableData="keyTableData"
+        @rowClick="rowClick"
+        @reLoadFunc="reLoadKeyFunc"
+      ></CacheList>
+    </div>
 
     <div id="cacheMddile" ref="cacheMddile" class="cache-mddile">
       <span id="btn1" class="toglebtn icon1" @click="arrowClick('btn1')">
         <i
           :class="
-            arrow1 === true ? 'el-icon-caret-right' : 'el-icon-caret-left'
+            arrow1 === true ? 'el-icon-caret-left' : 'el-icon-caret-right'
           "
           class="icon-position "
         ></i>
       </span>
+      <CacheList
+        :cacheMessage="cacheValMessage"
+        :tableHead="valTableHead"
+        :tableData="valTableData"
+        @reLoadFunc="reLoadValFunc"
+      ></CacheList>
       <span id="btn2" class="toglebtn icon2" @click="arrowClick('btn2')">
         <i
           :class="
@@ -25,25 +39,57 @@
   </div>
 </template>
 <script>
+import CacheList from './cacheList'
 // import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
-// import { sysApi } from "../../../../api/systemMonitor";
+import { sysApi } from '../../../../api/systemMonitor'
 export default {
   name: 'Cache',
   inject: ['reload'],
-  components: {},
+  components: {
+    CacheList
+  },
   data() {
     return {
       arrow1: true,
       arrow2: true,
       leftWidth: '25%',
       middleWidth: '35%',
-      rightWidth: '40%'
+      rightWidth: '40%',
+      currentRow: {},
+      cacheKeyMessage: {
+        iconClass: 'fa icon-social-dribbble',
+        text: '缓存列表'
+      },
+      cacheValMessage: {
+        iconClass: 'fa icon-menu',
+        text: '键名列表'
+      },
+      keyTableHead: {
+        id: '缓存列表'
+      },
+      keyTableData: [],
+      valTableHead: {
+        id: '缓存键名'
+      },
+      valTableData: []
     }
   },
   mounted() {
-    this.init(this.pageNation)
+    this.getCacheNameList()
   },
   methods: {
+    reLoadKeyFunc() {
+      this.getCacheNameList()
+    },
+    reLoadValFunc() {
+      this.rowClick(this.currentRow)
+    },
+    getCacheNameList() {
+      sysApi.getCacheNameList().then(res => {
+        this.keyTableData = res
+        // this.rowClick(res[0])
+      })
+    },
     showSearch(val) {
       this.showSearchVal = val
     },
@@ -53,45 +99,35 @@ export default {
     initPage() {
       this.reload()
     },
-    init() {
-      // this.showOrHidden();
+    // 获取缓存键名列表
+    rowClick(row) {
+      this.currentRow = row
+      sysApi.getCacheKeyList({ id: row.id }).then(res => {
+        this.valTableData = res
+      })
     },
     arrowClick(btn) {
-      console.log(52, btn)
+      // console.log(57, btn)
       const cacheLeft = this.$refs.cacheLeft
       const cacheMddile = this.$refs.cacheMddile
       const cacheRight = this.$refs.cacheRight
-      const elWidth = cacheLeft.style.width
-      // this.cacheMddile.width =
-      console.log(123, cacheLeft.style.width)
-    },
-    showOrHidden() {
-      const _this = this
-      const btn1 = document.getElementById('btn1')
-      const cacheLeft = document.getElementById('cacheLeft')
-      const cacheMddile = document.getElementById('cacheMddile')
-      // const cacheRight = document.getElementById("cacheRight");
-      const bar = document.getElementById('bar')
-      btn1.addEventListener(
-        'click',
-        function() {
-          console.log(123)
-          _this.arrow = !_this.arrow
-          const elWidth = cacheLeft.style.width
-          if (elWidth !== '0px') {
-            bar.style.display = 'none'
-            cacheLeft.style.width = '0px'
-            cacheMddile.style.width = '100%'
-          } else {
-            cacheLeft.style.width = '200px'
-            cacheMddile.style.width = 'calc(100% - 200px)'
-            setTimeout(function() {
-              bar.style.display = 'block'
-            }, 800) //
-          }
-        },
-        false
-      )
+      const eLWidth = cacheLeft.style.width
+      const eRWidth = cacheRight.style.width
+      if (btn === 'btn1') {
+        this.arrow1 = !this.arrow1
+        if (eLWidth !== '0px') {
+          cacheLeft.style.width = '0px'
+        } else {
+          cacheLeft.style.width = '25%'
+        }
+      } else {
+        this.arrow2 = !this.arrow2
+        if (eRWidth !== '0px') {
+          cacheRight.style.width = '0px'
+        } else {
+          cacheRight.style.width = '40%'
+        }
+      }
     }
   }
 }
@@ -101,27 +137,26 @@ export default {
   width: 100%;
   height: calc(100vh - 100px);
   display: flex;
+  align-items: center;
+  justify-content: center;
   .cache-left {
     width: 25%;
     display: inline-block;
     height: 100%;
     transition: width 1s;
     -webkit-transition: width 1s;
-    border: 1px solid blue;
+    // border: 1px solid blue;
   }
   .cache-mddile {
-    width: 35%;
+    // width: 100%;
+    flex: 1;
     border-left: 10px solid #fafafa;
     border-right: 10px solid #fafafa;
     height: 100%;
     position: relative;
-    outline: 1px solid red;
-    // .bar {
-    //   width: 220px;
-    //   height: 100%;
-    //   // transition: width 1s;
-    //   // -webkit-transition: width 1s;
-    // }
+    // outline: 1px solid red;
+    transition: width 1s;
+    -webkit-transition: width 1s;
     .toglebtn {
       position: absolute;
       display: inline-block;
@@ -144,7 +179,10 @@ export default {
   .cache-right {
     display: inline-block;
     width: 40%;
-    border: 1px solid green;
+    height: 100%;
+    // border: 1px solid green;
+    transition: width 1s;
+    -webkit-transition: width 1s;
   }
   .td-color {
     color: #1890ff;

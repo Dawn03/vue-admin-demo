@@ -34,7 +34,7 @@ const mutations = {
       id: "id",
       parentId: "pId",
       label: "name",
-      rootId: "YD"
+      rootId: "0"
     };
     const companyList = toTreeData(data, attributes)
     sessionStorage.setItem('companyList', JSON.stringify(companyList))
