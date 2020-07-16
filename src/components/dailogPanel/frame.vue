@@ -1,5 +1,4 @@
 <template>
-  <!-- // 也可以这样写,但是没有办法单独控制name age的显示 -->
   <el-dialog
     ref="dialog__wrapper"
     v-dialogDrag
@@ -7,6 +6,7 @@
     :width="width"
     :before-close="handleClose"
     :title="titleName"
+    :append-to-body="appToBody"
   >
     <!-- // 这里的插槽会替换title显示的内容 -->
     <div
@@ -17,11 +17,16 @@
       <slot name="title">{{ titleName }}</slot>
     </div>
     <div class="dialog-body">
+      <el-backtop target=".el-dialog__body" :right="230" :bottom="120">
+        <div class="back-top">
+          <i class="el-icon-top"></i>
+        </div>
+      </el-backtop>
       <div>
-        <slot name="content"> content </slot>
+        <slot name="content"> </slot>
       </div>
       <div class="dialog-footer">
-        <slot name="footer"> footer </slot>
+        <slot name="footer"> </slot>
       </div>
     </div>
   </el-dialog>
@@ -41,9 +46,13 @@ export default {
     },
     width: {
       type: String,
-      default: "60%"
+      default: "80%"
     },
     dialogVisible: {
+      type: Boolean,
+      default: false
+    },
+    appToBody: {
       type: Boolean,
       default: false
     }
@@ -66,14 +75,26 @@ export default {
   background: #fff;
 }
 .el-dialog__body {
+  position: relative;
   // background: #f4f6f8;
   padding: 5px 20px 20px;
-  height: 450px;
+  height: 70vh;
   overflow-y: scroll;
   overflow-x: hidden;
 }
 .dialog-footer {
   padding: 20px 0;
+}
+.back-top {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: #f2f5f6;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.12);
+  text-align: center;
+  line-height: 40px;
+  border-radius: 4px;
+  color: #1989fa;
 }
 </style>
 <style lang="scss" scoped></style>

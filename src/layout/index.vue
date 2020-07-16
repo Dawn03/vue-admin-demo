@@ -1,154 +1,100 @@
 <template>
-  <div :class="classObj" class="app-wrapper">
-    <div
-      v-if="device === 'mobile' && sidebar.opened"
-      class="drawer-bg"
-      @click="handleClickOutside"
-    />
-    <MyHeader
-      ref="mychild"
-      :bg-color="navBgColor"
-      @changeThemColor="changeAll"
-    />
-    <sidebar :bg-color="sideBgColor" class="sidebar-container" />
-    <div class="main-container" :bg-color="mainBgColor">
-      <div :class="{ 'fixed-header': fixedHeader }">
-        <navbar />
+  <div>
+    <navbar />
+    <div :class="classObj" class="app-wrapper">
+      <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
+
+      <side-menu class="sidebar-container" />
+      <div :class="{hasTagsView:needTagsView}" class="main-container">
+        <div :class="{'fixed-header':fixedHeader}">
+          <tags-view v-if="needTagsView" />
+        </div>
+        <app-main />
       </div>
-      <app-main />
     </div>
   </div>
 </template>
 
 <script>
-import { Navbar, Sidebar, AppMain } from "./components";
-import ResizeMixin from "./mixin/ResizeHandler";
-import MyHeader from "@/components/header/index";
-
-// import Hamburger from "@/components/Hamburger";
+import { AppMain, Navbar, SideMenu, TagsView } from './components'
+import ResizeMixin from './mixin/ResizeHandler'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
-  name: "Layout",
+  name: 'Layout',
   components: {
-    Navbar,
-    Sidebar,
     AppMain,
-    MyHeader
-    // Hamburger
+    Navbar,
+    SideMenu,
+    TagsView
   },
   mixins: [ResizeMixin],
-  data() {
-    return {
-      navBgColor: "#3c8dbc",
-      sideBgColor: "#222d32",
-      mainBgColor: "#fff"
-    };
-  },
   computed: {
-    sidebar() {
-      return this.$store.state.app.sidebar;
-    },
-    device() {
-      return this.$store.state.app.device;
-    },
-    fixedHeader() {
-      return this.$store.state.settings.fixedHeader;
-    },
+    ...mapState({
+      sidebar: state => state.app.sidebar,
+      device: state => state.app.device,
+      showSettings: state => state.settings.showSettings,
+      needTagsView: state => state.settings.tagsView,
+      fixedHeader: state => state.settings.fixedHeader
+    }),
     classObj() {
       return {
         hideSidebar: !this.sidebar.opened,
         openSidebar: this.sidebar.opened,
         withoutAnimation: this.sidebar.withoutAnimation,
-        mobile: this.device === "mobile"
-      };
+        mobile: this.device === 'mobile'
+      }
     }
   },
   methods: {
     handleClickOutside() {
-      this.$store.dispatch("app/closeSideBar", { withoutAnimation: false });
-    },
-    changeAll(item) {
-      this.navBgColor = item.navColor;
-      this.sideBgColor = item.sideColor;
-      this.mainBgColor = item.mainColor;
-      this.$refs.mychild.closeDailog();
-      // console.log(this.navBgColor);
+      this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
-@import "~@/styles/mixin.scss";
-@import "~@/styles/variables.scss";
+  @import "~@/styles/mixin.scss";
+  @import "~@/styles/variables.scss";
 
-.app-wrapper {
-  @include clearfix;
-  position: relative;
-  height: 100%;
-  width: 100%;
-  &.mobile.openSidebar {
-    position: fixed;
+  .app-wrapper {
+    @include clearfix;
+    position: relative;
+    height: 100%;
+    width: 100%;
+
+    &.mobile.openSidebar {
+      position: fixed;
+      top: 0;
+    }
+  }
+
+  .drawer-bg {
+    background: #000;
+    opacity: 0.3;
+    width: 100%;
     top: 0;
+    height: 100%;
+    position: absolute;
+    z-index: 999;
+  }
+  .main-container {
+    width: calc(100% - #{$sideBarWidth});
+  }
+  .fixed-header {
+    position: fixed;
+    top: 50px;
+    right: 0;
+    z-index: 9;
+    width: calc(100% - #{$sideBarWidth});
+    transition: width 0.28s;
   }
 
-  .header {
-    height: 50px;
-    background: $topBackground;
-    .head-left {
-      position: relative;
-      width: 200px;
-      .logo-box {
-        line-height: 50px;
-        margin-left: 20px;
-        .logo {
-          height: 38px;
-          vertical-align: middle;
-        }
-      }
-      .hamburger-container {
-        line-height: 46px;
-        height: 100%;
-        float: right;
-        cursor: pointer;
-        transition: background 0.3s;
-        -webkit-tap-highlight-color: transparent;
-        &:hover {
-          background: rgba(0, 0, 0, 0.025);
-        }
-      }
-      .switch-btn {
-      }
-    }
-    .head-right {
-    }
+  .hideSidebar .fixed-header {
+    width: calc(100% - 54px)
   }
-}
-
-.drawer-bg {
-  background: #000;
-  opacity: 0.3;
-  width: 100%;
-  top: 0;
-  height: 100%;
-  position: absolute;
-  z-index: 999;
-}
-
-.fixed-header {
-  position: fixed;
-  top: 0;
-  right: 0;
-  z-index: 9;
-  width: calc(100% - #{$sideBarWidth});
-  transition: width 0.28s;
-}
-
-.hideSidebar .fixed-header {
-  width: calc(100% - 54px);
-}
-
-.mobile .fixed-header {
-  width: 100%;
-}
+  .mobile .fixed-header {
+    width: 100%;
+  }
 </style>

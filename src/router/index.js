@@ -1,189 +1,187 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
+const baseFontURl = '/web'
 Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
 
-/**
- * Note: sub-menu only appear when route children.length >= 1
- * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
- *
- * hidden: true                   if set true, item will not show in the sidebar(default is false)
- * alwaysShow: true               if set true, will always show the root menu
- *                                if not set alwaysShow, when item has more than one children route,
- *                                it will becomes nested mode, otherwise not show the root menu
- * redirect: noRedirect           if set noRedirect will no redirect in the breadcrumb
- * name:'router-name'             the name is used by <keep-alive> (must set!!!)
- * meta : {
-    roles: ['admin','editor']    control the page roles (you can set multiple roles)
-    title: 'title'               the name show in sidebar and breadcrumb (recommend set)
-    icon: 'svg-name'             the icon show in the sidebar
-    breadcrumb: false            if set false, the item will hidden in breadcrumb(default is true)
-    activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set
-  }
- */
-
-/**
- * constantRoutes
- * a base page that does not have permission requirements
- * all roles can be accessed
- */
-export const constantRoutes = [{
+export const routesOutLayout = [
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true
   },
-
+  {
+    path: '/auth-redirect',
+    component: () => import('@/views/login/auth-redirect'),
+    hidden: true
+  },
   {
     path: '/404',
-    component: () => import('@/views/404'),
+    component: () => import('@/views/error-page/404'),
     hidden: true
   },
-
   {
-    path: '/',
-    component: Layout,
-    redirect: '/dashboard',
-    hidden: true,
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: {
-        title: '仪表盘',
-        icon: 'dashboard'
-      }
-    }]
+    path: '/401',
+    component: () => import('@/views/error-page/401'),
+    hidden: true
   },
   {
-    path: '/system',
+    path: '/redirect',
     component: Layout,
-    redirect: '/system/organazation',
-    name: 'system',
-    meta: {
-      title: '系统管理',
-      icon: 'nested'
-    },
-    children: [{
-        path: 'organazation',
-        component: () => import('@/views/system/organazation/index'), // Parent router-view
-        name: 'organazation',
-        meta: {
-          title: '组织管理'
-        },
-        children: [{
-            path: 'userManager',
-            component: () => import('@/views/system/organazation/userManager'),
-            name: 'userManager',
-            meta: {
-              title: '用户管理'
-            }
-          },
-          {
-            path: 'institution',
-            component: () => import('@/views/system/organazation/institution'),
-            name: 'institution',
-            meta: {
-              title: '机构管理'
-            }
-          }
-        ]
-      },
+    hidden: true,
+    children: [
       {
-        path: 'rightsManage',
-        component: () => import('@/views/system/rightsManage/index'),
-        meta: {
-          title: '权限管理'
-        },
-        children: [{
-            path: 'role',
-            component: () => import('@/views/system/rightsManage/roleManage'),
-            name: 'role',
-            meta: {
-              title: '角色管理'
-            }
-          },
-          {
-            path: 'secondManage',
-            component: () => import('@/views/system/rightsManage/secondManage'),
-            name: 'secondManage',
-            meta: {
-              title: '二级管理员'
-            }
-          }
-        ]
+        path: '/redirect/:path(.*)',
+        component: () => import('@/views/redirect/index')
       }
     ]
-  },
-  // {
-  //   path: '/example',
-  //   component: Layout,
-  //   redirect: '/example/table',
-  //   name: 'Example',
-  //   meta: { title: 'Example', icon: 'example' },
-  //   children: [
-  //     {
-  //       path: 'table',
-  //       name: 'Table',
-  //       component: () => import('@/views/table/index'),
-  //       meta: { title: 'Table', icon: 'table' }
-  //     },
-  //     {
-  //       path: 'tree',
-  //       name: 'Tree',
-  //       component: () => import('@/views/tree/index'),
-  //       meta: { title: 'Tree', icon: 'tree' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: '/form',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'Form',
-  //       component: () => import('@/views/form/index'),
-  //       meta: { title: 'Form', icon: 'form' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: 'external-link',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-  //       meta: { title: 'External Link', icon: 'link' }
-  //     }
-  //   ]
-  // },
-
-  // 404 page must be placed at the end !!!
-  {
-    path: '*',
-    redirect: '/404',
-    hidden: true
   }
 ]
 
-const createRouter = () => new Router({
-  mode: 'history', // require service support
-  scrollBehavior: () => ({
-    y: 0
-  }),
-  routes: constantRoutes
+export function createRoutesInLayout(routes = []) {
+  return [
+
+    {
+      path: '/',
+      redirect: '/dashboard',
+      component: Layout,
+      children: [
+        { path: 'dashboard', name: 'Dashboard', meta: { title: 'dashboard', icon: 'dashboard', affix: true }, component: () => import('@/views/dashboard/index') },
+        { path: '/sys/user/info', name: 'userinfo', meta: { title: 'personalCenter', icon: 'icon-user' }, component: () => import('@/views/sys/user/info') },
+        ...routes
+      ]
+    }
+    // 404 page must be placed at the end !!!
+    // ,{ path: '*', redirect: '/404', hidden: true }
+  ]
+}
+
+// 默认的路由
+export const constantRoutes = createRoutesInLayout().concat(routesOutLayout)
+/**
+ * asyncRoutes
+ * the routes that need to be dynamically loaded based on user roles
+ */
+export const asyncRoutes = [
+  {
+    path: `${baseFontURl}/a/sys/empUser/index`,
+    component: () => import('@/views/sys/organazation/userManager'),
+    name: 'userManager',
+    meta: {
+      title: 'userManager'
+    }
+  },
+  {
+    path: `${baseFontURl}/a/sys/company/list`,
+    component: () => import('@/views/sys/organazation/company'),
+    name: 'company',
+    meta: {
+      title: 'company'
+    }
+  },
+  {
+    path: `${baseFontURl}/a/sys/post/list`,
+    component: () => import('@/views/sys/organazation/post'),
+    name: 'post',
+    meta: {
+      title: 'post'
+    }
+  },
+  {
+    path: `${baseFontURl}/a/sys/office/index`,
+    component: () => import('@/views/sys/organazation/institution'),
+    name: 'institution',
+    meta: {
+      title: 'institution'
+    }
+  },
+  {
+    path: `${baseFontURl}/a/sys/role/list`,
+    component: () => import('@/views/sys/role/role'),
+    name: 'role',
+    meta: {
+      title: 'role'
+    }
+  },
+  {
+    path: `${baseFontURl}/a/sys/secAdmin/list`,
+    component: () => import('@/views/sys/role/secAdmin'),
+    name: 'secAdmin',
+    meta: {
+      title: 'secAdmin'
+    }
+  },
+  {
+    path: `${baseFontURl}/a/sys/corpAdmin/list`,
+    component: () => import('@/views/sys/role/corpAdmin'),
+    name: 'corpAdmin',
+    meta: {
+      title: 'corpAdmin'
+    }
+  },
+  {
+    path: `${baseFontURl}/a/sys/menu/list`,
+    component: () => import('@/views/sys/systemSet/menu'),
+    name: 'menu',
+    meta: {
+      title: 'menu'
+    }
+  },
+  {
+    path: `${baseFontURl}/a/sys/module/list`,
+    component: () => import('@/views/sys/systemSet/module'),
+    name: 'module',
+    meta: {
+      title: 'module'
+    }
+  },
+  {
+    path: `${baseFontURl}/a/sys/config/list`,
+    component: () => import('@/views/sys/systemSet/config'),
+    name: 'config',
+    meta: {
+      title: 'config'
+    }
+  },
+  {
+    path: `${baseFontURl}/a/sys/dictType/list`,
+    component: () => import('@/views/sys/systemSet/dictType'),
+    name: 'dictType',
+    meta: {
+      title: 'dictType'
+    }
+  },
+  {
+    path: `${baseFontURl}/a/sys/area/list`,
+    component: () => import('@/views/sys/systemSet/area'),
+    name: 'area',
+    meta: {
+      title: 'area'
+    }
+  },
+  {
+    path: `${baseFontURl}/licence`,
+    component: () => import('@/views/sys/systemSet/licence'),
+    name: 'licence',
+    meta: {
+      title: 'licence'
+    }
+  },
+  { path: '*', redirect: '/404', hidden: true }
+]
+
+const createRouter = (routes = []) => new Router({
+  scrollBehavior: () => ({ y: 0 }),
+  routes
 })
 
-const router = createRouter()
+const router = createRouter(constantRoutes)
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
-export function resetRouter() {
-  const newRouter = createRouter()
+export function resetRouter(routes = []) {
+  const newRouter = createRouter(routes)
   router.matcher = newRouter.matcher // reset router
 }
 
