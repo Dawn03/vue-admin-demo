@@ -81,7 +81,7 @@
 </template>
 <script>
 export default {
-  name: "InputFilter",
+  name: 'InputFilter',
   components: {},
   props: {
     formItem: {
@@ -95,89 +95,89 @@ export default {
   },
   data() {
     return {
-      defaultWidth: "140",
+      defaultWidth: '140',
       selectOptions: [],
       pickerOptions: {
         shortcuts: [
           {
-            text: "今日",
+            text: '今日',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
+              const end = new Date()
+              const start = new Date()
               // start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit("pick", [start, end]);
+              picker.$emit('pick', [start, end])
             }
           },
           {
-            text: "本周",
+            text: '本周',
             onClick(picker) {
-              const now = new Date();
-              const nowDayOfWeek = now.getDay(); // 当前日
-              const temp = nowDayOfWeek - 1; // 当前日和周一差几天
-              const start = now - temp * 3600 * 1000 * 24;
-              const end = start + 3600 * 1000 * 24 * 6;
+              const now = new Date()
+              const nowDayOfWeek = now.getDay() // 当前日
+              const temp = nowDayOfWeek - 1 // 当前日和周一差几天
+              const start = now - temp * 3600 * 1000 * 24
+              const end = start + 3600 * 1000 * 24 * 6
               // start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit("pick", [start, end]);
+              picker.$emit('pick', [start, end])
             }
           },
           {
-            text: "本月",
+            text: '本月',
             onClick(picker) {
-              const now = new Date();
-              const date = now.getDate(); // 当前日 14
-              const temp = date - 1;
-              const start = now - temp * 3600 * 1000 * 24;
-              const end = start * 3600 * 1000 * 24 * 10;
-              picker.$emit("pick", [start, end]);
+              const now = new Date()
+              const date = now.getDate() // 当前日 14
+              const temp = date - 1
+              const start = now - temp * 3600 * 1000 * 24
+              const end = start * 3600 * 1000 * 24 * 10
+              picker.$emit('pick', [start, end])
             }
           },
           {
-            text: "本季度",
+            text: '本季度',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit("pick", [start, end]);
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+              picker.$emit('pick', [start, end])
             }
           },
           {
-            text: "本季上月度",
+            text: '本季上月度',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit("pick", [start, end]);
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+              picker.$emit('pick', [start, end])
             }
           }
         ]
       }
-    };
+    }
   },
   watch: {
     formItem(newVal, val) {
-      this.selectOptions = newVal;
+      this.selectOptions = newVal
     }
   },
   methods: {
     /* 查询 */
     searchBtn() {
-      console.log("searchBtn");
-      this.$emit("searchBtn");
+      console.log('searchBtn')
+      this.$emit('searchBtn')
     },
     /* 重置 */
     resetForm() {
-      this.$emit("resetForm");
+      this.$emit('resetForm')
     },
     changeResult(val, item) {
       // console.log(83, val, item);
-      this.$emit("statusValChange", item);
+      this.$emit('statusValChange', item)
     },
     showChoosePanel(item) {
       //   console.log(2343);
-      this.$emit("filterPanel", item);
+      this.$emit('filterPanel', item)
     }
   }
-};
+}
 </script>
 <style lang="scss">
 .input-filter {

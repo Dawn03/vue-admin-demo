@@ -3,6 +3,6 @@
 </template>
 <script>
 export default {
-  name: "Glyphoicons"
-};
+  name: 'Glyphoicons'
+}
 </script>

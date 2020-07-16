@@ -35,15 +35,15 @@
         </span>
       </template>
       <template slot="areaType" slot-scope="scope">
-        {{ swichText("sys_area_type", scope.row.areaType, "未设置") }}
+        {{ swichText('sys_area_type', scope.row.areaType, '未设置') }}
       </template>
 
       <template slot="status" slot-scope="scope">
         <span v-if="scope.row.status === '0'">
-          {{ swichText("sys_status", scope.row.status, "未设置") }}
+          {{ swichText('sys_status', scope.row.status, '未设置') }}
         </span>
         <span v-else class="r-btn">
-          {{ swichText("sys_status", scope.row.status, "未设置") }}
+          {{ swichText('sys_status', scope.row.status, '未设置') }}
         </span>
       </template>
       <template slot="operate">
@@ -96,15 +96,15 @@
   </div>
 </template>
 <script>
-import TableTree from "@/components/tableTree";
-import InputFilter from "@/components/inputFliter";
-import AreaEdit from "./areaEdit.vue";
-import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
-import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
-import { sysApi } from "../../../../api/systemSet";
+import TableTree from '@/components/tableTree'
+import InputFilter from '@/components/inputFliter'
+import AreaEdit from './areaEdit.vue'
+import TopBtns from '@/components/componentBtns/topBtns/baseBtn'
+import { clearFilterVal, getInputVal, dictTypeMap } from '@/utils/pubFunc'
+import { sysApi } from '../../../../api/systemSet'
 export default {
-  name: "Area",
-  inject: ["reload"],
+  name: 'Area',
+  inject: ['reload'],
   components: {
     TableTree,
     InputFilter,
@@ -115,111 +115,111 @@ export default {
     return {
       showSearchVal: false,
       leftMg: {
-        icon: "fa icon-map",
-        text: "行政区划"
+        icon: 'fa icon-map',
+        text: '行政区划'
       },
       btnArr: [
         {
-          handlerName: "View",
-          btnText: "查询",
-          class: "fa fa-search"
+          handlerName: 'View',
+          btnText: '查询',
+          class: 'fa fa-search'
         },
         {
-          handlerName: "Reload",
-          btnText: "刷新",
-          class: "fa fa-refresh"
+          handlerName: 'Reload',
+          btnText: '刷新',
+          class: 'fa fa-refresh'
         },
         {
-          handlerName: "Expand",
-          btnText: "展开",
-          class: "fa fa-angle-double-down"
+          handlerName: 'Expand',
+          btnText: '展开',
+          class: 'fa fa-angle-double-down'
         },
         {
-          handlerName: "Folding",
-          btnText: "折叠",
-          class: "fa fa-angle-double-down"
+          handlerName: 'Folding',
+          btnText: '折叠',
+          class: 'fa fa-angle-double-down'
         },
         {
-          handlerName: "AddNew",
-          btnText: "新增",
-          class: "fa fa-plus"
+          handlerName: 'AddNew',
+          btnText: '新增',
+          class: 'fa fa-plus'
         }
       ],
       formInline: [
         {
-          type: "input",
-          label: "区域代码",
-          key: "areaCode",
-          value: ""
+          type: 'input',
+          label: '区域代码',
+          key: 'areaCode',
+          value: ''
         },
         {
-          type: "input",
-          label: "区域名称",
-          key: "areaName",
-          value: ""
+          type: 'input',
+          label: '区域名称',
+          key: 'areaName',
+          value: ''
         },
         {
-          type: "select",
-          label: "状态",
-          options: this.getStatusOption("sys_search_status"),
-          key: "status",
-          value: ""
+          type: 'select',
+          label: '状态',
+          options: this.getStatusOption('sys_search_status'),
+          key: 'status',
+          value: ''
         }
       ],
       columnTextPostion: {
-        areaName: "left"
+        areaName: 'left'
       },
       columnWidths: {
         treeSort: 100,
         status: 80
       },
       columnSortabel: {},
-      slotColumns: ["areaName", "areaType", "status"],
+      slotColumns: ['areaName', 'areaType', 'status'],
       tableHead: {
-        areaName: "区域名称",
-        areaType: "区域类型",
-        remarks: "备注信息",
-        treeSort: "排序号",
-        status: "状态", // 1 菜单 2权限
-        updateDate: "更新时间" // 1 菜单 2权限
+        areaName: '区域名称',
+        areaType: '区域类型',
+        remarks: '备注信息',
+        treeSort: '排序号',
+        status: '状态', // 1 菜单 2权限
+        updateDate: '更新时间' // 1 菜单 2权限
       },
       tableData: [],
       pageNation: {
-        areaCode: "",
-        areaName: "",
-        status: "",
+        areaCode: '',
+        areaName: '',
+        status: '',
         pageNo: 1,
         pageSize: 20,
-        orderBy: ""
+        orderBy: ''
       },
       tableFit: true
-    };
+    }
   },
   mounted() {
-    this.init(this.pageNation);
+    this.init(this.pageNation)
   },
   methods: {
     showSearch(val) {
-      this.showSearchVal = val;
+      this.showSearchVal = val
     },
     handlerName(funcName) {
-      this[funcName]();
+      this[funcName]()
     },
     initPage() {
-      this.reload();
+      this.reload()
     },
     init(param) {
       // console.log(2222, param);
       sysApi.getAreaList(param).then(res => {
-        const resList = res.list;
+        const resList = res.list
         for (let i = 0, len = resList.length; i < len; i++) {
           if (resList[i].isTreeLeaf === false) {
-            resList[i].hasChildren = true;
+            resList[i].hasChildren = true
           }
         }
-        this.tableData = resList;
-        this.pageNation.total = res.count;
-      });
+        this.tableData = resList
+        this.pageNation.total = res.count
+      })
     },
     // tree 懒加载
     requstLazyLoad(param) {
@@ -228,104 +228,102 @@ export default {
         parentCode: param.tree.id,
         parentid: param.tree.parentCode,
         _search: false,
-        pageSize: "",
+        pageSize: '',
         pageNo: 1
-      };
+      }
       sysApi.getAreaList(obj).then(res => {
         for (let i = 0, len = res.list.length; i < len; i++) {
           if (!res.list[i].isTreeLeaf) {
-            res.list[i].hasChildren = true;
+            res.list[i].hasChildren = true
           }
         }
-        param.resolve(res.list);
-      });
+        param.resolve(res.list)
+      })
     },
     /* 列表文本转义 */
     swichText(type, val, other) {
-      return dictTypeMap(type, val, other);
+      return dictTypeMap(type, val, other)
     },
     /* 获取状态下拉框数据 */
     getStatusOption(type) {
-      const selectTypeData = JSON.parse(
-        sessionStorage.getItem("selectDicType")
-      );
-      return selectTypeData[type];
+      const selectTypeData = JSON.parse(sessionStorage.getItem('selectDicType'))
+      return selectTypeData[type]
     },
     statusValChange(item) {
-      this.searchBtn(item);
+      this.searchBtn(item)
     },
     /* 获取填入输入框的值  */
     searchBtn(data = {}) {
       const valObj = Object.assign(
         this.pageNation,
         getInputVal(this.formInline)
-      );
-      this.init(valObj);
+      )
+      this.init(valObj)
     },
     /* 清除输入框内的值 */
     resetForm() {
-      clearFilterVal(this.formInline);
-      this.pageNation.pageNo = 1;
-      this.pageNation.areaCode = "";
-      this.pageNation.areaName = "";
-      this.pageNation.status = "";
-      this.init(this.pageNation);
+      clearFilterVal(this.formInline)
+      this.pageNation.pageNo = 1
+      this.pageNation.areaCode = ''
+      this.pageNation.areaName = ''
+      this.pageNation.status = ''
+      this.init(this.pageNation)
     },
     currentChange(val) {
-      this.pageNation.pageNo = val;
-      this.init(this.pageNation);
+      this.pageNation.pageNo = val
+      this.init(this.pageNation)
     },
     /* 编辑/新增下级表格 */
     areaEditAdd(row, type) {
-      this.$refs.areaEditPanel.show(row, type);
+      this.$refs.areaEditPanel.show(row, type)
     },
-    AddNew(row = {}, type = "新增") {
-      this.$refs.areaEditPanel.show(row, type);
+    AddNew(row = {}, type = '新增') {
+      this.$refs.areaEditPanel.show(row, type)
     },
     setAreaStart(row) {
-      const typeText = row.isLoader ? "停用" : "启用";
-      this.$alertMsgBox(`确认要${typeText}该区域吗?`, "信息")
+      const typeText = row.isLoader ? '停用' : '启用'
+      this.$alertMsgBox(`确认要${typeText}该区域吗?`, '信息')
         .then(() => {
           sysApi
             .setAreaStart({
-              type: row.status === "0" ? "disable" : "enable",
+              type: row.status === '0' ? 'disable' : 'enable',
               areaCode: row.id
             })
             .then(res => {
-              if (res.result === "true") {
-                this.$message.success(res.message);
-                this.init(this.pageNation);
+              if (res.result === 'true') {
+                this.$message.success(res.message)
+                this.init(this.pageNation)
               } else {
-                this.$message.waring(res.message);
+                this.$message.waring(res.message)
               }
-            });
+            })
         })
         .catch(() => {
-          this.$message.info("取消");
-        });
+          this.$message.info('取消')
+        })
     },
     deleteArea(row) {
-      this.$alertMsgBox("确认要删除该行政区划吗？", "信息")
+      this.$alertMsgBox('确认要删除该行政区划吗？', '信息')
         .then(() => {
           sysApi
             .deleteArea({
               id: row.id
             })
             .then(res => {
-              if (res.result === "true") {
-                this.init(this.pageNation);
-                this.$message.success(res.message);
+              if (res.result === 'true') {
+                this.init(this.pageNation)
+                this.$message.success(res.message)
               } else {
-                this.$message.waring(res.message);
+                this.$message.waring(res.message)
               }
-            });
+            })
         })
         .catch(() => {
-          this.$message.info("取消");
-        });
+          this.$message.info('取消')
+        })
     }
   }
-};
+}
 </script>
 <style lang="scss">
 .tree-sort {

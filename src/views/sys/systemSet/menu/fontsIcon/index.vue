@@ -29,12 +29,12 @@
   </div>
 </template>
 <script>
-import DailogFrame from "@/components/dailogPanel/frame";
-import FontAwesomeIcons from "./fontAwesomeIcons";
-import SimpleLineIcons from "./simpleLineIcons";
-import Glyphicons from "./glyphicons";
+import DailogFrame from '@/components/dailogPanel/frame'
+import FontAwesomeIcons from './fontAwesomeIcons'
+import SimpleLineIcons from './simpleLineIcons'
+import Glyphicons from './glyphicons'
 export default {
-  name: "FontIconChoose",
+  name: 'FontIconChoose',
   components: {
     FontAwesomeIcons,
     SimpleLineIcons,
@@ -45,49 +45,49 @@ export default {
   data() {
     return {
       innerVisible: false,
-      titleType: "图标选择",
+      titleType: '图标选择',
       tabArr: [
         {
-          label: "Simple Line Icons",
-          name: "first",
-          componentName: "SimpleLineIcons"
+          label: 'Simple Line Icons',
+          name: 'first',
+          componentName: 'SimpleLineIcons'
         },
         {
-          label: "Font Awesome Icons",
-          name: "second",
-          componentName: "FontAwesomeIcons"
+          label: 'Font Awesome Icons',
+          name: 'second',
+          componentName: 'FontAwesomeIcons'
         },
         {
-          label: "Glyphicons",
-          name: "third",
-          componentName: "Glyphicons"
+          label: 'Glyphicons',
+          name: 'third',
+          componentName: 'Glyphicons'
         }
       ],
-      activeName: "first"
-    };
+      activeName: 'first'
+    }
   },
 
   mounted() {},
   methods: {
     handleClick(tab, event) {
-      console.log(tab, event);
+      console.log(tab, event)
     },
     /* 显示对话框  编辑机构  新增下级机构  新增机构*/
     show(row, type) {
-      console.log(63);
-      this.innerVisible = true;
+      console.log(63)
+      this.innerVisible = true
     },
     iconChoose(iconName) {
-      this.$emit("iconChoose", iconName);
-      this.closeEditDialog();
+      this.$emit('iconChoose', iconName)
+      this.closeEditDialog()
     },
     // 关闭对话框选择
     closeEditDialog() {
       //   this.resetForm();
-      this.innerVisible = false;
+      this.innerVisible = false
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .color {

@@ -49,15 +49,15 @@
         </span>
       </template>
       <template slot="isSys" slot-scope="scope">
-        {{ swichText("sys_yes_no", scope.row.isSys, "未安装") }}
+        {{ swichText('sys_yes_no', scope.row.isSys, '未安装') }}
       </template>
 
       <template slot="status" slot-scope="scope">
         <span v-if="scope.row.status === '0'">
-          {{ swichText("sys_status", scope.row.status, "未设置") }}
+          {{ swichText('sys_status', scope.row.status, '未设置') }}
         </span>
         <span v-else class="r-btn">
-          {{ swichText("sys_status", scope.row.status, "未设置") }}
+          {{ swichText('sys_status', scope.row.status, '未设置') }}
         </span>
       </template>
       <template slot="operate">
@@ -120,16 +120,16 @@
   </div>
 </template>
 <script>
-import TableTree from "@/components/tableTree";
-import InputFilter from "@/components/inputFliter";
-import DictTypeEdit from "./dictTypeEdit.vue";
-import DicTypeDataPanel from "./dicTypeDataPanel";
-import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
-import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
-import { sysApi } from "../../../../api/systemSet";
+import TableTree from '@/components/tableTree'
+import InputFilter from '@/components/inputFliter'
+import DictTypeEdit from './dictTypeEdit.vue'
+import DicTypeDataPanel from './dicTypeDataPanel'
+import TopBtns from '@/components/componentBtns/topBtns/baseBtn'
+import { clearFilterVal, getInputVal, dictTypeMap } from '@/utils/pubFunc'
+import { sysApi } from '../../../../api/systemSet'
 export default {
-  name: "Menu",
-  inject: ["reload"],
+  name: 'Menu',
+  inject: ['reload'],
   components: {
     TableTree,
     InputFilter,
@@ -141,53 +141,53 @@ export default {
     return {
       showSearchVal: false,
       leftMg: {
-        icon: "fa fa-fw icon-social-dropbox",
-        text: "字典管理"
+        icon: 'fa fa-fw icon-social-dropbox',
+        text: '字典管理'
       },
       btnArr: [
         {
-          handlerName: "View",
-          btnText: "查询",
-          class: "fa fa-search"
+          handlerName: 'View',
+          btnText: '查询',
+          class: 'fa fa-search'
         },
 
         {
-          handlerName: "AddNew",
-          btnText: "新增",
-          class: "fa fa-plus"
+          handlerName: 'AddNew',
+          btnText: '新增',
+          class: 'fa fa-plus'
         }
       ],
       formInline: [
         {
-          type: "input",
-          label: "字典名称",
-          key: "dictName",
-          value: ""
+          type: 'input',
+          label: '字典名称',
+          key: 'dictName',
+          value: ''
         },
         {
-          type: "input",
-          label: "字典类型",
-          key: "dictType_like",
-          value: ""
+          type: 'input',
+          label: '字典类型',
+          key: 'dictType_like',
+          value: ''
         },
         {
-          type: "select",
-          label: "系统字典",
-          key: "isSys",
-          options: this.getStatusOption("sys_yes_no"),
-          value: ""
+          type: 'select',
+          label: '系统字典',
+          key: 'isSys',
+          options: this.getStatusOption('sys_yes_no'),
+          value: ''
         },
         {
-          type: "select",
-          label: "状态",
-          options: this.getStatusOption("sys_search_status"),
-          key: "status",
-          value: ""
+          type: 'select',
+          label: '状态',
+          options: this.getStatusOption('sys_search_status'),
+          key: 'status',
+          value: ''
         }
       ],
       columnTextPostion: {
-        dictName: "left",
-        dictType: "left"
+        dictName: 'left',
+        dictType: 'left'
       },
       columnWidths: {
         isSys: 100,
@@ -201,146 +201,144 @@ export default {
         remarks: true,
         status: true
       },
-      slotColumns: ["dictName", "dictType", "isSys", "status"],
+      slotColumns: ['dictName', 'dictType', 'isSys', 'status'],
       tableHead: {
-        dictName: "字典名称",
-        dictType: "字典类型",
-        isSys: "系统字典",
-        updateDate: "更新时间",
-        remarks: "备注",
-        status: "状态" // 1 菜单 2权限
+        dictName: '字典名称',
+        dictType: '字典类型',
+        isSys: '系统字典',
+        updateDate: '更新时间',
+        remarks: '备注',
+        status: '状态' // 1 菜单 2权限
       },
       tableData: [],
       pageNation: {
-        dictName: "",
-        dictType_like: "",
-        isSys: "",
-        status: "",
+        dictName: '',
+        dictType_like: '',
+        isSys: '',
+        status: '',
         pageSize: 20,
         pageNo: 1,
         total: 0,
-        orderBy: ""
+        orderBy: ''
       },
       tableFit: true
-    };
+    }
   },
   mounted() {
-    this.init(this.pageNation);
+    this.init(this.pageNation)
   },
   methods: {
     showSearch(val) {
-      this.showSearchVal = val;
+      this.showSearchVal = val
     },
     handlerName(funcName) {
-      this[funcName]();
+      this[funcName]()
     },
     initPage() {
-      this.reload();
+      this.reload()
     },
     init(param) {
       // console.log(2222, param);
       sysApi.dictType(param).then(res => {
-        this.tableData = res.list;
-        this.pageNation.total = res.count;
-      });
+        this.tableData = res.list
+        this.pageNation.total = res.count
+      })
     },
 
     /* 列表文本转义 */
     swichText(type, val, other) {
-      return dictTypeMap(type, val, other);
+      return dictTypeMap(type, val, other)
     },
     /* 获取状态下拉框数据 */
     getStatusOption(type) {
-      const selectTypeData = JSON.parse(
-        sessionStorage.getItem("selectDicType")
-      );
-      return selectTypeData[type];
+      const selectTypeData = JSON.parse(sessionStorage.getItem('selectDicType'))
+      return selectTypeData[type]
     },
     statusValChange(item) {
-      this.searchBtn(item);
+      this.searchBtn(item)
     },
     /* 获取填入输入框的值  */
     searchBtn(data = {}) {
       const valObj = Object.assign(
         this.pageNation,
         getInputVal(this.formInline)
-      );
-      this.init(valObj);
+      )
+      this.init(valObj)
     },
     /* 清除输入框内的值 */
     resetForm() {
-      clearFilterVal(this.formInline);
-      this.pageNation.pageNo = 1;
-      this.pageNation.dictName = "";
-      this.pageNation.mainClassName = "";
-      this.pageNation.status = "";
-      this.pageNation.orderBy = "";
-      this.pageNation.dictType_like = "";
-      this.init(this.pageNation);
+      clearFilterVal(this.formInline)
+      this.pageNation.pageNo = 1
+      this.pageNation.dictName = ''
+      this.pageNation.mainClassName = ''
+      this.pageNation.status = ''
+      this.pageNation.orderBy = ''
+      this.pageNation.dictType_like = ''
+      this.init(this.pageNation)
     },
     currentChange(val) {
-      this.pageNation.pageNo = val;
-      this.init(this.pageNation);
+      this.pageNation.pageNo = val
+      this.init(this.pageNation)
     },
     sortChange(sortVal) {
-      this.pageNation.orderBy = sortVal;
-      this.init(this.pageNation);
+      this.pageNation.orderBy = sortVal
+      this.init(this.pageNation)
     },
     /* 编辑/新增下级表格 */
     dictTypeEditAdd(row, type) {
-      this.$refs.dictTypeEditPanel.show(row, type);
+      this.$refs.dictTypeEditPanel.show(row, type)
     },
     AddNew() {
-      this.$refs.dictTypeEditPanel.show({}, "新增");
+      this.$refs.dictTypeEditPanel.show({}, '新增')
     },
     /* 字典类型 查看字典数据 */
     dictTypeView(row) {
-      this.$refs.dicTypeDataPanel.show(row);
+      this.$refs.dicTypeDataPanel.show(row)
     },
     setDictTypeStart(row) {
-      const typeText = row.isLoader ? "停用" : "启用";
-      this.$alertMsgBox(`确认要${typeText}该字典类型吗?`, "信息")
+      const typeText = row.isLoader ? '停用' : '启用'
+      this.$alertMsgBox(`确认要${typeText}该字典类型吗?`, '信息')
         .then(() => {
           sysApi
             .setDictTypeStart({
-              type: row.status === "0" ? "disable" : "enable",
+              type: row.status === '0' ? 'disable' : 'enable',
               id: row.id
             })
             .then(res => {
-              if (res.result === "true") {
-                this.$message.success(res.message);
-                this.init(this.pageNation);
+              if (res.result === 'true') {
+                this.$message.success(res.message)
+                this.init(this.pageNation)
               } else {
-                this.$message.waring(res.message);
+                this.$message.waring(res.message)
               }
-            });
+            })
         })
         .catch(() => {
-          this.$message.info("取消");
-        });
+          this.$message.info('取消')
+        })
     },
     deleteDictType(row) {
-      this.$alertMsgBox("确认要删除该字典类型吗？", "信息")
+      this.$alertMsgBox('确认要删除该字典类型吗？', '信息')
         .then(() => {
           sysApi
             .deleteDictType({
               id: row.id
             })
             .then(res => {
-              if (res.result === "true") {
-                this.init(this.params);
-                this.$message.success(res.message);
+              if (res.result === 'true') {
+                this.init(this.params)
+                this.$message.success(res.message)
               } else {
-                this.$message.waring(res.message);
+                this.$message.waring(res.message)
               }
-            });
+            })
         })
         .catch(() => {
-          this.$message.info("取消");
-        });
+          this.$message.info('取消')
+        })
     }
   }
-};
+}
 </script>
 <style lang="scss">
 .tree-sort {

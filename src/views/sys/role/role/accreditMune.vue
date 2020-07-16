@@ -65,13 +65,13 @@
 <script>
 // import { } from "module";
 
-import dymForm from "@/components/element/dymForm";
-import ColumnBar from "@/components/commonColumn";
-import DailogFrame from "@/components/dailogPanel/frame";
-import MenuRights from "@/components/menuRights";
-import { roleApi } from "@/api/role";
+import dymForm from '@/components/element/dymForm'
+import ColumnBar from '@/components/commonColumn'
+import DailogFrame from '@/components/dailogPanel/frame'
+import MenuRights from '@/components/menuRights'
+import { roleApi } from '@/api/role'
 export default {
-  name: "DataRights",
+  name: 'DataRights',
   components: {
     DailogFrame,
     ColumnBar,
@@ -81,91 +81,91 @@ export default {
   props: {
     columnBarName: {
       type: String,
-      default: "板块标题"
+      default: '板块标题'
     },
     tName1: {
       type: String,
-      default: ""
+      default: ''
     },
     tName2: {
       type: String,
-      default: ""
+      default: ''
     },
     tName3: {
       type: String,
-      default: ""
+      default: ''
     },
     titleName: {
       type: String,
-      default: "提示"
+      default: '提示'
     },
     menuTree1: {
       type: [Array],
       default: () => {
-        return [];
+        return []
       }
     },
     menuTree2: {
       type: [Array],
       default: () => {
-        return [];
+        return []
       }
     },
     menuTree3: {
       type: [Array],
       default: () => {
-        return [];
+        return []
       }
     },
     checkedMemu1: {
       type: [Array],
       default: () => {
-        return [];
+        return []
       }
     },
     checkedMemu2: {
       type: [Array],
       default: () => {
-        return [];
+        return []
       }
     },
     checkedMemu3: {
       type: [Array],
       default: () => {
-        return [];
+        return []
       }
     }
   },
   data() {
     return {
-      editModel: "E",
+      editModel: 'E',
       showDataRights: false,
       checked: true,
       dataRightsForm: {
-        loginAccount: "",
-        userAlias: ""
+        loginAccount: '',
+        userAlias: ''
       },
       componentList: [
         {
-          label: "角色名称：",
-          prop: "roleName",
-          labelWidth: "90px",
+          label: '角色名称：',
+          prop: 'roleName',
+          labelWidth: '90px',
           disabled: true,
-          componentName: "el-input",
+          componentName: 'el-input',
           cols: [12, 12, 12, 12],
-          maxlength: "64",
-          placeholder: "请输入",
-          value: "roleName"
+          maxlength: '64',
+          placeholder: '请输入',
+          value: 'roleName'
         },
         {
-          label: "角色编码：",
-          prop: "roleCode",
-          labelWidth: "90px",
+          label: '角色编码：',
+          prop: 'roleCode',
+          labelWidth: '90px',
           disabled: true,
-          componentName: "el-input",
+          componentName: 'el-input',
           cols: [12, 12, 12, 12],
-          placeholder: "请输入",
-          value: "roleCode"
+          placeholder: '请输入',
+          value: 'roleCode'
         }
       ],
       rules: {
@@ -175,58 +175,58 @@ export default {
 
       currentRow: {},
       roleMenuListJson: []
-    };
+    }
   },
   computed: {
     checkedVals: {
       get() {
-        return this.checkedMemu1;
+        return this.checkedMemu1
       },
       set(val) {
-        this.roleMenuListJson = val;
+        this.roleMenuListJson = val
         // console.log(143, val);
       }
     }
   },
   methods: {
     init(row) {
-      this.dataRightsForm = JSON.parse(JSON.stringify(row));
-      this.showDataRights = true;
-      this.currentRow = row;
+      this.dataRightsForm = JSON.parse(JSON.stringify(row))
+      this.showDataRights = true
+      this.currentRow = row
       this.$nextTick(() => {
         // console.log(218, this.checkedMemu1);
-        this.$refs.menuRights.setDefaultChecked();
-      });
+        this.$refs.menuRights.setDefaultChecked()
+      })
     },
     checkTree(param) {
-      this.checkedVals = param.val;
-      console.log("授权功能弹窗", param);
+      this.checkedVals = param.val
+      console.log('授权功能弹窗', param)
     },
     /* 保存 */
     saveDataRights() {
-      console.log(207, this.roleMenuListJson);
-      return;
+      console.log(207, this.roleMenuListJson)
+      return
       const obj = {
-        op: "auth",
+        op: 'auth',
         oldRoleName: this.currentRow.roleName,
         roleName: this.currentRow.roleName,
         isNewRecord: false,
         roleCode: this.currentRow.roleCode,
         roleMenuListJson: JSON.stringify(this.roleMenuListJson)
-      };
+      }
       roleApi.saveAuthorizeData(obj).then(res => {
-        if (res.result === "true") {
-          this.$message.success(res.message);
+        if (res.result === 'true') {
+          this.$message.success(res.message)
         }
-        this.colseDataRights();
-      });
+        this.colseDataRights()
+      })
     },
     colseDataRights(formName) {
-      this.showDataRights = false;
-      this.tableCheckBoxValue = [];
+      this.showDataRights = false
+      this.tableCheckBoxValue = []
     }
   }
-};
+}
 </script>
 <style></style>
 <style lang="scss" scoped>

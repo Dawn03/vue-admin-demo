@@ -33,9 +33,9 @@
   </div>
 </template>
 <script>
-import Text from "./index.js";
+import Text from './index.js'
 export default {
-  name: "BaseBtn",
+  name: 'BaseBtn',
   mixins: [Text],
   props: {
     leftMg: {
@@ -55,18 +55,18 @@ export default {
           //     btnText: "查询",
           //     class: "fa fa-search"
           //   }
-        ];
+        ]
       }
     },
     type: {
       type: String,
-      default: "info"
+      default: 'info'
       //   validator: val => ["info", "success", "warning", "error"].includes(val)
       // ['info', 'success', 'warning', 'error'] 表示type只接收这四个字符串作为参数传入message组件
     },
     text: {
       type: String,
-      default: ""
+      default: ''
     },
     show: {
       type: Boolean,
@@ -77,17 +77,17 @@ export default {
     return {
       btnGroups: [
         {
-          handlerName: "View",
-          btnText: "查询",
-          class: "fa fa-search"
+          handlerName: 'View',
+          btnText: '查询',
+          class: 'fa fa-search'
         }
       ]
-    };
+    }
   },
   computed: {
     renderBtns: {
       get: function() {
-        return this.btnArr;
+        return this.btnArr
       },
       set: function(value) {
         // this.$emit("update:formValue", value);
@@ -95,7 +95,7 @@ export default {
     }
   },
   mounted() {
-    this.showBtns();
+    this.showBtns()
   },
   methods: {
     showBtns() {
@@ -105,19 +105,19 @@ export default {
     },
     /* 判断需要生产的按钮类型 返回btns里的值 */
     productBtn(arr1, arr2) {
-      var obj = {};
+      var obj = {}
       return [...arr1, ...arr2].filter(item => {
         if (!(obj[item.handlerName] = obj[item.handlerName] === undefined)) {
-          return item;
+          return item
         }
-      });
+      })
     },
     /* emit触发事件类型 */
     handlerClick(btnType) {
-      this[btnType]();
+      this[btnType]()
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .current-type {

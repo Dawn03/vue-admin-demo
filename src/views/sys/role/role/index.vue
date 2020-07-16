@@ -4,17 +4,17 @@
   </div>
 </template>
 <script>
-import ListData from "./ListData";
+import ListData from './ListData'
 export default {
-  name: "RoleManage",
+  name: 'RoleManage',
   components: {
     ListData
   },
   data() {
-    return {};
+    return {}
   },
   methods: {}
-};
+}
 </script>
 <style lang="scss" scoped>
 .role {

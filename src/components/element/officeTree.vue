@@ -2,7 +2,7 @@
   <el-cascader
     v-model="value"
     clearable
-    :props="{emitPath: false, checkStrictly: true}"
+    :props="{ emitPath: false, checkStrictly: true }"
     :disabled="disabled"
     :options="options"
     :show-all-levels="false"

@@ -29,8 +29,8 @@ export default {
   width: 100%;
   position: relative;
   overflow: hidden;
-  padding-top:0px;
-  margin-top:50px;
+  padding-top: 0px;
+  margin-top: 50px;
   // background-color: #f1f1f1;
 }
 
@@ -40,7 +40,7 @@ export default {
     min-height: calc(100vh - 84px);
   }
 
-  .fixed-header+.app-main {
+  .fixed-header + .app-main {
     margin-top: 84px;
   }
 }

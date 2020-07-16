@@ -17,38 +17,38 @@
 
 <script>
 export default {
-  name: "CheckBoxChoose",
+  name: 'CheckBoxChoose',
   props: {
     value: {
       type: Array,
       default: function() {
-        return [];
+        return []
       }
     },
     /* 单选项种类 */
     options: {
       type: Array,
       default: function() {
-        return [];
+        return []
       }
     }
   },
   data() {
     return {
       // checkList: []
-    };
+    }
   },
   computed: {
     // 转换绑定的选中数据，与v-model同步
     checkList: {
       get: function() {
-        return this.value;
+        return this.value
       },
       set: function(value) {
-        this.$emit("input", value);
+        this.$emit('input', value)
       }
     }
   },
   methods: {}
-};
+}
 </script>

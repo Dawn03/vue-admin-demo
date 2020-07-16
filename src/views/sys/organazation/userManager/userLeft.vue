@@ -11,7 +11,7 @@
   </div>
 </template>
 <script>
-import LeftTree from "@/components/leftTree";
+import LeftTree from '@/components/leftTree'
 
 export default {
   components: {
@@ -21,7 +21,7 @@ export default {
     instMenuData: {
       type: Array,
       default: () => {
-        return [];
+        return []
       }
     }
   },
@@ -29,19 +29,19 @@ export default {
     return {
       menuData1: [
         {
-          label: "苑东生物",
-          id: "1",
+          label: '苑东生物',
+          id: '1',
           children: []
         }
       ]
-    };
+    }
   },
   methods: {
     gotoInsitution() {
-      this.$router.push("/js/a/sys/office/index");
+      this.$router.push('/js/a/sys/office/index')
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .user-head {

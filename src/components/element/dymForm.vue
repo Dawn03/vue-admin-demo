@@ -38,7 +38,6 @@
             v-model="newFormValue[it.value]"
             :show-alpha="it.showAlpha"
             class="dymForm"
-            
             :style="[{ width: it.width, display: it.inline }]"
             :placeholder="''"
             :clearable="it.clearable"
@@ -112,23 +111,22 @@
   </div>
 </template>
 <script>
-import ColumnBar from "@/components/commonColumn";
-import BaseSelect from "@/components/element/BaseSelect";
-import RadioChoose from "@/components/element/RadioChoose";
-import CheckBoxChoose from "@/components/element/CheckBoxChoose";
-import dict from "@/components/element/SelectDictionary.vue"; // 字典组件
+import ColumnBar from '@/components/commonColumn'
+import BaseSelect from '@/components/element/BaseSelect'
+import RadioChoose from '@/components/element/RadioChoose'
+import CheckBoxChoose from '@/components/element/CheckBoxChoose'
+import dict from '@/components/element/SelectDictionary.vue' // 字典组件
 // import officeTree from '@/components/element/officeTree.vue' // 公司树
 // import orgTree from '@/components/element/orgTree.vue' // 根据公司树查询下面机构
 // import orgTreeAll from '@/components/element/orgTreeAll.vue' // 查询所有机构
-import BaseCascader from "@/components/element/BaseCascader.vue"; // 动态树base
-import passwd from "@/components/element/passwd.vue"; // 密码
+import BaseCascader from '@/components/element/BaseCascader.vue' // 动态树base
+import passwd from '@/components/element/passwd.vue' // 密码
 // import tinyEditor from "@/components/fileManage/tinyEditor.vue"; // 富文本编辑器
-import autoComplete from "@/components/element/autoComplete.vue"; // 自动补充输入框
-import reportPhase from "@/components/element/reportPhase.vue"; // 期数
-import cascaderCompany from "@/components/element/CascaderCompany.vue"; // 公司选择
-import cascaderDepartment from "@/components/element/CascaderDepartment.vue"; // 部门选择
-import cascaderOrg from "@/components/element/CascaderOrg.vue"; // 机构选择（公司+部门）
-import cascaderOrgUser from "@/components/element/CascaderOrgUser.vue"; // 机构选择（公司+部门+人员）
+import autoComplete from '@/components/element/autoComplete.vue' // 自动补充输入框
+import cascaderCompany from '@/components/element/CascaderCompany.vue' // 公司选择
+import cascaderDepartment from '@/components/element/CascaderDepartment.vue' // 部门选择
+import cascaderOrg from '@/components/element/CascaderOrg.vue' // 机构选择（公司+部门）
+import cascaderOrgUser from '@/components/element/CascaderOrgUser.vue' // 机构选择（公司+部门+人员）
 // import cascaderOrgDownload from "@/components/element/CascaderOrgDownload.vue"; // 机构选择（公司+部门+人员）
 // import cascaderOrgDownloadUser from "@/components/element/CascaderOrgDownloadUser.vue"; // 机构选择（公司+部门+人员）
 // import btnUpload from "@/components/button/btnUpload.vue"; // 机构选择（公司+部门+人员）
@@ -146,7 +144,6 @@ export default {
     passwd,
     // tinyEditor,
     autoComplete,
-    reportPhase,
     cascaderCompany,
     cascaderDepartment,
     cascaderOrg,
@@ -162,63 +159,66 @@ export default {
       required: true
     },
     formValue: {
-      type: [Object]
+      type: [Object],
+      default: function() {
+        return {}
+      }
     },
     editModel: {
       type: [String],
       default: function() {
-        return "";
+        return ''
       }
     }
   },
   data() {
     return {
       selectObj: {}
-    };
+    }
   },
   computed: {
     newFormValue: {
       get: function() {
         // console.log(222, "get", this.formValue);
-        return this.formValue;
+        return this.formValue
       },
       set: function(value) {
         // console.log(333, "set", this.formValue);
-        this.$emit("update:formValue", value);
+        this.$emit('update:formValue', value)
       }
     }
   },
   methods: {
     otherData(value) {
-      this.$emit("otherData", value);
+      this.$emit('otherData', value)
     },
     onbackblankaccount(value) {
-      this.$emit("onbackblankaccount", value);
+      this.$emit('onbackblankaccount', value)
     },
     selectChanged(val, name, row) {
       // console.log("selectChanged", val, name, row);
-      this.selectObj[name] = row;
-      this.$emit("selectChanged", val, name, this.selectObj);
+      this.selectObj[name] = row
+      this.$emit('selectChanged', val, name, this.selectObj)
     },
     buildQueryParas(queryName, queryValue) {
       // console.log("buildQueryParas", queryName);
-      const obj = {};
-      if (typeof queryName === "string") {
-        obj[queryName] = this.formValue[queryValue];
+      const obj = {}
+      if (typeof queryName === 'string') {
+        obj[queryName] = this.formValue[queryValue]
       } else if (queryName !== undefined) {
-        const list = [];
+        const list = []
         queryName.forEach((item, index) => {
-          const v = queryValue[index];
-          if (item === "enterpriseIds") {
-            list.push(this.formValue[v]);
-            obj[item] = list;
+          const v = queryValue[index]
+          if (item === 'enterpriseIds') {
+            list.push(this.formValue[v])
+            obj[item] = list
           } else {
-            obj[item] = this.formValue[v];
+            obj[item] = this.formValue[v]
           }
-        });
+        })
       }
       // console.log(129, "obj", obj);
-      return obj;
+      return obj
       // if (this.UtilJs.isEmpty(queryName) || this.UtilJs.isEmpty(queryValue)) {
       //   return
       // } else {
@@ -231,8 +231,8 @@ export default {
     /* 点击带图标的input 触发事件 ， iconType 设置触发icon点击事件类型  */
     btnClick(keyName, iconType) {
       // console.log(232, keyName, iconType);
-      if (iconType === "inputSearch") {
-        this.focus({}, keyName);
+      if (iconType === 'inputSearch') {
+        this.focus({}, keyName)
       }
     },
     /* 当一个组件前后都有icon 图标时 */
@@ -244,26 +244,26 @@ export default {
     focus(event, keyName) {
       // console.log(240, event, keyName);
       // this.$emit('focus', keyName)
-      this.$emit("focusIt", keyName);
+      this.$emit('focusIt', keyName)
     },
     blur(event) {
       // console.log('event', event)
-      this.$emit("blur");
+      this.$emit('blur')
     },
     inputIt(val) {
       // console.log(2231, val);
     },
     change(val) {
       // console.log(201, val);
-      this.selectObj[name] = val;
-      this.$emit("selectChanged", val, name, this.selectObj);
+      this.selectObj[name] = val
+      this.$emit('selectChanged', val, name, this.selectObj)
     },
     /* 显示扩展字段 */
     showExtentionDom() {
-      this.$emit("showExtentionDom");
+      this.$emit('showExtentionDom')
     }
   }
-};
+}
 </script>
 <style scoped>
 .question {

@@ -91,15 +91,15 @@
   </div>
 </template>
 <script>
-import TableTree from "@/components/tableTree";
-import InputFilter from "@/components/inputFliter";
-import ModuleEdit from "./moduleEdit";
-import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
-import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
-import { sysApi } from "../../../../api/systemSet";
+import TableTree from '@/components/tableTree'
+import InputFilter from '@/components/inputFliter'
+import ModuleEdit from './moduleEdit'
+import TopBtns from '@/components/componentBtns/topBtns/baseBtn'
+import { clearFilterVal, getInputVal, dictTypeMap } from '@/utils/pubFunc'
+import { sysApi } from '../../../../api/systemSet'
 export default {
-  name: "Menu",
-  inject: ["reload"],
+  name: 'Menu',
+  inject: ['reload'],
   components: {
     TableTree,
     InputFilter,
@@ -110,45 +110,45 @@ export default {
     return {
       showSearchVal: false,
       leftMg: {
-        icon: "fa icon-grid f14",
-        text: "模块管理"
+        icon: 'fa icon-grid f14',
+        text: '模块管理'
       },
       btnArr: [
         {
-          handlerName: "View",
-          btnText: "查询",
-          class: "fa fa-search"
+          handlerName: 'View',
+          btnText: '查询',
+          class: 'fa fa-search'
         },
 
         {
-          handlerName: "AddNew",
-          btnText: "新增",
-          class: "fa fa-plus"
+          handlerName: 'AddNew',
+          btnText: '新增',
+          class: 'fa fa-plus'
         }
       ],
       formInline: [
         {
-          type: "input",
-          label: "模块名称",
-          key: "moduleName",
-          value: ""
+          type: 'input',
+          label: '模块名称',
+          key: 'moduleName',
+          value: ''
         },
         {
-          type: "input",
-          label: "主类全名",
-          key: "mainClassName",
-          value: ""
+          type: 'input',
+          label: '主类全名',
+          key: 'mainClassName',
+          value: ''
         },
         {
-          type: "select",
-          label: "状态",
-          options: this.getStatusOption("sys_search_status"),
-          key: "status",
-          value: ""
+          type: 'select',
+          label: '状态',
+          options: this.getStatusOption('sys_search_status'),
+          key: 'status',
+          value: ''
         }
       ],
       columnTextPostion: {
-        description: "left"
+        description: 'left'
       },
       columnWidths: {
         description: 400
@@ -160,139 +160,137 @@ export default {
         currentVersion: true,
         status: true
       },
-      slotColumns: ["moduleName", "status"],
+      slotColumns: ['moduleName', 'status'],
       tableHead: {
-        moduleName: "模块名称",
-        moduleCode: "模块编码",
-        description: "模块描述",
-        currentVersion: "版本",
-        status: "状态" // 1 菜单 2权限
+        moduleName: '模块名称',
+        moduleCode: '模块编码',
+        description: '模块描述',
+        currentVersion: '版本',
+        status: '状态' // 1 菜单 2权限
       },
       tableData: [],
       pageNation: {
-        moduleName: "",
-        mainClassName: "",
-        status: "",
+        moduleName: '',
+        mainClassName: '',
+        status: '',
         pageSize: 20,
         pageNo: 1,
         total: 0,
-        orderBy: ""
+        orderBy: ''
       },
       tableFit: true
-    };
+    }
   },
   mounted() {
-    this.init(this.pageNation);
+    this.init(this.pageNation)
   },
   methods: {
     showSearch(val) {
-      this.showSearchVal = val;
+      this.showSearchVal = val
     },
     handlerName(funcName) {
-      this[funcName]();
+      this[funcName]()
     },
     initPage() {
-      this.reload();
+      this.reload()
     },
     init(param) {
       // console.log(2222, param);
       sysApi.getModule(param).then(res => {
-        this.tableData = res.list;
-        this.pageNation.total = res.count;
-      });
+        this.tableData = res.list
+        this.pageNation.total = res.count
+      })
     },
 
     /* 列表文本转义 */
     swichText(type, val, other) {
-      return dictTypeMap(type, val, other);
+      return dictTypeMap(type, val, other)
     },
     /* 获取状态下拉框数据 */
     getStatusOption(type) {
-      const selectTypeData = JSON.parse(
-        sessionStorage.getItem("selectDicType")
-      );
-      return selectTypeData[type];
+      const selectTypeData = JSON.parse(sessionStorage.getItem('selectDicType'))
+      return selectTypeData[type]
     },
     statusValChange(item) {
-      this.searchBtn(item);
+      this.searchBtn(item)
     },
     /* 获取填入输入框的值  */
     searchBtn(data = {}) {
       const valObj = Object.assign(
         this.pageNation,
         getInputVal(this.formInline)
-      );
-      this.init(valObj);
+      )
+      this.init(valObj)
     },
     /* 清除输入框内的值 */
     resetForm() {
-      clearFilterVal(this.formInline);
-      this.pageNation.pageNo = 1;
-      this.pageNation.moduleName = "";
-      this.pageNation.mainClassName = "";
-      this.pageNation.status = "";
-      this.pageNation.orderBy = "";
-      this.init(this.pageNation);
+      clearFilterVal(this.formInline)
+      this.pageNation.pageNo = 1
+      this.pageNation.moduleName = ''
+      this.pageNation.mainClassName = ''
+      this.pageNation.status = ''
+      this.pageNation.orderBy = ''
+      this.init(this.pageNation)
     },
     currentChange(val) {
-      this.pageNation.pageNo = val;
-      this.init(this.pageNation);
+      this.pageNation.pageNo = val
+      this.init(this.pageNation)
     },
     sortChange(sortVal) {
-      this.pageNation.orderBy = sortVal;
-      this.init(this.pageNation);
+      this.pageNation.orderBy = sortVal
+      this.init(this.pageNation)
     },
     /* 编辑/新增下级表格 */
     menuEditAdd(row, type) {
-      this.$refs.moduleEditPanel.show(row, type);
+      this.$refs.moduleEditPanel.show(row, type)
     },
     AddNew() {
-      this.$refs.moduleEditPanel.show({}, "新增");
+      this.$refs.moduleEditPanel.show({}, '新增')
     },
     stopOrStart(row) {
-      const typeText = row.isLoader ? "停用" : "启用";
-      this.$alertMsgBox(`确认要${typeText}该模块吗?`, "信息")
+      const typeText = row.isLoader ? '停用' : '启用'
+      this.$alertMsgBox(`确认要${typeText}该模块吗?`, '信息')
         .then(() => {
           sysApi
             .setModuleStart({
-              type: row.status === "0" ? "disable" : "enable",
+              type: row.status === '0' ? 'disable' : 'enable',
               moduleCode: row.moduleCode
             })
             .then(res => {
-              if (res.result === "true") {
-                this.$message.success(res.message);
-                this.init(this.pageNation);
+              if (res.result === 'true') {
+                this.$message.success(res.message)
+                this.init(this.pageNation)
               } else {
-                this.$message.waring(res.message);
+                this.$message.waring(res.message)
               }
-            });
+            })
         })
         .catch(() => {
-          this.$message.info("取消");
-        });
+          this.$message.info('取消')
+        })
     },
     deleteModule(row) {
-      this.$alertMsgBox("确认要删除该模块吗？", "信息")
+      this.$alertMsgBox('确认要删除该模块吗？', '信息')
         .then(() => {
           sysApi
             .deleteModule({
               moduleCode: row.moduleCode
             })
             .then(res => {
-              if (res.result === "true") {
-                this.init(this.params);
-                this.$message.success(res.message);
+              if (res.result === 'true') {
+                this.init(this.params)
+                this.$message.success(res.message)
               } else {
-                this.$message.waring(res.message);
+                this.$message.waring(res.message)
               }
-            });
+            })
         })
         .catch(() => {
-          this.$message.info("取消");
-        });
+          this.$message.info('取消')
+        })
     }
   }
-};
+}
 </script>
 <style lang="scss">
 .tree-sort {

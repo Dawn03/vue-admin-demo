@@ -124,14 +124,14 @@
   </div>
 </template>
 <script>
-import ColumnBar from "@/components/commonColumn";
-import DailogFrame from "@/components/dailogPanel/frame";
-import MenuTree from "@/components/menuTree";
-import { orgApi } from "@/api/organization";
-import { pubApi } from "@/api/public_request";
-import { toTreeData, resetVal } from "@/utils/pubFunc";
+import ColumnBar from '@/components/commonColumn'
+import DailogFrame from '@/components/dailogPanel/frame'
+import MenuTree from '@/components/menuTree'
+import { orgApi } from '@/api/organization'
+import { pubApi } from '@/api/public_request'
+import { toTreeData, resetVal } from '@/utils/pubFunc'
 export default {
-  name: "DataRights",
+  name: 'DataRights',
   components: {
     DailogFrame,
     ColumnBar,
@@ -143,8 +143,8 @@ export default {
       checked: true,
       formDetail: {
         empUser: {
-          loginCode: "",
-          userName: ""
+          loginCode: '',
+          userName: ''
         }
       },
       officeMenuData: [],
@@ -159,120 +159,120 @@ export default {
       defaultExpand2: [],
       expandAll1: false,
       expandAll2: false
-    };
+    }
   },
   methods: {
     init(res) {
-      console.log(164, this.$store.state.publicData);
-      this.formDetail = JSON.parse(JSON.stringify(res));
+      console.log(164, this.$store.state.publicData)
+      this.formDetail = JSON.parse(JSON.stringify(res))
 
       Promise.all([this.getCompanyMenuTree(), this.getOfficeMenuTree()]).then(
         res => {
           // 已经选择的 默认的
-          const temp = this.formDetail.userDataScopeList;
+          const temp = this.formDetail.userDataScopeList
           for (let i = 0, len = temp.length; i < len; i++) {
-            if (temp[i]["ctrlType"] === "Company") {
-              this.companyCheckedArr.push(temp[i].ctrlData);
-            } else if (temp[i]["ctrlType"] === "Office") {
-              this.officeCheckedArr.push(temp[i].ctrlData);
+            if (temp[i]['ctrlType'] === 'Company') {
+              this.companyCheckedArr.push(temp[i].ctrlData)
+            } else if (temp[i]['ctrlType'] === 'Office') {
+              this.officeCheckedArr.push(temp[i].ctrlData)
             }
           }
-          this.showDataRights = true;
+          this.showDataRights = true
           this.$nextTick(() => {
-            this.$refs.menuTreeDom1.expandFirst(this.officeMenuData);
-            this.$refs.menuTreeDom2.expandFirst(this.companyMenuData);
-          });
+            this.$refs.menuTreeDom1.expandFirst(this.officeMenuData)
+            this.$refs.menuTreeDom2.expandFirst(this.companyMenuData)
+          })
         }
-      );
+      )
     },
     /* 获取全部机构 */
     getOfficeMenuTree() {
       const attributes = {
-        id: "id",
-        parentId: "pId",
-        label: "name",
-        rootId: "0"
-      };
+        id: 'id',
+        parentId: 'pId',
+        label: 'name',
+        rootId: '0'
+      }
       return new Promise((resolve, rejec) => {
         pubApi
-          .getOfficeMenuTree({ ctrlPermi: 2, excludeCode: "" })
+          .getOfficeMenuTree({ ctrlPermi: 2, excludeCode: '' })
           .then(res => {
-            this.officeMenuDataSource = JSON.parse(JSON.stringify(res));
-            this.officeMenuData = toTreeData(res, attributes);
-            resolve(res);
-          });
-      });
+            this.officeMenuDataSource = JSON.parse(JSON.stringify(res))
+            this.officeMenuData = toTreeData(res, attributes)
+            resolve(res)
+          })
+      })
     },
     /* 获取全部公司 */
     getCompanyMenuTree() {
       const attributes = {
-        id: "id",
-        parentId: "pId",
-        label: "name",
-        rootId: "0"
-      };
+        id: 'id',
+        parentId: 'pId',
+        label: 'name',
+        rootId: '0'
+      }
       return new Promise((resolve, reject) => {
         pubApi.getCompanyMenuTree().then(res => {
-          this.companyMenuDataSource = JSON.parse(JSON.stringify(res));
-          this.companyMenuData = toTreeData(res, attributes);
+          this.companyMenuDataSource = JSON.parse(JSON.stringify(res))
+          this.companyMenuData = toTreeData(res, attributes)
 
-          resolve(res);
-        });
-      });
+          resolve(res)
+        })
+      })
     },
     /* 展开或收起选项 */
     switchStatus1() {
-      this.expandAll1 = !this.expandAll1;
-      this.$refs.menuTreeDom1.showOrHiddenAllNodes();
+      this.expandAll1 = !this.expandAll1
+      this.$refs.menuTreeDom1.showOrHiddenAllNodes()
     },
     switchStatus2() {
-      this.expandAll2 = !this.expandAll2;
-      this.$refs.menuTreeDom2.showOrHiddenAllNodes();
+      this.expandAll2 = !this.expandAll2
+      this.$refs.menuTreeDom2.showOrHiddenAllNodes()
     },
     /* 保存 */
     saveDataRights() {
       // [{"ctrlType":"Company","ctrlData":"SD"},{"ctrlType":"Office","ctrlData":"SDJN"}]
-      const temp = this.officeCheckedArrSave.concat(this.companyCheckedArrSave);
+      const temp = this.officeCheckedArrSave.concat(this.companyCheckedArrSave)
       orgApi
         .saveDataRightDetail({
           userCode: this.formDetail.empUser.userCode,
           loginCode: this.formDetail.empUser.loginCode,
           userName: this.formDetail.empUser.userName,
-          userDataScopeListJson: JSON.stringify(temp) || "[]"
+          userDataScopeListJson: JSON.stringify(temp) || '[]'
         })
         .then(res => {
-          if (res.result === "true") {
-            this.$message.success(res.message);
-            this.colseDataRights();
+          if (res.result === 'true') {
+            this.$message.success(res.message)
+            this.colseDataRights()
           } else {
-            this.$message.warning(res.message);
+            this.$message.warning(res.message)
           }
-        });
+        })
     },
     colseDataRights(formName) {
-      this.showDataRights = false;
-      this.tableCheckBoxValue = [];
-      this.$refs.menuTreeDom1.resetChecked();
-      this.$refs.menuTreeDom2.resetChecked();
+      this.showDataRights = false
+      this.tableCheckBoxValue = []
+      this.$refs.menuTreeDom1.resetChecked()
+      this.$refs.menuTreeDom2.resetChecked()
     },
     /* 设置全选反选 */
     handleCheckAllChange1(val) {
-      this.$refs.menuTreeDom1.checkAll(val);
+      this.$refs.menuTreeDom1.checkAll(val)
     },
     /* 设置全选反选 */
     handleCheckAllChange2(val) {
-      this.$refs.menuTreeDom2.checkAll(val);
+      this.$refs.menuTreeDom2.checkAll(val)
     },
     // 已选择机构
     officePassCheckedNode(data) {
-      this.officeCheckedArrSave = resetVal(data, "Office");
+      this.officeCheckedArrSave = resetVal(data, 'Office')
     },
     // 已选择公司
     companyPassCheckedNode(data) {
-      this.companyCheckedArrSave = resetVal(data, "Company");
+      this.companyCheckedArrSave = resetVal(data, 'Company')
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .data-rights-panel {

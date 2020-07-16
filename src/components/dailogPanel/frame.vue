@@ -35,18 +35,18 @@
 <script>
 // import draggable from "vuedraggable";
 export default {
-  name: "DailogPane",
+  name: 'DailogPane',
   // components: {
   //   draggable
   // },
   props: {
     titleName: {
       type: String,
-      default: "提示"
+      default: '提示'
     },
     width: {
       type: String,
-      default: "80%"
+      default: '80%'
     },
     dialogVisible: {
       type: Boolean,
@@ -60,14 +60,14 @@ export default {
   data() {
     return {
       //   dialogVisible: false,
-    };
+    }
   },
   methods: {
     handleClose() {
-      this.$emit("closeDialog");
+      this.$emit('closeDialog')
     }
   }
-};
+}
 </script>
 <style lang="scss">
 .el-dialog__header {

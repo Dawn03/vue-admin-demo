@@ -32,19 +32,19 @@ export default {
   data() {
     return {
       //   currentPage: 2
-    };
+    }
   },
   methods: {
     handleSizeChange(val) {
-      this.$emit("sizeChange", val);
-      console.log(`每页 ${val} 条`);
+      this.$emit('sizeChange', val)
+      console.log(`每页 ${val} 条`)
     },
     handleCurrentChange(val) {
-      this.$emit("currentChange", val);
-      console.log(`当前页: ${val}`);
+      this.$emit('currentChange', val)
+      console.log(`当前页: ${val}`)
     }
   }
-};
+}
 </script>
 <style lang="scss">
 .page-box {

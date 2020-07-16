@@ -260,19 +260,19 @@
   </div>
 </template>
 <script>
-import ColumnBar from "@/components/commonColumn";
-import DailogFrame from "@/components/dailogPanel/frame";
-import TableTree from "@/components/tableTree";
-import ExtentionFeild from "@/components/extentionFeild";
-import ChooseMenuTree from "@/components/chooseMenuTree";
-import { returnReg } from "@/utils/validate";
-import { filterNokeyVal, stringVal } from "@/utils/pubFunc";
-import { orgApi } from "@/api/organization";
-import { pubApi } from "@/api/public_request";
-import AssignRoleDetail from "./assignRoleDetail";
-import { getOffceList, getCompanyList } from "@/js/publicData";
+import ColumnBar from '@/components/commonColumn'
+import DailogFrame from '@/components/dailogPanel/frame'
+import TableTree from '@/components/tableTree'
+import ExtentionFeild from '@/components/extentionFeild'
+import ChooseMenuTree from '@/components/chooseMenuTree'
+import { returnReg } from '@/utils/validate'
+import { filterNokeyVal, stringVal } from '@/utils/pubFunc'
+import { orgApi } from '@/api/organization'
+import { pubApi } from '@/api/public_request'
+import AssignRoleDetail from './assignRoleDetail'
+import { getOffceList, getCompanyList } from '@/js/publicData'
 export default {
-  name: "UserEdit",
+  name: 'UserEdit',
   components: {
     DailogFrame,
     ColumnBar,
@@ -283,293 +283,293 @@ export default {
   },
   data() {
     const validTelNumber = (rule, value, callback) => {
-      const phoneReg = returnReg("phone");
-      const telReg = returnReg("telNumber");
-      if (!phoneReg.test(value) && !telReg.test(value) && value !== "") {
+      const phoneReg = returnReg('phone')
+      const telReg = returnReg('telNumber')
+      if (!phoneReg.test(value) && !telReg.test(value) && value !== '') {
         callback(
           new Error(
-            "请正确填写您的办公号码，固话为区号0(3-4位)号码-(7-9位),手机为1开头的11位手机号段"
+            '请正确填写您的办公号码，固话为区号0(3-4位)号码-(7-9位),手机为1开头的11位手机号段'
           )
-        );
+        )
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
-      titleName: "",
+      titleName: '',
       userDetail: {},
       test: [],
-      exHeight: "0px",
+      exHeight: '0px',
       showEditDailog: false,
       innerDialogVisible: false,
-      menuTreeTitle: "",
-      keyVal: "",
-      defaultExpand: ["1"],
+      menuTreeTitle: '',
+      keyVal: '',
+      defaultExpand: ['1'],
       menuData: [],
       gutterVal: 100,
-      stopOrStart: "",
+      stopOrStart: '',
       officeCodeClick: {},
       extend: {
-        extendS1: "",
-        extendS2: "",
-        extendS3: "",
-        extendS4: "",
-        extendS5: "",
-        extendS6: "",
-        extendS7: "",
-        extendS8: "",
-        extendI1: "",
-        extendI2: "",
-        extendI3: "",
-        extendI4: "",
-        extendF1: "",
-        extendF2: "",
-        extendF3: "",
-        extendF4: "",
-        extendD1: "",
-        extendD2: "",
-        extendD3: "",
-        extendD4: ""
+        extendS1: '',
+        extendS2: '',
+        extendS3: '',
+        extendS4: '',
+        extendS5: '',
+        extendS6: '',
+        extendS7: '',
+        extendS8: '',
+        extendI1: '',
+        extendI2: '',
+        extendI3: '',
+        extendI4: '',
+        extendF1: '',
+        extendF2: '',
+        extendF3: '',
+        extendF4: '',
+        extendD1: '',
+        extendD2: '',
+        extendD3: '',
+        extendD4: ''
       },
       attchCurrentRow: {},
-      attchOfficeName: "",
+      attchOfficeName: '',
       employeePostsOptions: [],
       employeePosts: [], // cfo 所在岗位
-      userRoleString: "", // 新增-分配角色-保存字段
+      userRoleString: '', // 新增-分配角色-保存字段
       employeeOfficeList: [], // 附属公司列表
       userForm: {
-        op: "", // add  edit
-        userType: "employee", // employee
-        userCode: "",
-        officeName: "", // 归属机构
-        officeCode: "", //
-        companyName: "", // 归属公司
-        companyCode: "", //
-        oldLoginCode: "",
-        loginCode: "", // 登录账号
-        userName: "", // 用户昵称
-        email: "", //
-        mobile: "", //
-        phone: "", // 办公电话
-        userWeight: "", // 权重
-        empNo: "", // 员工编号
-        empName: "", // 员工姓名
-        empNameEn: "", // 英文名
-        remarks: "" //
+        op: '', // add  edit
+        userType: 'employee', // employee
+        userCode: '',
+        officeName: '', // 归属机构
+        officeCode: '', //
+        companyName: '', // 归属公司
+        companyCode: '', //
+        oldLoginCode: '',
+        loginCode: '', // 登录账号
+        userName: '', // 用户昵称
+        email: '', //
+        mobile: '', //
+        phone: '', // 办公电话
+        userWeight: '', // 权重
+        empNo: '', // 员工编号
+        empName: '', // 员工姓名
+        empNameEn: '', // 英文名
+        remarks: '' //
       },
       rules: {
         officeName: [
-          { required: true, message: "请选择归属机构", trigger: "change" },
+          { required: true, message: '请选择归属机构', trigger: 'change' },
           {
-            message: "请输入账号",
-            trigger: "blur"
+            message: '请输入账号',
+            trigger: 'blur'
           }
         ],
         loginCode: [
-          { required: true, message: "请输入登录账号", trigger: "blur" },
-          { min: 4, max: 20, message: "长度在 4 到 20 个字符", trigger: "blur" }
+          { required: true, message: '请输入登录账号', trigger: 'blur' },
+          { min: 4, max: 20, message: '长度在 4 到 20 个字符', trigger: 'blur' }
         ],
         userName: [
-          { required: true, message: "请输入用户昵称", trigger: "blur" }
+          { required: true, message: '请输入用户昵称', trigger: 'blur' }
         ],
         email: [
           {
-            pattern: returnReg("email"),
-            message: "请输入正确的邮箱",
-            trigger: "blur"
+            pattern: returnReg('email'),
+            message: '请输入正确的邮箱',
+            trigger: 'blur'
           }
         ],
         mobile: [
           {
-            pattern: returnReg("phone"),
-            message: "输入正确的手机号",
-            trigger: "blur"
+            pattern: returnReg('phone'),
+            message: '输入正确的手机号',
+            trigger: 'blur'
           }
         ],
-        phone: [{ validator: validTelNumber, trigger: "change" }],
-        userWeight: [{ message: "请填入权重", trigger: "blur" }]
+        phone: [{ validator: validTelNumber, trigger: 'change' }],
+        userWeight: [{ message: '请填入权重', trigger: 'blur' }]
       },
-      slotColumns: ["officeName", "postCode"],
+      slotColumns: ['officeName', 'postCode'],
       tableHead: {
-        officeName: "附属机构",
-        postCode: "附属岗位"
+        officeName: '附属机构',
+        postCode: '附属岗位'
       },
       addCountIndex: 0,
       roleChooseList: [],
       offceList: [],
       companyList: [],
       nodeData: {}
-    };
+    }
   },
   mounted() {
     getOffceList().then(res => {
-      this.offceList = res;
-      console.log(404, res);
-    });
+      this.offceList = res
+      console.log(404, res)
+    })
 
     getCompanyList().then(res => {
-      this.companyList = res;
-    });
+      this.companyList = res
+    })
   },
   methods: {
     /* 获取编辑详情 */
     /* 显示对话框 */
     show(row, type) {
-      this.titleName = type;
-      if (type === "新增") {
-        this.userForm.op = "add";
-        this.userForm.userType = "employee";
-        this.userForm.userCode = "";
+      this.titleName = type
+      if (type === '新增') {
+        this.userForm.op = 'add'
+        this.userForm.userType = 'employee'
+        this.userForm.userCode = ''
         pubApi.getEmployeePosts().then(res => {
           for (let i = 0, len = res.length; i < len; i++) {
-            res[i].postName = res[i].name;
-            res[i].postCode = res[i].id;
+            res[i].postName = res[i].name
+            res[i].postCode = res[i].id
           }
-          this.employeePostsOptions = res;
-          this.showEditDailog = true;
-        });
+          this.employeePostsOptions = res
+          this.showEditDailog = true
+        })
         /* 新增 分配角色 */
         pubApi.getRoleMenuTree().then(res => {
-          this.roleChooseList = res;
-        });
+          this.roleChooseList = res
+        })
       } else {
-        this.userForm.op = "edit";
-        this.userForm.userType = "employee";
+        this.userForm.op = 'edit'
+        this.userForm.userType = 'employee'
         const obj = {
           userCode: row.userCode,
           op: this.userForm.op
           // _layer: true
-        };
+        }
         orgApi.getUserDetail(obj).then(res => {
-          this.userForm.userCode = res.empUser.userCode;
-          this.userForm.officeName = res.empUser.employee.office.officeName;
-          this.userForm.officeCode = res.empUser.employee.office.officeCode;
-          this.userForm.companyName = res.empUser.employee.company.companyName;
-          this.userForm.companyCode = res.empUser.employee.company.companyCode;
-          this.userForm.oldLoginCode = res.empUser.loginCode;
-          this.userForm.loginCode = res.empUser.loginCode;
+          this.userForm.userCode = res.empUser.userCode
+          this.userForm.officeName = res.empUser.employee.office.officeName
+          this.userForm.officeCode = res.empUser.employee.office.officeCode
+          this.userForm.companyName = res.empUser.employee.company.companyName
+          this.userForm.companyCode = res.empUser.employee.company.companyCode
+          this.userForm.oldLoginCode = res.empUser.loginCode
+          this.userForm.loginCode = res.empUser.loginCode
 
-          this.userForm.userName = res.empUser.userName;
-          this.userForm.email = res.empUser.email;
-          this.userForm.mobile = res.empUser.mobile;
-          this.userForm.phone = res.empUser.phone;
-          this.userForm.userWeight = res.empUser.userWeight;
-          this.userForm.empNo = res.empUser.employee.empNo;
-          this.userForm.empName = res.empUser.employee.empName;
-          this.userForm.empNameEn = res.empUser.employee.empNameEn;
-          this.employeePostsOptions = res.postList; //  所在岗位选择
-          this.employeePosts = res.empUser.employee.employeePosts; //  所在岗位回显
-          this.userForm.remarks = res.empUser.remarks;
-          this.employeeOfficeList = res.empUser.employee.employeeOfficeList;
+          this.userForm.userName = res.empUser.userName
+          this.userForm.email = res.empUser.email
+          this.userForm.mobile = res.empUser.mobile
+          this.userForm.phone = res.empUser.phone
+          this.userForm.userWeight = res.empUser.userWeight
+          this.userForm.empNo = res.empUser.employee.empNo
+          this.userForm.empName = res.empUser.employee.empName
+          this.userForm.empNameEn = res.empUser.employee.empNameEn
+          this.employeePostsOptions = res.postList //  所在岗位选择
+          this.employeePosts = res.empUser.employee.employeePosts //  所在岗位回显
+          this.userForm.remarks = res.empUser.remarks
+          this.employeeOfficeList = res.empUser.employee.employeeOfficeList
           for (const key in res.empUser.extend) {
-            this.extend[key] = res.empUser.extend[key];
+            this.extend[key] = res.empUser.extend[key]
           }
-          this.showEditDailog = true;
-        });
+          this.showEditDailog = true
+        })
       }
     },
     /* 触发选择归属机构 */
     institutionChoose(typeText) {
-      this.menuTreeTitle = "机构选择";
-      this.getOfficeMenuTree();
+      this.menuTreeTitle = '机构选择'
+      this.getOfficeMenuTree()
     },
     /*  触发选择附属公司选择*/
     attchEmployeeChoose(row) {
-      this.getOfficeMenuTree();
-      this.menuTreeTitle = "附属机构选择";
-      this.attchCurrentRow = row;
+      this.getOfficeMenuTree()
+      this.menuTreeTitle = '附属机构选择'
+      this.attchCurrentRow = row
       // 选择之后值的归属问题
     },
     /* 获取归属机构列表 */
     getOfficeMenuTree() {
       // console.log(473, this.offceList);
-      this.menuData = this.offceList;
-      this.innerDialogVisible = true;
+      this.menuData = this.offceList
+      this.innerDialogVisible = true
     },
     /*  触发选择归属公司*/
     companyChoose() {
-      this.menuTreeTitle = "归属公司选择";
-      this.menuData = this.companyList;
-      this.innerDialogVisible = true;
+      this.menuTreeTitle = '归属公司选择'
+      this.menuData = this.companyList
+      this.innerDialogVisible = true
     },
 
     /* changeKeyVal */
     changeKeyVal(val) {
       // console.log(379, val);
-      this.keyVal = val;
+      this.keyVal = val
     },
     /* 单击只选择节点  双击选择节点 并关闭弹窗 菜单树中当前点击的树节点*/
     clickNodeReslut(data) {
-      this.nodeData = data.data;
-      if (data.type === "dbclick") {
-        this.nodeEvents(data.data);
+      this.nodeData = data.data
+      if (data.type === 'dbclick') {
+        this.nodeEvents(data.data)
       }
     },
     /* 关闭选择归属机构或者归属公司 */
     closeMuneTreeChoose(val) {
-      if (val === "sure") {
-        this.nodeEvents(this.nodeData);
+      if (val === 'sure') {
+        this.nodeEvents(this.nodeData)
       }
-      this.innerDialogVisible = false;
+      this.innerDialogVisible = false
     },
     /* 根据树节点单双击确定触发事件 */
     nodeEvents(data) {
       // console.log(506, data);
-      if (this.menuTreeTitle === "机构选择") {
-        this.userForm.officeName = data.label;
-        this.userForm.officeCode = data.id;
-        this.officeCodeClick = data;
-      } else if (this.menuTreeTitle === "附属机构选择") {
+      if (this.menuTreeTitle === '机构选择') {
+        this.userForm.officeName = data.label
+        this.userForm.officeCode = data.id
+        this.officeCodeClick = data
+      } else if (this.menuTreeTitle === '附属机构选择') {
         for (let i = 0, len = this.employeeOfficeList.length; i < len; i++) {
           if (
             this.attchCurrentRow.flagId === this.employeeOfficeList[i].flagId
           ) {
-            this.employeeOfficeList[i].officeName = data.label;
-            this.employeeOfficeList[i].officeCode = data.id;
-            this.innerDialogVisible = false;
-            return;
+            this.employeeOfficeList[i].officeName = data.label
+            this.employeeOfficeList[i].officeCode = data.id
+            this.innerDialogVisible = false
+            return
           }
         }
       } else {
-        this.userForm.companyName = data.data.label;
-        this.userForm.companyCode = data.data.id;
+        this.userForm.companyName = data.data.label
+        this.userForm.companyCode = data.data.id
       }
-      this.keyVal = "";
-      this.innerDialogVisible = false;
+      this.keyVal = ''
+      this.innerDialogVisible = false
     },
     /* 新增 */
     addNew() {
       const obj = {
-        officeName: "",
-        postCode: "",
-        officeCode: "",
+        officeName: '',
+        postCode: '',
+        officeCode: '',
         flagId: this.addCountIndex
-      };
-      this.employeeOfficeList.push(obj);
-      this.addCountIndex++;
+      }
+      this.employeeOfficeList.push(obj)
+      this.addCountIndex++
     },
     /* 删除新增 */
     deleteAdd(row) {
       for (let i = 0, len = this.employeeOfficeList.length; i < len; i++) {
-        console.log(542, row);
+        console.log(542, row)
         if (row.flagId === this.employeeOfficeList[i].flagId) {
-          this.employeeOfficeList.splice(i, 1);
-          return;
+          this.employeeOfficeList.splice(i, 1)
+          return
         }
       }
     },
     /* 显示扩展字段 */
     showExtentionDom() {
-      this.exHeight = this.exHeight === "0px" ? "auto" : "0px";
+      this.exHeight = this.exHeight === '0px' ? 'auto' : '0px'
     },
     /* 扩展字段值 */
     extentionFormVal(val) {
-      this.extend = val;
+      this.extend = val
     },
     /* 获取角色checkbox  userRoleString 需要字符串格式*/
     getCheckVal(checkboxVal) {
       // this.employeePosts = checkboxVal;
-      this.userRoleString = stringVal(checkboxVal, "id");
+      this.userRoleString = stringVal(checkboxVal, 'id')
       // console.log(12345, this.employeePosts);
     },
     /* 提交 */
@@ -578,74 +578,74 @@ export default {
       // console.log(9990, this.officeCodeClick);
       this.$refs[formName].validate(valid => {
         if (valid) {
-          const obj = {};
+          const obj = {}
           if (this.userRoleString) {
-            obj.userRoleString = this.userRoleString;
+            obj.userRoleString = this.userRoleString
           }
-          obj.extend = this.extend; // :filterNokeyVal();
-          obj.op = this.userForm.op;
-          obj.userType = this.userForm.userType;
-          obj.userCode = this.userForm.userCode;
-          obj.oldLoginCode = this.userForm.oldLoginCode;
-          obj.loginCode = this.userForm.loginCode;
-          obj.userName = this.userForm.userName;
-          obj.email = this.userForm.email;
-          obj.mobile = this.userForm.mobile;
-          obj.phone = this.userForm.phone;
-          obj.userWeight = this.userForm.userWeight;
-          obj.remarks = this.userForm.remarks;
+          obj.extend = this.extend // :filterNokeyVal();
+          obj.op = this.userForm.op
+          obj.userType = this.userForm.userType
+          obj.userCode = this.userForm.userCode
+          obj.oldLoginCode = this.userForm.oldLoginCode
+          obj.loginCode = this.userForm.loginCode
+          obj.userName = this.userForm.userName
+          obj.email = this.userForm.email
+          obj.mobile = this.userForm.mobile
+          obj.phone = this.userForm.phone
+          obj.userWeight = this.userForm.userWeight
+          obj.remarks = this.userForm.remarks
           obj.employee = {
             office: {
-              officeCode: this.userForm.officeCode || "",
-              officeName: this.userForm.officeName || ""
+              officeCode: this.userForm.officeCode || '',
+              officeName: this.userForm.officeName || ''
             },
             company: {
-              companyName: this.userForm.companyName || "",
-              companyCode: this.userForm.companyCode || ""
+              companyName: this.userForm.companyName || '',
+              companyCode: this.userForm.companyCode || ''
             },
-            empNo: this.userForm.empNo || "",
-            empName: this.userForm.empName || "",
+            empNo: this.userForm.empNo || '',
+            empName: this.userForm.empName || '',
             employeePosts: this.employeePosts || [],
-            empNameEn: this.userForm.empNameEn || "",
+            empNameEn: this.userForm.empNameEn || '',
             employeeOfficeList: this.employeeOfficeList || []
-          };
+          }
           orgApi.addNewUser(obj).then(res => {
-            if (res.result === "false") {
-              this.$message.warning(res.message);
+            if (res.result === 'false') {
+              this.$message.warning(res.message)
             } else {
-              this.$message.success(res.message);
-              this.closeEditDialog();
-              this.$emit("initListPage");
+              this.$message.success(res.message)
+              this.closeEditDialog()
+              this.$emit('initListPage')
             }
-          });
+          })
         } else {
-          console.log("error submit!!");
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
     /* 关闭编辑对话框 */
     colseUser() {
-      this.closeEditDialog();
+      this.closeEditDialog()
     },
     closeEditDialog() {
-      this.showEditDailog = false;
-      this.$refs["userForm"].resetFields();
-      this.attchCurrentRow = {};
-      this.attchOfficeName = "";
-      this.employeePosts = [];
-      this.employeeOfficeList = [];
+      this.showEditDailog = false
+      this.$refs['userForm'].resetFields()
+      this.attchCurrentRow = {}
+      this.attchOfficeName = ''
+      this.employeePosts = []
+      this.employeeOfficeList = []
       for (const key in this.extend) {
-        this.extend[key] = "";
+        this.extend[key] = ''
       }
       for (const key in this.userForm) {
-        this.userForm[key] = "";
+        this.userForm[key] = ''
       }
-      this.$emit("initListPage");
+      this.$emit('initListPage')
       // this.$refs.roleDetail.toggleSelection();
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .user-edit-panel {

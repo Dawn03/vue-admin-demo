@@ -1,7 +1,13 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
-
+    <el-form
+      ref="loginForm"
+      :model="loginForm"
+      :rules="loginRules"
+      class="login-form"
+      autocomplete="on"
+      label-position="left"
+    >
       <div class="title-container">
         <h3 class="title">
           {{ $t('login.title') }}
@@ -24,7 +30,12 @@
         />
       </el-form-item>
 
-      <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
+      <el-tooltip
+        v-model="capsTooltip"
+        content="Caps lock is On"
+        placement="right"
+        manual
+      >
         <el-form-item prop="password">
           <span class="svg-container">
             <svg-icon icon-class="password" />
@@ -43,12 +54,19 @@
             @keyup.enter.native="handleLogin"
           />
           <span class="show-pwd" @click="showPwd">
-            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+            <svg-icon
+              :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+            />
           </span>
         </el-form-item>
       </el-tooltip>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
+      <el-button
+        :loading="loading"
+        type="primary"
+        style="width:100%;margin-bottom:30px;"
+        @click.native.prevent="handleLogin"
+      >
         {{ $t('login.logIn') }}
       </el-button>
 
@@ -64,7 +82,11 @@
           <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
         </div>
 
-        <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
+        <el-button
+          class="thirdparty-button"
+          type="primary"
+          @click="showDialog = true"
+        >
           {{ $t('login.thirdparty') }}
         </el-button>
       </div>
@@ -72,9 +94,6 @@
 
     <el-dialog :title="$t('login.thirdparty')" :visible.sync="showDialog">
       {{ $t('login.thirdpartyTips') }}
-      <br>
-      <br>
-      <br>
       <social-sign />
     </el-dialog>
   </div>
@@ -84,7 +103,6 @@
 // import { validUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect'
 import SocialSign from './components/SocialSignin'
-import { pubApi } from "@/api/public_request";
 export default {
   name: 'Login',
   components: { LangSelect, SocialSign },
@@ -109,8 +127,12 @@ export default {
         password: 'admin'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        username: [
+          { required: true, trigger: 'blur', validator: validateUsername }
+        ],
+        password: [
+          { required: true, trigger: 'blur', validator: validatePassword }
+        ]
       },
       passwordType: 'password',
       capsTooltip: false,
@@ -148,7 +170,7 @@ export default {
   methods: {
     checkCapslock(e) {
       const { key } = e
-      this.capsTooltip = key && key.length === 1 && (key >= 'A' && key <= 'Z')
+      this.capsTooltip = key && key.length === 1 && key >= 'A' && key <= 'Z'
     },
     showPwd() {
       if (this.passwordType === 'password') {
@@ -164,11 +186,12 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm)
+          this.$store
+            .dispatch('user/login', this.loginForm)
             .then(() => {
-              //this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
               this.loading = false
-	      this.afterRun();
+              this.afterRun()
+              //  this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
             })
             .catch(() => {
               this.loading = false
@@ -186,7 +209,7 @@ export default {
         }
         return acc
       }, {})
-    }
+    },
     // afterQRScan() {
     //   if (e.key === 'x-admin-oauth-code') {
     //     const code = getQueryObject(e.newValue)
@@ -206,7 +229,7 @@ export default {
     //   }
     // }
     /* 调用 需要在登录完成后 页面跳转前 获取的数据 */
-    ,afterRun() {
+    afterRun() {
       // console.log("run");
       Promise.all([
         this.getCompany(),
@@ -215,46 +238,45 @@ export default {
         this.getMenuTree()
       ]).then(res => {
         /* 你的逻辑代码 */
-        this.$router.push({ path: this.redirect || "/" });
-      });
+        this.$router.push({ path: this.redirect || '/' })
+      })
     },
     /* 获取公司 */
     getOffice() {
       return new Promise((resolve, reject) => {
         /* 你的逻辑代码 */
-        this.$store.dispatch("publicData/getOfficeMenuTree").then(res => {
-          resolve(res);
-        });
-      });
+        this.$store.dispatch('publicData/getOfficeMenuTree').then(res => {
+          resolve(res)
+        })
+      })
     },
     /* 获取机构 */
     getCompany() {
       return new Promise((resolve, reject) => {
         /* 你的逻辑代码 */
-        this.$store.dispatch("publicData/getCompanyMenuTree").then(res => {
-          resolve(res);
-        });
-      });
+        this.$store.dispatch('publicData/getCompanyMenuTree').then(res => {
+          resolve(res)
+        })
+      })
     },
     /* 获取所有字典类型 */
     getAllDicType() {
       return new Promise((resolve, reject) => {
         /* 你的逻辑代码 */
-        this.$store.dispatch("publicData/getAllDicType").then(res => {
-          resolve(res);
-        });
-      });
+        this.$store.dispatch('publicData/getAllDicType').then(res => {
+          resolve(res)
+        })
+      })
     },
     /* 获取左侧菜单数据 */
     getMenuTree() {
       return new Promise((resolve, reject) => {
         /* 你的逻辑代码 */
-        this.$store.dispatch("publicData/getLeftMenuTree").then(res => {
-          resolve(res);
-        });
-      });
+        this.$store.dispatch('publicData/getLeftMenuTree').then(res => {
+          resolve(res)
+        })
+      })
     }
-  
   }
 }
 </script>
@@ -263,8 +285,8 @@ export default {
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
-$bg:#283443;
-$light_gray:#fff;
+$bg: #283443;
+$light_gray: #fff;
 $cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
@@ -307,9 +329,9 @@ $cursor: #fff;
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$bg: #2d3a4b;
+$dark_gray: #889aa4;
+$light_gray: #eee;
 
 .login-container {
   min-height: 100%;

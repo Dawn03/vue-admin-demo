@@ -8,29 +8,29 @@
 </template>
 <script>
 // import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
-import { sysApi } from "../../../../api/systemSet";
+import { sysApi } from '../../../../api/systemSet'
 export default {
-  name: "Licence",
-  inject: ["reload"],
+  name: 'Licence',
+  inject: ['reload'],
   components: {},
   data() {
-    return {};
+    return {}
   },
   mounted() {
-    this.init();
+    this.init()
   },
   methods: {
     initPage() {
-      this.reload();
+      this.reload()
     },
     init() {
       // console.log(2222, param);
       sysApi.initLicence().then(res => {
-        console.log(30, res);
-      });
+        console.log(30, res)
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped></style>

@@ -18,7 +18,7 @@
 // import { orgApi } from "@/api/component/componentApi";
 export default {
   // 机构树（公司+部门+用户）
-  name: "CascaderOrgUser",
+  name: 'CascaderOrgUser',
   props: {
     value: {
       type: [Array, String],
@@ -37,19 +37,19 @@ export default {
     return {
       options: [],
       selected: []
-    };
+    }
   },
   watch: {
     value(val) {
-      this.selected = val;
+      this.selected = val
     },
     selected(val) {
-      this.$emit("input", val);
+      this.$emit('input', val)
     }
   },
   created() {
-    this.selected = this.value;
-    this.getData();
+    this.selected = this.value
+    this.getData()
   },
   methods: {
     getData() {
@@ -63,14 +63,14 @@ export default {
       for (var i = 0; i < data.length; i++) {
         if (data[i].children.length < 1) {
           // children若为空数组，则将children设为undefined
-          data[i].children = undefined;
+          data[i].children = undefined
         } else {
           // children若不为空数组，则继续 递归调用 本方法
-          this.getTreeData(data[i].children);
+          this.getTreeData(data[i].children)
         }
       }
-      return data;
+      return data
     }
   }
-};
+}
 </script>

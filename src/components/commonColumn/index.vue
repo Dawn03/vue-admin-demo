@@ -8,11 +8,11 @@
 <script>
 // import xx from "@/xx";
 export default {
-  name: "CommonColumn",
+  name: 'CommonColumn',
   props: {
     columnText: {
       type: String,
-      default: "",
+      default: '',
       required: true
     },
     iconTips: {
@@ -21,14 +21,14 @@ export default {
     }
   },
   data() {
-    return {};
+    return {}
   },
   methods: {
     showExtention() {
-      this.$emit("showExtentionDetail");
+      this.$emit('showExtentionDetail')
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .column-text {

@@ -70,20 +70,20 @@
   </div>
 </template>
 <script>
-import MenuTree from "@/components/menuTree";
+import MenuTree from '@/components/menuTree'
 export default {
-  name: "ChooseMenuTree",
+  name: 'ChooseMenuTree',
   components: {
     MenuTree
   },
   props: {
     titleName: {
       type: String,
-      default: ""
+      default: ''
     },
     keyVal: {
       type: String,
-      default: ""
+      default: ''
     },
     innerDialogVisible: {
       type: Boolean,
@@ -96,19 +96,19 @@ export default {
     menuData: {
       type: Array,
       default: () => {
-        return [];
+        return []
       }
     },
     checkedMemu: {
       type: Array,
       default: () => {
-        return [];
+        return []
       }
     },
     defaultExpand: {
       type: Array,
       default: () => {
-        return [];
+        return []
       }
     },
     parentNode: {
@@ -127,71 +127,71 @@ export default {
   data() {
     return {
       showKeyVal: true,
-      display: "block",
+      display: 'block'
       // expandAll: true
-    };
+    }
   },
   computed: {
     keyVal_: {
       get() {
-        return this.keyVal;
+        return this.keyVal
       },
       set(val) {
         /* keyVal_改变由父组件控制 */
-        this.$emit("on-change-keyVal", val);
+        this.$emit('on-change-keyVal', val)
       }
     }
   },
   watch: {
     /* tree 搜索过滤 */
     keyVal_(val) {
-      this.$refs.menuTreeDom.executeFilter(val);
+      this.$refs.menuTreeDom.executeFilter(val)
     }
   },
   methods: {
     test() {
-      console.log(145);
+      console.log(145)
     },
     // 关闭对话框选择
     handleClose() {
-      this.$emit("closeInnerDialog");
+      this.$emit('closeInnerDialog')
     },
     /* 收或展开 关键字搜素 */
     expandFunc() {
-      this.showKeyVal = !this.showKeyVal;
-      this.display = this.display === "block" ? " none" : "block";
+      this.showKeyVal = !this.showKeyVal
+      this.display = this.display === 'block' ? ' none' : 'block'
     },
 
     /* 展开或收起选项 */
     switchStatus() {
       // console.log(155);
-      this.expandAll = !this.expandAll;
-      this.$refs.menuTreeDom.showOrHiddenAllNodes();
+      this.expandAll = !this.expandAll
+      this.$refs.menuTreeDom.showOrHiddenAllNodes()
     },
     /* 搜索关键字  */
     searchKey() {
-      console.log("搜索关键字");
+      console.log('搜索关键字')
       // this.$refs.menuTreeDom.executeFilter(this.keyVal);
     },
     /* 确认并关闭  选择的节点的值已经传到组件 所以不需要任何传值 只需关闭弹窗即可  */
     sureAndCloseBtn() {
-      this.$emit("closeInnerDialog", "sure");
+      this.$emit('closeInnerDialog', 'sure')
       //  this.passCheckedNode(this.)
     },
     /* 关闭 */
     closeBtn() {
-      this.$emit("closeInnerDialog", "close");
+      this.$emit('closeInnerDialog', 'close')
     },
     // 设置默认选中
     setDefaultChecked(tree) {
       // "CDYL01", "CDYL02"
-      console.log(170, "设置回显", tree, this.checkedMemu);
+      console.log(170, '设置回显', tree, this.checkedMemu)
       this.$nextTick(() => {
-        this.$refs.menuTreeDom.setDefaultChecked(tree);
-      });
+        this.$refs.menuTreeDom.setDefaultChecked(tree)
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

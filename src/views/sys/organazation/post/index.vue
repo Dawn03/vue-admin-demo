@@ -33,7 +33,7 @@
         </span>
       </template>
       <template slot="postType" slot-scope="scope">
-        {{ swichText("sys_post_type", scope.row.postType, "未设置") }}
+        {{ swichText('sys_post_type', scope.row.postType, '未设置') }}
       </template>
       <template slot="status" slot-scope="scope">
         <span
@@ -41,7 +41,7 @@
             color: [scope.row.status == '0' ? '#000' : '#f00']
           }"
         >
-          {{ swichText("sys_search_status", scope.row.status, "未设置") }}
+          {{ swichText('sys_search_status', scope.row.status, '未设置') }}
         </span>
       </template>
       <template slot="operate">
@@ -79,15 +79,15 @@
   </div>
 </template>
 <script>
-import TopBtns from "@/components/componentBtns/topBtns/baseBtn";
-import TableTree from "@/components/tableTree";
-import InputFilter from "@/components/inputFliter";
-import AddAndEdit from "./addAndEdit";
-import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
-import { orgApi } from "@/api/organization";
+import TopBtns from '@/components/componentBtns/topBtns/baseBtn'
+import TableTree from '@/components/tableTree'
+import InputFilter from '@/components/inputFliter'
+import AddAndEdit from './addAndEdit'
+import { clearFilterVal, getInputVal, dictTypeMap } from '@/utils/pubFunc'
+import { orgApi } from '@/api/organization'
 export default {
-  name: "PostManage",
-  inject: ["reload"],
+  name: 'PostManage',
+  inject: ['reload'],
   components: {
     TopBtns,
     TableTree,
@@ -98,48 +98,48 @@ export default {
     return {
       showSearchVal: false,
       leftMg: {
-        icon: "fa icon-trophy",
-        text: "岗位管理"
+        icon: 'fa icon-trophy',
+        text: '岗位管理'
       },
       btnArr: [
         {
-          handlerName: "View",
-          btnText: "查询",
-          class: "fa fa-search"
+          handlerName: 'View',
+          btnText: '查询',
+          class: 'fa fa-search'
         },
         {
-          handlerName: "AddNew",
-          btnText: "新增",
-          class: "fa fa-plus"
+          handlerName: 'AddNew',
+          btnText: '新增',
+          class: 'fa fa-plus'
         }
       ],
       stopOrStart: null,
       formInline: [
         {
-          type: "input",
-          label: "岗位编码",
-          key: "postCode",
-          value: ""
+          type: 'input',
+          label: '岗位编码',
+          key: 'postCode',
+          value: ''
         },
         {
-          type: "input",
-          label: "岗位名称",
-          key: "postName",
-          value: ""
+          type: 'input',
+          label: '岗位名称',
+          key: 'postName',
+          value: ''
         },
         {
-          type: "select",
-          label: "岗位分类",
-          key: "postType",
-          value: "",
-          options: this.getPostOption("sys_post_type")
+          type: 'select',
+          label: '岗位分类',
+          key: 'postType',
+          value: '',
+          options: this.getPostOption('sys_post_type')
         },
         {
-          type: "select",
-          label: "状态",
-          options: this.getStatusOption("sys_search_status"),
-          key: "status",
-          value: ""
+          type: 'select',
+          label: '状态',
+          options: this.getStatusOption('sys_search_status'),
+          key: 'status',
+          value: ''
         }
       ],
       columnWidths: {
@@ -155,71 +155,67 @@ export default {
         remarks: true, // 无对应键名
         status: true // status
       },
-      slotColumns: ["postName", "postType", "status"],
+      slotColumns: ['postName', 'postType', 'status'],
       tableHead: {
-        postName: "岗位名称",
-        postCode: "岗位编码",
-        postSort: "排序号",
-        postType: "岗位分类",
-        updateDate: "更新时间",
-        remarks: "备注信息", // 无对应键名
-        status: "状态" // status
+        postName: '岗位名称',
+        postCode: '岗位编码',
+        postSort: '排序号',
+        postType: '岗位分类',
+        updateDate: '更新时间',
+        remarks: '备注信息', // 无对应键名
+        status: '状态' // status
       },
       tableData: [],
       pageNation: {
         total: 0,
         pageSize: 20,
         pageNo: 1,
-        orderBy: "",
-        status: ""
+        orderBy: '',
+        status: ''
       },
       tableFit: true
-    };
+    }
   },
   mounted() {
-    this.init(this.pageNation);
+    this.init(this.pageNation)
   },
   methods: {
     showSearch(val) {
-      this.showSearchVal = val;
+      this.showSearchVal = val
     },
     handlerName(funcName) {
-      this[funcName]();
+      this[funcName]()
     },
     initPage() {
-      this.reload();
+      this.reload()
     },
     init(param) {
       // console.log(2222, param);
       orgApi.getPostList(param).then(res => {
-        this.pageNation.total = res.count;
-        this.tableData = res.list;
-      });
+        this.pageNation.total = res.count
+        this.tableData = res.list
+      })
     },
 
     /* 获取岗位下拉框数据 */
     getPostOption(type) {
-      const selectTypeData = JSON.parse(
-        sessionStorage.getItem("selectDicType")
-      );
-      return selectTypeData[type];
+      const selectTypeData = JSON.parse(sessionStorage.getItem('selectDicType'))
+      return selectTypeData[type]
     },
     /* 获取状态下拉框数据 */
     getStatusOption(type) {
-      const selectTypeData = JSON.parse(
-        sessionStorage.getItem("selectDicType")
-      );
-      return selectTypeData[type];
+      const selectTypeData = JSON.parse(sessionStorage.getItem('selectDicType'))
+      return selectTypeData[type]
     },
     stopUsePost(row) {
-      if (row.status === "0") {
-        this.stopOrStart = "disable";
-        this.stopOrStartText = "停用";
+      if (row.status === '0') {
+        this.stopOrStart = 'disable'
+        this.stopOrStartText = '停用'
       } else {
-        this.stopOrStart = "enable";
-        this.stopOrStartText = "起用";
+        this.stopOrStart = 'enable'
+        this.stopOrStartText = '起用'
       }
-      this.$alertMsgBox(`确定要${this.stopOrStartText}该用户吗`, "信息")
+      this.$alertMsgBox(`确定要${this.stopOrStartText}该用户吗`, '信息')
         .then(() => {
           orgApi
             .stopUsePost({
@@ -227,43 +223,43 @@ export default {
               postCode: row.postCode
             })
             .then(res => {
-              if (res.result === "true") {
-                this.init(this.pageNation);
-                this.$message.success(res.message);
+              if (res.result === 'true') {
+                this.init(this.pageNation)
+                this.$message.success(res.message)
               } else {
-                this.$message.warning(res.message);
+                this.$message.warning(res.message)
               }
-            });
+            })
         })
         .catch(() => {
-          this.$message.info("取消");
-        });
+          this.$message.info('取消')
+        })
     },
     deleteBtn(row) {
-      this.$alertMsgBox(`此操作将永久删除该文件, 是否继续?`, "提示")
+      this.$alertMsgBox(`此操作将永久删除该文件, 是否继续?`, '提示')
         .then(() => {
           orgApi
             .deletePost({
               postCode: row.postCode
             })
             .then(res => {
-              if (res.result === "true") {
-                this.init(this.pageNation);
-                this.$message.success(res.message);
+              if (res.result === 'true') {
+                this.init(this.pageNation)
+                this.$message.success(res.message)
               }
-            });
+            })
         })
         .catch(() => {
-          this.$message.info("取消");
-        });
+          this.$message.info('取消')
+        })
     },
     /* 列表文本转义 */
     swichText(type, val, other) {
-      return dictTypeMap(type, val, other);
+      return dictTypeMap(type, val, other)
       // console.log(99, dictTypeMap(type, val, other));
     },
     statusValChange(item) {
-      this.searchBtn();
+      this.searchBtn()
     },
     /* 获取填入输入框的值  */
     searchBtn(data = {}) {
@@ -271,37 +267,37 @@ export default {
         total: this.pageNation.total,
         pageSize: this.pageNation.pageSize,
         pageNo: this.pageNation.pageNo,
-        status: ""
-      };
-      const valObj = Object.assign(obj, getInputVal(this.formInline));
-      this.init(valObj);
+        status: ''
+      }
+      const valObj = Object.assign(obj, getInputVal(this.formInline))
+      this.init(valObj)
     },
     /* 清除输入框内的值 */
     resetForm() {
-      this.pageNation.status = "";
-      this.pageNation.orderBy = "";
+      this.pageNation.status = ''
+      this.pageNation.orderBy = ''
       const valObj = Object.assign(
         this.pageNation,
         clearFilterVal(this.formInline)
-      );
-      this.init(valObj);
+      )
+      this.init(valObj)
     },
     currentChange(val) {
-      this.pageNation.pageNo = val;
-      this.init(this.pageNation);
+      this.pageNation.pageNo = val
+      this.init(this.pageNation)
     },
     sortChange(sortVal) {
-      this.pageNation.orderBy = sortVal;
-      this.init(this.pageNation);
+      this.pageNation.orderBy = sortVal
+      this.init(this.pageNation)
     },
     /* 编辑表格 */
     postEdit(row, type) {
-      this.$refs.postEditPanel.show(row, type);
+      this.$refs.postEditPanel.show(row, type)
     },
     AddNew() {
-      this.$refs.postEditPanel.show({}, "新增");
+      this.$refs.postEditPanel.show({}, '新增')
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped></style>

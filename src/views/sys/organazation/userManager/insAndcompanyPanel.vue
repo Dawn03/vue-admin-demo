@@ -26,8 +26,8 @@
   </DailogFrame>
 </template>
 <script>
-import DailogFrame from "@/components/dailogPanel/frame";
-import MenuTree from "@/components/menuTree";
+import DailogFrame from '@/components/dailogPanel/frame'
+import MenuTree from '@/components/menuTree'
 export default {
   components: {
     DailogFrame,
@@ -43,43 +43,43 @@ export default {
     return {
       showDailog: false,
       typeVal: {},
-      menuTreeTitle: "",
-      defaultExpand: ["1"],
+      menuTreeTitle: '',
+      defaultExpand: ['1'],
       menuData: [],
-      keyVal: "",
-      keyVal_: ""
-    };
+      keyVal: '',
+      keyVal_: ''
+    }
   },
   methods: {
     show(item, menuData) {
-      this.typeVal = item;
-      this.menuData = menuData;
-      this.showDailog = true;
+      this.typeVal = item
+      this.menuData = menuData
+      this.showDailog = true
     },
     // 关闭对话框选择
     closeDialog() {
-      this.showDailog = false;
+      this.showDailog = false
     },
     closeMuneTreeChoose() {
-      this.showDailog = false;
+      this.showDailog = false
     },
     /* changeKeyVal */
     changeKeyVal(val) {
       // console.log(379, val);
-      this.keyVal = val;
+      this.keyVal = val
     },
     /* 菜单树中当前点击的树节点*/
     clickNodeReslut(data) {
       // console.log(384, data);
-      this.$emit("getClickNode", data, this.typeVal);
-      this.closeMuneTreeChoose();
-      this.keyVal = "";
+      this.$emit('getClickNode', data, this.typeVal)
+      this.closeMuneTreeChoose()
+      this.keyVal = ''
     },
     /* 搜索关键字  */
     searchKey() {
-      console.log("搜索关键字", this.keyVal_);
+      console.log('搜索关键字', this.keyVal_)
       // this.$refs.menuTreeDom.executeFilter(this.keyVal);
     }
   }
-};
+}
 </script>

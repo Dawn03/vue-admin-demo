@@ -26,11 +26,11 @@
   </div>
 </template>
 <script>
-import ColumnBar from "@/components/commonColumn";
-import TableTree from "@/components/tableTree";
-import { orgApi } from "@/api/organization";
+import ColumnBar from '@/components/commonColumn'
+import TableTree from '@/components/tableTree'
+import { orgApi } from '@/api/organization'
 export default {
-  name: "AssignRoleDetail",
+  name: 'AssignRoleDetail',
   components: {
     ColumnBar,
     TableTree
@@ -39,31 +39,31 @@ export default {
     tableData: {
       type: Array,
       default: () => {
-        return [];
+        return []
       }
     },
     tableCheckBoxValue: {
       type: Array,
       default: () => {
-        return [];
+        return []
       }
     }
   },
   data() {
     return {
       tableHead: {
-        name: "角色名称",
-        id: "角色编码"
+        name: '角色名称',
+        id: '角色编码'
       }
-    };
+    }
   },
   computed: {
     tableCheckBoxValueDetail: {
       get() {
-        return this.tableCheckBoxValue;
+        return this.tableCheckBoxValue
       },
       set(val) {
-        this.$emit("tableCheckBoxVal", val);
+        this.$emit('tableCheckBoxVal', val)
       }
     }
   },
@@ -72,16 +72,16 @@ export default {
     // 多选回显 有值设置默认选中 无值清空
     showHadCheckedRow(rows) {
       // console.log(105, rows);
-      this.$refs.table.toggleSelection(rows);
+      this.$refs.table.toggleSelection(rows)
     },
     // 多选操作
     tableCheckBox(row) {
-      this.tableCheckBoxValueDetail = row;
+      this.tableCheckBoxValueDetail = row
     },
     // 清除checkedBox多选操作
     toggleSelection() {
-      this.$refs.table.toggleSelection();
+      this.$refs.table.toggleSelection()
     }
   }
-};
+}
 </script>

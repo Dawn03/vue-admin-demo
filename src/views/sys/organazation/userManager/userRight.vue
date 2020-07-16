@@ -71,7 +71,7 @@
       </template>
       <template slot="status" slot-scope="scope">
         <span :style="[{ color: scope.row.status === '0' ? '#000' : '#f00' }]">
-          {{ swichText("sys_user_status", scope.row.status, "未设置") }}
+          {{ swichText('sys_user_status', scope.row.status, '未设置') }}
         </span>
       </template>
       <template slot="operate">
@@ -153,16 +153,10 @@
       </template>
     </TableTree>
     <!-- table行点击对话框 -->
-    <userEditPanel
-      ref="userEditPanel"
-      @initListPage="initListPage"
-    />
+    <userEditPanel ref="userEditPanel" @initListPage="initListPage" />
     <AssignRole ref="assignRolePanel" />
     <DataRights ref="dataRightsPanel" />
-    <InAndCompany
-      ref="inAndCompanyPanel"
-      @getClickNode="getClickNode"
-    />
+    <InAndCompany ref="inAndCompanyPanel" @getClickNode="getClickNode" />
   </div>
 </template>
 <script>
@@ -437,9 +431,7 @@ export default {
     },
     /* 获取状态下拉框数据 */
     getStatusOption(type) {
-      const selectTypeData = JSON.parse(
-        sessionStorage.getItem('selectDicType')
-      )
+      const selectTypeData = JSON.parse(sessionStorage.getItem('selectDicType'))
       return selectTypeData[type]
     },
     /* 列表文本转义 */

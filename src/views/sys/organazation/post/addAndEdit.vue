@@ -46,120 +46,120 @@
   </div>
 </template>
 <script>
-import ColumnBar from "@/components/commonColumn";
-import DailogFrame from "@/components/dailogPanel/frame";
-import DymForm from "@/components/element/dymForm";
+// import ColumnBar from '@/components/commonColumn'
+import DailogFrame from '@/components/dailogPanel/frame'
+import DymForm from '@/components/element/dymForm'
 
-import { dictTypeMap } from "@/utils/pubFunc";
-import { returnReg } from "@/utils/validate";
-import { orgApi } from "../../../../api/organization";
-import { pubApi } from "@/api/public_request";
+// import { dictTypeMap } from '@/utils/pubFunc'
+import { returnReg } from '@/utils/validate'
+import { orgApi } from '../../../../api/organization'
+// import { pubApi } from '@/api/public_request'
 export default {
-  name: "UserEdit",
+  name: 'UserEdit',
   components: {
     DailogFrame,
-    DymForm,
-    ColumnBar
+    DymForm
+    // ColumnBar
   },
   data() {
-    const treeSortValidator = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("必填信息"));
-      } else if (!returnReg("positiveInteger").test(value)) {
-        callback(new Error("请输入一个正整数!"));
-      } else {
-        callback();
-      }
-    };
+    // const treeSortValidator = (rule, value, callback) => {
+    //   if (value === '') {
+    //     callback(new Error('必填信息'))
+    //   } else if (!returnReg('positiveInteger').test(value)) {
+    //     callback(new Error('请输入一个正整数!'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     return {
       showEditDailog: false,
       showCheckbox: false,
-      editModel: "E",
+      editModel: 'E',
       postForm: {
-        oldRoleName: "",
-        postName: "",
-        postCode: "",
-        postType: "",
-        postSort: "",
-        remarks: "" // 无对应键名
+        oldRoleName: '',
+        postName: '',
+        postCode: '',
+        postType: '',
+        postSort: '',
+        remarks: '' // 无对应键名
       },
       componentList: [
         {
-          label: "基本信息", // 授权功能菜单
+          label: '基本信息', // 授权功能菜单
           lineTips: true,
           cols: [24, 24, 24, 24],
           showFlag: false
         },
         {
-          label: "岗位名称：",
-          prop: "postName",
-          labelWidth: "90px",
-          componentName: "el-input",
+          label: '岗位名称：',
+          prop: 'postName',
+          labelWidth: '90px',
+          componentName: 'el-input',
           cols: [12, 12, 12, 12],
-          placeholder: "请输入",
-          value: "postName"
+          placeholder: '请输入',
+          value: 'postName'
         },
         {
-          label: "岗位编码：",
-          prop: "postCode",
-          labelWidth: "90px",
-          componentName: "el-input",
+          label: '岗位编码：',
+          prop: 'postCode',
+          labelWidth: '90px',
+          componentName: 'el-input',
           cols: [12, 12, 12, 12],
-          placeholder: "请输入",
-          value: "postCode",
+          placeholder: '请输入',
+          value: 'postCode',
           disabled: this.isNewRecord
         },
         {
-          label: "岗位分类：",
-          prop: "postType",
-          labelWidth: "90px",
-          componentName: "baseSelect",
+          label: '岗位分类：',
+          prop: 'postType',
+          labelWidth: '90px',
+          componentName: 'baseSelect',
           cols: [12, 12, 12, 12],
-          placeholder: "请输选择",
-          value: "postType",
-          options: this.getPostOption("sys_post_type")
+          placeholder: '请输选择',
+          value: 'postType',
+          options: this.getPostOption('sys_post_type')
         },
         {
-          label: "排序号：",
-          prop: "postSort",
-          labelWidth: "90px",
-          componentName: "el-input",
+          label: '排序号：',
+          prop: 'postSort',
+          labelWidth: '90px',
+          componentName: 'el-input',
           cols: [12, 12, 12, 12],
-          placeholder: "请输入",
-          value: "postSort"
+          placeholder: '请输入',
+          value: 'postSort'
         },
         {
-          label: "备注信息：",
-          prop: "remarks",
-          labelWidth: "90px",
-          componentName: "el-input",
+          label: '备注信息：',
+          prop: 'remarks',
+          labelWidth: '90px',
+          componentName: 'el-input',
           rowsSpan: 4,
-          type: "textarea",
+          type: 'textarea',
           cols: [24, 24, 24, 24],
-          placeholder: "请输入",
-          value: "remarks"
+          placeholder: '请输入',
+          value: 'remarks'
         }
       ],
-      titleType: "",
+      titleType: '',
       isNewRecord: false,
       companyFormRules: {
-        postName: [{ required: true, message: "必填信息", trigger: "blur" }],
-        postCode: [{ required: true, message: "必填信息", trigger: "blur" }],
+        postName: [{ required: true, message: '必填信息', trigger: 'blur' }],
+        postCode: [{ required: true, message: '必填信息', trigger: 'blur' }],
         postSort: [
           {
             required: false,
-            pattern: returnReg("positiveInteger"),
-            message: "请输入一个正整数",
-            trigger: "blur"
+            pattern: returnReg('positiveInteger'),
+            message: '请输入一个正整数',
+            trigger: 'blur'
           }
         ]
       }
-    };
+    }
   },
   computed: {
     isNewRecord1: {
       get() {
-        return this.isNewRecord;
+        return this.isNewRecord
       },
       set(val) {}
     }
@@ -169,78 +169,76 @@ export default {
     /* 显示对话框  编辑机构  新增下级机构  新增机构*/
     show(row, type) {
       // console.log(285, type, row);
-      this.showEditDailog = true;
-      this.titleType = type;
-      if (type === "编辑") {
-        this.componentList[2].disabled = true;
+      this.showEditDailog = true
+      this.titleType = type
+      if (type === '编辑') {
+        this.componentList[2].disabled = true
         orgApi
           .getPostEdit({
-            key: "postCode",
+            key: 'postCode',
             val: row.postCode
           })
           .then(res => {
-            this.postForm = res.post;
-            this.isNewRecord = res.post.isNewRecord;
-            this.postForm.oldRoleName = this.postForm.postName;
-          });
+            this.postForm = res.post
+            this.isNewRecord = res.post.isNewRecord
+            this.postForm.oldRoleName = this.postForm.postName
+          })
       } else {
         //  新增
-        this.componentList[2].disabled = false;
+        this.componentList[2].disabled = false
         orgApi.getPostAdd().then(res => {
-          this.isNewRecord = res.post.isNewRecord;
-          this.postForm.postCode = res.post.postSort;
-        });
+          this.isNewRecord = res.post.isNewRecord
+          this.postForm.postCode = res.post.postSort
+        })
       }
     },
     /* 获取岗位下拉框数据 */
     getPostOption(type) {
-      const selectTypeData = JSON.parse(
-        sessionStorage.getItem("selectDicType")
-      );
-      return selectTypeData[type];
+      const selectTypeData = JSON.parse(sessionStorage.getItem('selectDicType'))
+      return selectTypeData[type]
     },
     /* 关闭编辑对话框 */
     closeEditDialog() {
-      this.colseOffice("postForm");
-      this.showEditDailog = false;
+      this.colseOffice('postForm')
+      this.showEditDailog = false
     },
     /* 提交 */
     submitForm(formName) {
       // console.log(3, this.postForm);
       this.$refs[formName].validate(valid => {
         if (valid) {
-          const obj = this.postForm;
-          obj.isNewRecord = this.isNewRecord;
+          const obj = this.postForm
+          obj.isNewRecord = this.isNewRecord
           orgApi.saveEdit(obj).then(res => {
-            if (res.result === "true") {
-              this.$message.success(res.message);
-              this.$emit("initPage", {
-                status: "",
+            if (res.result === 'true') {
+              this.$message.success(res.message)
+              this.$emit('initPage', {
+                status: '',
                 ctrlPermi: 2
-              });
-              this.showEditDailog = false;
+              })
+              this.showEditDailog = false
             } else {
-              this.$message.warning(res.message);
+              this.$message.warning(res.message)
             }
-            this.colseOffice("postForm");
-          });
+            this.colseOffice('postForm')
+          })
         } else {
           // console.log(4);
-          console.log("error submit!!");
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
     colseOffice(formName) {
       this.$nextTick(() => {
-        this.$refs[formName].resetFields(); // 清空表单
-        this.showEditDailog = false;
-      });
+        this.$refs[formName].resetFields() // 清空表单
+        this.showEditDailog = false
+      })
       // this.postForm.parent.id = "";
       // this.postForm.parent.officeName = "";
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .company-edit-panel {

@@ -10,7 +10,7 @@
   </div>
 </template>
 <script>
-import LeftTree from "@/components/leftTree";
+import LeftTree from '@/components/leftTree'
 export default {
   components: {
     LeftTree
@@ -19,20 +19,20 @@ export default {
     instMenuData: {
       type: Array,
       default: () => {
-        return [];
+        return []
       }
     },
     defaultExpand: {
       type: String,
-      default: ""
+      default: ''
     }
   },
   data() {
     return {
       menuData: []
-    };
+    }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .user-head {

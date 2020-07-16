@@ -183,18 +183,18 @@
   </div>
 </template>
 <script>
-import TableTree from "@/components/tableTree";
-import InputFilter from "@/components/inputFliter";
-import Pagination from "@/components/pagination";
-import UserEditPanel from "./userEditPanel";
+import TableTree from '@/components/tableTree'
+import InputFilter from '@/components/inputFliter'
+import Pagination from '@/components/pagination'
+import UserEditPanel from './userEditPanel'
 
 // import { returnReg } from "@/utils/validate"; /* 表单正则验证 */
-import { clearFilterVal, getInputVal, toTreeData } from "@/utils/pubFunc";
-import { orgApi } from "@/api/organization";
+import { clearFilterVal, getInputVal, toTreeData } from '@/utils/pubFunc'
+import { orgApi } from '@/api/organization'
 
-import { statusMap } from "@/utils/pubFunc";
+import { statusMap } from '@/utils/pubFunc'
 export default {
-  name: "UserRight",
+  name: 'UserRight',
   components: {
     TableTree,
     InputFilter,
@@ -205,111 +205,111 @@ export default {
     instMenuData: {
       type: Array,
       default: () => {
-        return [];
+        return []
       }
     }
   },
   data() {
     return {
-      btnText: "查询",
+      btnText: '查询',
       sys_user_status: [], // 用户状态键值存储
       changeArrowDirection: false,
       currentId: null,
       stopOrStart: null,
-      titleName: "",
-      stopOrStartText: "", // 停用或者启用
+      titleName: '',
+      stopOrStartText: '', // 停用或者启用
       formInline: [
         {
-          type: "input",
-          label: "账号",
-          key: "loginCode",
-          value: ""
+          type: 'input',
+          label: '账号',
+          key: 'loginCode',
+          value: ''
         },
         {
-          type: "input",
-          label: "昵称",
-          key: "userName",
-          value: ""
+          type: 'input',
+          label: '昵称',
+          key: 'userName',
+          value: ''
         },
         {
-          type: "input",
-          label: "姓名",
-          key: "refName",
-          value: ""
+          type: 'input',
+          label: '姓名',
+          key: 'refName',
+          value: ''
         },
         {
-          type: "input",
-          label: "手机",
-          key: "mobile",
-          value: ""
+          type: 'input',
+          label: '手机',
+          key: 'mobile',
+          value: ''
         },
         {
-          type: "select",
-          label: "状态",
+          type: 'select',
+          label: '状态',
           options: [
             {
-              label: "正常",
-              value: "0"
+              label: '正常',
+              value: '0'
             },
             {
-              label: "停用",
-              value: "2"
+              label: '停用',
+              value: '2'
             },
             {
-              label: "冻结",
-              value: "3"
+              label: '冻结',
+              value: '3'
             }
           ],
-          key: "status",
-          value: ""
+          key: 'status',
+          value: ''
         }
       ],
 
       showMore: false,
       moreFormItem: [
         {
-          type: "searchInput",
-          label: "机构",
-          key: "institution",
-          value: ""
+          type: 'searchInput',
+          label: '机构',
+          key: 'institution',
+          value: ''
         },
         {
-          type: "searchInput",
-          label: "公司",
-          key: "company",
-          value: ""
+          type: 'searchInput',
+          label: '公司',
+          key: 'company',
+          value: ''
         },
         {
-          type: "input",
-          label: "邮箱",
-          key: "email",
-          value: ""
+          type: 'input',
+          label: '邮箱',
+          key: 'email',
+          value: ''
         },
         {
-          type: "select",
-          label: "岗位",
-          key: "employee.postCode",
+          type: 'select',
+          label: '岗位',
+          key: 'employee.postCode',
           options: [
             {
-              label: "总经理",
-              value: "ceo"
+              label: '总经理',
+              value: 'ceo'
             },
             {
-              label: "财务经理",
-              value: "cfo"
+              label: '财务经理',
+              value: 'cfo'
             },
             {
-              label: "人力经理",
-              value: "hrm"
+              label: '人力经理',
+              value: 'hrm'
             }
           ],
-          value: ""
+          value: ''
         },
         {
-          type: "input",
-          label: "电话",
-          key: "phone",
-          value: ""
+          type: 'input',
+          label: '电话',
+          key: 'phone',
+          value: ''
         }
       ],
       tableFit: true,
@@ -318,24 +318,24 @@ export default {
         // email: 170
       },
       slotColumns: [
-        "loginCode",
-        "refName",
-        "employee.empName",
-        "employee.company.companyName",
-        "employee.office.officeName",
-        "statusText"
+        'loginCode',
+        'refName',
+        'employee.empName',
+        'employee.company.companyName',
+        'employee.office.officeName',
+        'statusText'
       ],
       tableHead: {
-        loginCode: "登录账号",
-        userName: "用户昵称",
-        "employee.empName": "员工姓名",
-        "employee.company.companyName": "归属机构",
-        "employee.office.officeName": "归属公司",
-        email: "电子邮箱",
-        mobile: "手机号",
-        phone: "办公电话",
-        updateDate: "更新时间",
-        statusText: "状态" // status
+        loginCode: '登录账号',
+        userName: '用户昵称',
+        'employee.empName': '员工姓名',
+        'employee.company.companyName': '归属机构',
+        'employee.office.officeName': '归属公司',
+        email: '电子邮箱',
+        mobile: '手机号',
+        phone: '办公电话',
+        updateDate: '更新时间',
+        statusText: '状态' // status
       },
       tableData: [],
       statusOption: {},
@@ -350,146 +350,146 @@ export default {
         refName: null,
         mobile: null,
         status: null,
-        "employee.office.officeName": null, // 企管部
-        "employee.office.officeCode": null, // SDJN01
-        "employee.company.companyName": null, // 济南公司
-        "employee.company.companyCode": null, // SDJN
+        'employee.office.officeName': null, // 企管部
+        'employee.office.officeCode': null, // SDJN01
+        'employee.company.companyName': null, // 济南公司
+        'employee.company.companyCode': null, // SDJN
         email: null, // 邮箱
-        "employee.postCode": null, // ceo
+        'employee.postCode': null, // ceo
         phone: null, // 08277648513
         orderBy: null //
       }
-    };
+    }
   },
   mounted() {
     const obj = {
       pageSize: this.pageNation.pageSize,
       pageNo: this.pageNation.pageNo,
-      status: ""
-    };
-    this.init(obj);
+      status: ''
+    }
+    this.init(obj)
     // 获取用户角色
-    this.$store.dispatch("role/getRole");
+    this.$store.dispatch('role/getRole')
     // console.log(397, '刚刚启动时进入页面')
   },
   methods: {
     async init(param) {
-      await this.$store.dispatch("user/getUserMapFeild", "sys_user_status");
+      await this.$store.dispatch('user/getUserMapFeild', 'sys_user_status')
       orgApi
         .getUserList(param)
         .then(response => {
-          const obj = {};
-          const res = this.$store.state.user.userMap;
+          const obj = {}
+          const res = this.$store.state.user.userMap
           for (let i = 0, len = res.length; i < len; i++) {
-            obj[res[i]["value"]] = res[i]["name"];
+            obj[res[i]['value']] = res[i]['name']
           }
-          this.pageNation.total = response.count;
-          this.tableData = statusMap(response.list, obj);
+          this.pageNation.total = response.count
+          this.tableData = statusMap(response.list, obj)
         })
         .catch(function(error) {
-          console.log(error);
-        });
+          console.log(error)
+        })
     },
     initListPage() {
       this.init({
         pageSize: this.pageNation.pageSize,
         pageNo: this.pageNation.pageNo,
-        status: ""
-      });
+        status: ''
+      })
     },
     showOrHidden() {
-      this.btnText = this.btnText === "查询" ? "隐藏" : "查询";
+      this.btnText = this.btnText === '查询' ? '隐藏' : '查询'
     },
     // select
     statusValChange(val, item) {
       const searchObj = {
         pageSize: this.pageNation.pageSize,
         pageNo: this.pageNation.pageNo
-      };
-      if (item.key === "status") {
-        searchObj.status = val;
-        this.init(searchObj);
+      }
+      if (item.key === 'status') {
+        searchObj.status = val
+        this.init(searchObj)
       } else {
-        this.searchVal[item.key] = val;
+        this.searchVal[item.key] = val
       }
     },
     /* 获取填入输入框的值  */
     searchBtn(data = {}) {
-      this.searchVal["employee.office.officeName"] = data.label;
-      this.searchVal["employee.office.officeCode"] = data.id;
+      this.searchVal['employee.office.officeName'] = data.label
+      this.searchVal['employee.office.officeCode'] = data.id
       this.searchVal = Object.assign(
         this.searchVal,
         this.pageNation,
         getInputVal(this.formInline),
         getInputVal(this.moreFormItem)
-      );
-      this.init(this.searchVal);
+      )
+      this.init(this.searchVal)
     },
     /* 清除输入框内的值 */
     resetForm() {
-      clearFilterVal(this.formInline);
-      clearFilterVal(this.moreFormItem);
-      this.searchVal = {};
+      clearFilterVal(this.formInline)
+      clearFilterVal(this.moreFormItem)
+      this.searchVal = {}
       const obj = {
         pageSize: this.pageNation.pageSize,
         pageNo: 1,
         status: null
-      };
-      this.init(obj);
-      console.log(this.searchVal);
+      }
+      this.init(obj)
+      console.log(this.searchVal)
     },
     /* 切换显示更多条件筛选 */
     getMore() {
-      this.showMore = !this.showMore;
+      this.showMore = !this.showMore
     },
     // 显示带搜索图标的对话框
     showFilterPanel(item) {
-      this.titleName = `${item.label}选择`;
-      if (item.key === "institution") {
-        this.$refs.inAndCompanyPanel.show(item, this.instMenuData);
+      this.titleName = `${item.label}选择`
+      if (item.key === 'institution') {
+        this.$refs.inAndCompanyPanel.show(item, this.instMenuData)
       } else {
         orgApi.getCompanyMenuTree({ ctrlPermi: 2 }).then(res => {
           const attributes = {
-            id: "id",
-            parentId: "pId",
-            label: "name",
-            rootId: "YD"
-          };
-          const treeData = toTreeData(res, attributes);
-          this.$refs.inAndCompanyPanel.show(item, treeData);
-        });
+            id: 'id',
+            parentId: 'pId',
+            label: 'name',
+            rootId: 'YD'
+          }
+          const treeData = toTreeData(res, attributes)
+          this.$refs.inAndCompanyPanel.show(item, treeData)
+        })
       }
     },
     getClickNode(val, typeVal) {
-      console.log("typeVal.key", val);
-      if (typeVal.key === "institution") {
-        this.moreFormItem[0].value = val.label;
-        this.searchVal["employee.office.officeCode"] = val.id;
-        this.searchVal["employee.office.officeName"] = val.label;
+      console.log('typeVal.key', val)
+      if (typeVal.key === 'institution') {
+        this.moreFormItem[0].value = val.label
+        this.searchVal['employee.office.officeCode'] = val.id
+        this.searchVal['employee.office.officeName'] = val.label
       } else {
-        this.moreFormItem[1].value = val.label;
-        this.searchVal["employee.company.companyCode"] = val.id;
-        this.searchVal["employee.company.companyName"] = val.label;
+        this.moreFormItem[1].value = val.label
+        this.searchVal['employee.company.companyCode'] = val.id
+        this.searchVal['employee.company.companyName'] = val.label
       }
     },
     /* 编辑表格 */
     editHandleClick(row, type) {
       // console.log(11, row);
-      this.$refs.userEditPanel.show(row, type);
+      this.$refs.userEditPanel.show(row, type)
     },
     showImportAndExport() {
-      alert("button click");
+      alert('button click')
     },
     /* 禁用启用 */
     stopUse(row) {
-      if (row.status === "0") {
-        this.stopOrStart = "disable";
-        this.stopOrStartText = "停用";
+      if (row.status === '0') {
+        this.stopOrStart = 'disable'
+        this.stopOrStartText = '停用'
       } else {
-        this.stopOrStart = "enable";
-        this.stopOrStartText = "起用";
+        this.stopOrStart = 'enable'
+        this.stopOrStartText = '起用'
       }
-      this.$alertMsgBox(`确定要${this.stopOrStartText}该用户吗`, "信息")
+      this.$alertMsgBox(`确定要${this.stopOrStartText}该用户吗`, '信息')
         .then(() => {
           orgApi
             .stopUseOrStart({
@@ -497,40 +497,40 @@ export default {
               userCode: row.userCode
             })
             .then(res => {
-              if (res.result === "true") {
+              if (res.result === 'true') {
                 const obj = {
                   pageSize: this.searchVal.pageSize,
                   pageNo: this.searchVal.pageNo,
-                  status: ""
-                };
-                this.init(obj);
-                this.$message.success(res.message);
+                  status: ''
+                }
+                this.init(obj)
+                this.$message.success(res.message)
               } else {
-                this.$message.warning(res.message);
+                this.$message.warning(res.message)
               }
-            });
+            })
         })
         .catch(() => {
-          this.$message.info("取消");
-        });
+          this.$message.info('取消')
+        })
     },
     deleteHandleClick(row) {
-      this.$alertMsgBox("确认要删除该用户吗", "信息")
+      this.$alertMsgBox('确认要删除该用户吗', '信息')
         .then(() => {
           orgApi.deleteUser(row.userCode).then(res => {
-            if (res.result === "false") {
-              this.$message.warning(res.message);
+            if (res.result === 'false') {
+              this.$message.warning(res.message)
             } else {
-              this.$message.success(res.message);
+              this.$message.success(res.message)
             }
-          });
+          })
         })
         .catch(() => {
-          this.$message.info("取消");
-        });
+          this.$message.info('取消')
+        })
     },
     assignRole(row) {
-      this.$refs.assignRolePanel.init(row);
+      this.$refs.assignRolePanel.init(row)
     },
     /* 数据权限 */
     dataRights(row) {
@@ -539,41 +539,41 @@ export default {
           userCode: row.userCode
         })
         .then(res => {
-          this.$refs.dataRightsPanel.init(res);
-        });
+          this.$refs.dataRightsPanel.init(res)
+        })
     },
     resetPassword(row) {
       this.$alertMsgBox(
         `确认要将 ${row.userCode} 用户密码重置到初始状态吗`,
-        "信息"
+        '信息'
       )
         .then(() => {
           orgApi.resetPw({ userCode: row.userCode }).then(res => {
-            if (res.result === "true") {
-              this.$message.success(res.message);
+            if (res.result === 'true') {
+              this.$message.success(res.message)
             } else {
-              this.$message.warning(res.message);
+              this.$message.warning(res.message)
             }
-          });
+          })
         })
         .catch(() => {
-          this.$message.info("取消");
-        });
+          this.$message.info('取消')
+        })
     },
     moreHandleClick(row) {
-      this.currentId = row.id;
-      this.changeArrowDirection = !this.changeArrowDirection;
+      this.currentId = row.id
+      this.changeArrowDirection = !this.changeArrowDirection
     },
     currentChange(val) {
-      this.searchVal.pageNo = val;
+      this.searchVal.pageNo = val
       const obj = {
         pageSize: this.pageNation.pageSize,
         pageNo: this.pageNation.pageNo
-      };
-      this.init(obj);
+      }
+      this.init(obj)
     }
   }
-};
+}
 </script>
 <style lang="scss">
 .el-popover {

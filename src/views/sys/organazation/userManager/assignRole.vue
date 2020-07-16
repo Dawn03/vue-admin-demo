@@ -63,12 +63,12 @@
   </div>
 </template>
 <script>
-import DailogFrame from "@/components/dailogPanel/frame";
-import AssignRoleDetail from "./assignRoleDetail";
-import { orgApi } from "@/api/organization";
-import { stringVal } from "@/utils/pubFunc";
+import DailogFrame from '@/components/dailogPanel/frame'
+import AssignRoleDetail from './assignRoleDetail'
+import { orgApi } from '@/api/organization'
+import { stringVal } from '@/utils/pubFunc'
 export default {
-  name: "AssignRole",
+  name: 'AssignRole',
   components: {
     DailogFrame,
     AssignRoleDetail
@@ -77,84 +77,84 @@ export default {
     return {
       showAssginRole: false,
       roleForm: {
-        loginCode: "",
-        userName: ""
+        loginCode: '',
+        userName: ''
       },
       tableCheckBoxValue: [],
-      userRoleString: "",
+      userRoleString: '',
       rules: {
         loginAccount: [{ required: true }],
         userAlias: [{ required: true }]
       },
       tableHead: {
-        name: "角色名称",
-        id: "角色编码"
+        name: '角色名称',
+        id: '角色编码'
       },
       tableData: []
-    };
+    }
   },
   mounted() {},
   methods: {
     init(row) {
-      this.tableData = this.$store.state.role.roleList;
-      this.roleForm = row;
+      this.tableData = this.$store.state.role.roleList
+      this.roleForm = row
       orgApi
         .getUserDetail({
           userCode: row.userCode,
-          op: "auth"
+          op: 'auth'
         })
         .then(res => {
-          const temp = JSON.parse(JSON.stringify(res.roleList));
-          if (res.result === "false" || res.result === "login") {
-            this.$message.warning(res.message);
+          const temp = JSON.parse(JSON.stringify(res.roleList))
+          if (res.result === 'false' || res.result === 'login') {
+            this.$message.warning(res.message)
           } else {
-            this.showAssginRole = true;
+            this.showAssginRole = true
             /* 控制表格回显 有显示 无清空*/
             this.$nextTick(() => {
-              const tempArr = [];
+              const tempArr = []
               for (let i = 0, len = temp.length; i < len; i++) {
                 tempArr.push({
                   id: temp[i].roleCode,
                   name: temp[i].roleName
-                });
+                })
               }
-              this.$refs.tableCheckRef.showHadCheckedRow(tempArr);
-            });
+              this.$refs.tableCheckRef.showHadCheckedRow(tempArr)
+            })
           }
-        });
+        })
     },
     // 多选操作
     tableCheckBoxVal(row) {
-      this.userRoleString = stringVal(row, "id");
+      this.userRoleString = stringVal(row, 'id')
     },
     /* 保存 */
     saveAssignRole() {
       const obj = {
-        op: "auth",
+        op: 'auth',
         userType: this.roleForm.userType,
         userCode: this.roleForm.userCode,
         oldLoginCode: this.roleForm.loginCode,
         loginCode: this.roleForm.loginCode,
         userName: this.roleForm.userName,
         userRoleString: this.userRoleString
-      };
+      }
       orgApi.saveUserRole(obj).then(res => {
-        if (res.result === "false") {
-          this.$message.warning(res.message);
+        if (res.result === 'false') {
+          this.$message.warning(res.message)
         } else {
-          this.$message.success(res.message);
-          this.colseAssignRole();
+          this.$message.success(res.message)
+          this.colseAssignRole()
         }
-      });
+      })
     },
     colseAssignRole(formName) {
-      this.showAssginRole = false;
-      this.$refs.roleForm.resetFields();
-      this.tableCheckBoxValue = [];
-      this.$refs.tableCheckRef.showHadCheckedRow([]);
+      this.showAssginRole = false
+      this.$refs.roleForm.resetFields()
+      this.tableCheckBoxValue = []
+      this.$refs.tableCheckRef.showHadCheckedRow([])
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .assign-role-panel {

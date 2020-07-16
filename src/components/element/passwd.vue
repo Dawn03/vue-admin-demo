@@ -1,41 +1,46 @@
 <template>
-  <el-input placeholder="请输入密码" v-model="selected" show-password @blur="otherData"></el-input>
+  <el-input
+    v-model="selected"
+    placeholder="请输入密码"
+    show-password
+    @blur="otherData"
+  ></el-input>
 </template>
 
 <script>
-  export default {
-    // 组织机构树
-    name: 'orgTree',
-    props: {
-      value: {
-        type: String,
-        default: null
-      },
-      disabled: {
-        type: Boolean,
-        default: false
-      }
+export default {
+  // 组织机构树
+  name: 'OrgTree',
+  props: {
+    value: {
+      type: String,
+      default: null
     },
-    data () {
-      return {
-        selected: ''
-      }
+    disabled: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+    return {
+      selected: ''
+    }
+  },
+  watch: {
+    value(val) {
+      this.selected = val
     },
-    created () {
-      this.selected = this.value
-    },
-    watch: {
-      value (val) {
-        this.selected = val
-      },
-      selected (val) {
-        this.$emit('input', val)
-      }
-    },
-    methods: {
-      otherData () {
-        this.$emit('otherData', this.selected)
-      }
+    selected(val) {
+      this.$emit('input', val)
+    }
+  },
+  created() {
+    this.selected = this.value
+  },
+  methods: {
+    otherData() {
+      this.$emit('otherData', this.selected)
     }
   }
+}
 </script>
