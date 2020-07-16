@@ -169,6 +169,14 @@ export const asyncRoutes = [
       title: 'licence'
     }
   },
+  {
+    path: `${baseFontURl}/a/sys/log/list`,
+    component: () => import('@/views/sys/systemMonitor/log'),
+    name: 'log',
+    meta: {
+      title: 'log'
+    }
+  },
   { path: '*', redirect: '/404', hidden: true }
 ]
 

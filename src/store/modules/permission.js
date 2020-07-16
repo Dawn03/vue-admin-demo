@@ -13,30 +13,28 @@ import {
 
 function hasRouteChildren(item = {}, keyname = 'childList') {
   const hasChild = hasChildren(item, keyname)
-  return hasChild && item[keyname].reduce((count, menu) => menu.menuType == 1 ? ++count : count, 0) > 0
+  return hasChild && item[keyname].reduce((count, menu) => menu.menuType === 1 ? ++count : count, 0) > 0
 }
-
-
 
 function getRoutes(menuSource, routes) {
   function isEffectiveMenuURL(sourceItem) {
-    if (sourceItem.menuType != 1) return
-    if (sourceItem.isShow != 1) return
-    if (sourceItem.menuUrl == '') return
+    if (sourceItem.menuType !== 1) return
+    if (sourceItem.isShow !== 1) return
+    if (sourceItem.menuUrl === '') return
     return true
   }
 
   function maker(menus, sourceItem) {
     if (hasRouteChildren(sourceItem)) sourceItem.childList.reduce(maker, menus)
-    if (isEffectiveMenuURL(sourceItem))
-      menus.push(sourceItem.menuUrl);
-
+    if (isEffectiveMenuURL(sourceItem)) {
+      menus.push(sourceItem.menuUrl)
+    }
     return menus
   }
   const menuUrls = menuSource.reduce(maker, [])
 
-  return routes.filter(function (item) {
-    return menuUrls.includes(item.path);
+  return routes.filter(function(item) {
+    return menuUrls.includes(item.path)
   })
 }
 /*
@@ -45,8 +43,8 @@ function getRoutes(menuSource, routes) {
  */
 function getPermissions(menuSource) {
   function isEffectivePermission(sourceItem) {
-    if (sourceItem.menuType != 2) return
-    if (sourceItem.permission == '') return
+    if (sourceItem.menuType !== 2) return
+    if (sourceItem.permission === '') return
     return true
   }
 
@@ -107,9 +105,9 @@ const actions = {
         // [ 路由 ] 重新设置路由
         resetRouter(routes)
         commit('SET_ROUTES', routes)
-        //得到所有的权限
+        //  得到所有的权限
         commit('SET_PERMISSIONS', getPermissions(menus))
-        state.isLoaded = true;
+        state.isLoaded = true
         resolve(routes)
       }
     })

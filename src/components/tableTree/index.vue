@@ -73,7 +73,7 @@
 </template>
 <script>
 // import TableButton from "@/components/tableButton";
-import Pagination from '../Pagination/index'
+import Pagination from '../Pagination'
 export default {
   components: {
     // TableButton,
