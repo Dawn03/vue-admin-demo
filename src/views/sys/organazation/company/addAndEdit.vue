@@ -276,7 +276,7 @@ export default {
     }
   },
   created() {
-    this.getCompanyMenuTree()
+    // this.getCompanyMenuTree()
   },
   mounted() {},
   methods: {

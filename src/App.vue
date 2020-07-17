@@ -27,8 +27,8 @@ export default {
 </script>
 /* 字体font-awesome图标使用 */
 <style type="text/css">
-[class^="el-icon-fa"],
-[class*=" el-icon-fa"] {
+[class^='el-icon-fa'],
+[class*=' el-icon-fa'] {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome !important;
   font-size: inherit;
@@ -62,7 +62,7 @@ export default {
 }
 .el-form-item__error:after {
   display: block;
-  content: "";
+  content: '';
   border-width: 7px 7px 7px 7px;
   border-style: solid;
   border-color: transparent transparent #f56c6c transparent;
@@ -99,5 +99,10 @@ export default {
 .el-icon-video-pause,
 .el-icon-delete {
   color: #f56c6c;
+}
+/* 解决custom-theme 样式问题 */
+.el-input--medium .el-input__inner {
+  height: 30px;
+  line-height: 30px;
 }
 </style>

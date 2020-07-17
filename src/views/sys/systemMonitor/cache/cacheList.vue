@@ -3,15 +3,16 @@
     <div class="content clearfix">
       <i :class="cacheMessage.iconClass"></i>
       <span>{{ cacheMessage.text }}</span>
-      <i @click="reLoad" class="fr i-m fa fa-refresh"></i>
+      <i class="fr i-m fa fa-refresh" @click="reLoad"></i>
     </div>
     <TableTree
       :table-head="tableHead"
       :table-data="tableData"
-      :columnTextPostion="columnTextPostion"
+      :column-text-postion="columnTextPostion"
       :table-fit="tableFit"
+      :show-page="false"
       v-on="$listeners"
-      :showPage="false"
+      :highLight="true"
     >
       <template slot="index">
         <el-table-column
@@ -70,7 +71,10 @@ export default {
   },
   methods: {
     reLoad() {
-        this.$emit('reLoadFunc')
+      this.$emit('reLoadFunc')
+    },
+    deleteHandleClick(row) {
+      this.$emit('deleteFunc', row)
     }
   }
 }
@@ -79,8 +83,10 @@ export default {
 .content {
   margin-top: 5px;
   line-height: 30px;
-  height: 30px;
-  padding: 0 10px;
+  height: 40px;
+  padding: 5px 10px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 10px;
   i {
     // vertical-align: initial;
     margin-right: 10px;
@@ -88,6 +94,7 @@ export default {
   }
   .i-m {
     margin-top: 5px;
+    cursor: pointer;
   }
 }
 </style>

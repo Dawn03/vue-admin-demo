@@ -1,16 +1,17 @@
 <template>
   <div class="cache  wrapper_content">
-    <div id="cacheLeft" ref="cacheLeft" class="cache-left">
+    <div ref="cacheLeft" class="cache-left">
       <CacheList
-        :cacheMessage="cacheKeyMessage"
-        :tableHead="keyTableHead"
-        :tableData="keyTableData"
+        :cache-message="cacheKeyMessage"
+        :table-head="keyTableHead"
+        :table-data="keyTableData"
         @rowClick="rowClick"
         @reLoadFunc="reLoadKeyFunc"
+        @deleteFunc="deleteKeyFunc"
       ></CacheList>
     </div>
 
-    <div id="cacheMddile" ref="cacheMddile" class="cache-mddile">
+    <div ref="cacheMddile" class="cache-mddile">
       <span id="btn1" class="toglebtn icon1" @click="arrowClick('btn1')">
         <i
           :class="
@@ -20,10 +21,12 @@
         ></i>
       </span>
       <CacheList
-        :cacheMessage="cacheValMessage"
-        :tableHead="valTableHead"
-        :tableData="valTableData"
+        :cache-message="cacheValMessage"
+        :table-head="valTableHead"
+        :table-data="valTableData"
+        @rowClick="rowClickVal"
         @reLoadFunc="reLoadValFunc"
+        @deleteFunc="deleteValFunc"
       ></CacheList>
       <span id="btn2" class="toglebtn icon2" @click="arrowClick('btn2')">
         <i
@@ -35,7 +38,36 @@
       </span>
     </div>
 
-    <div id="cacheRight" ref="cacheRight" class="cache-right"></div>
+    <div ref="cacheRight" class="cache-right">
+      <div class="content clearfix">
+        <i class="fa icon-notebook"></i>
+        <span>缓存内容</span>
+        <el-button
+          icon="fr i-m fa fa-refresh"
+          class="fr"
+          size="mini"
+          @click="clearAllCache"
+        >
+          清理全部缓存
+        </el-button>
+      </div>
+      <el-form
+        style="padding: 10px 30px;"
+        :label-position="'top'"
+        label-width="80px"
+        :model="form"
+      >
+        <el-form-item label="缓存名称：">
+          <el-input v-model="form.cacheName"></el-input>
+        </el-form-item>
+        <el-form-item label="缓存键名：">
+          <el-input v-model="form.key"></el-input>
+        </el-form-item>
+        <el-form-item label="缓存内容：">
+          <el-input v-model="form.value" type="textarea" :rows="10"></el-input>
+        </el-form-item>
+      </el-form>
+    </div>
   </div>
 </template>
 <script>
@@ -52,9 +84,8 @@ export default {
     return {
       arrow1: true,
       arrow2: true,
-      leftWidth: '25%',
-      middleWidth: '35%',
-      rightWidth: '40%',
+      leftWidth: '300px',
+      rightWidth: '400px',
       currentRow: {},
       cacheKeyMessage: {
         iconClass: 'fa icon-social-dribbble',
@@ -71,7 +102,12 @@ export default {
       valTableHead: {
         id: '缓存键名'
       },
-      valTableData: []
+      valTableData: [],
+      form: {
+        cacheName: '',
+        key: '',
+        value: ''
+      }
     }
   },
   mounted() {
@@ -106,28 +142,91 @@ export default {
         this.valTableData = res
       })
     },
+    // 获取缓存内容
+    rowClickVal(row) {
+      sysApi
+        .getCacheValue({
+          cacheName: row.cacheName,
+          key: row.id
+        })
+        .then(res => {
+          this.form = res
+        })
+    },
+
     arrowClick(btn) {
-      // console.log(57, btn)
       const cacheLeft = this.$refs.cacheLeft
-      const cacheMddile = this.$refs.cacheMddile
       const cacheRight = this.$refs.cacheRight
       const eLWidth = cacheLeft.style.width
       const eRWidth = cacheRight.style.width
+      console.log(57, eRWidth)
+
       if (btn === 'btn1') {
         this.arrow1 = !this.arrow1
-        if (eLWidth !== '0px') {
-          cacheLeft.style.width = '0px'
+        if (eLWidth === '' || eLWidth === '300px') {
+          cacheLeft.style.width = '0'
+          cacheLeft.style.visibility = 'hidden'
         } else {
-          cacheLeft.style.width = '25%'
+          cacheLeft.style.width = '300px'
+          cacheLeft.style.visibility = 'visible'
         }
       } else {
         this.arrow2 = !this.arrow2
-        if (eRWidth !== '0px') {
-          cacheRight.style.width = '0px'
+        if (eRWidth === '' || eRWidth === '400px') {
+          cacheRight.style.width = '0'
+          cacheRight.style.visibility = 'hidden'
         } else {
-          cacheRight.style.width = '40%'
+          console.log(131)
+          cacheRight.style.width = '400px'
+          cacheRight.style.visibility = 'visible'
         }
       }
+    },
+    deleteKeyFunc(row) {
+      this.$alertMsgBox('确认要清理该缓存吗？', '信息')
+        .then(() => {
+          sysApi.deleteKeyFunc({ id: row.id }).then(res => {
+            if (res.result === 'true') {
+              this.$message.success(res.message)
+            } else {
+              this.$message.error(res.message)
+            }
+          })
+        })
+        .catch(() => {
+          this.$message.info('取消')
+        })
+    },
+    deleteValFunc(row) {
+      // console.log(182, row)
+      this.$alertMsgBox('确认要清理该缓存吗？', '信息')
+        .then(() => {
+          sysApi
+            .deleteValFunc({
+              cacheName: row.cacheName,
+              id: row.id
+            })
+            .then(res => {
+              if (res.result === 'true') {
+                this.$message.success(res.message)
+              } else {
+                this.$message.error(res.message)
+              }
+            })
+        })
+        .catch(() => {
+          this.$message.info('取消')
+        })
+    },
+    // 清理全部缓存
+    clearAllCache() {
+      sysApi.clearAll().then(res => {
+        if (res.result === 'true') {
+          this.$message.success(res.message)
+        } else {
+          this.$message.error(res.message)
+        }
+      })
     }
   }
 }
@@ -136,11 +235,12 @@ export default {
 .cache {
   width: 100%;
   height: calc(100vh - 100px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: box;
+  display: -webkit-box;
+  // align-items: center;
+  // justify-content: center;
   .cache-left {
-    width: 25%;
+    width: 300px;
     display: inline-block;
     height: 100%;
     transition: width 1s;
@@ -148,25 +248,26 @@ export default {
     // border: 1px solid blue;
   }
   .cache-mddile {
-    // width: 100%;
+    width: 100%;
     flex: 1;
-    border-left: 10px solid #fafafa;
-    border-right: 10px solid #fafafa;
+    border-left: 6px solid #fafafa;
+    border-right: 6px solid #fafafa;
     height: 100%;
     position: relative;
     // outline: 1px solid red;
     transition: width 1s;
     -webkit-transition: width 1s;
     .toglebtn {
+      cursor: pointer;
       position: absolute;
       display: inline-block;
       top: 200px;
       background: #eee;
       height: 70px;
-      width: 10px;
+      width: 6px;
       line-height: 70px;
       .icon-position {
-        margin-left: -3px;
+        margin-left: -5px;
       }
     }
     .icon1 {
@@ -178,11 +279,27 @@ export default {
   }
   .cache-right {
     display: inline-block;
-    width: 40%;
+    width: 400px;
     height: 100%;
     // border: 1px solid green;
     transition: width 1s;
     -webkit-transition: width 1s;
+    .content {
+      margin-top: 5px;
+      line-height: 30px;
+      height: 40px;
+      padding: 5px 10px;
+      border-bottom: 1px solid #eee;
+      margin-bottom: 10px;
+      i {
+        // vertical-align: initial;
+        margin-right: 10px;
+        font-size: 14px;
+      }
+      .i-m {
+        margin-top: 5px;
+      }
+    }
   }
   .td-color {
     color: #1890ff;

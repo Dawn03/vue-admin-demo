@@ -7,7 +7,11 @@
       @handlerName="handlerName"
     >
       <template slot="more">
-        <el-dropdown size="mini" @click="showImportAndExport">
+        <el-dropdown
+          style="margin-left:10px;"
+          size="mini"
+          @click="showImportAndExport"
+        >
           <el-button type="primary" size="mini" title="更多">
             <i class="fa fa-navicon" />
             <i class="el-icon-arrow-down el-icon--right" />

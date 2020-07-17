@@ -10,6 +10,7 @@
       header-align="center"
       lazy
       :load="load"
+      :highlight-current-row="highLight"
       :fit="tableFit"
       style="width: 100%"
       row-key="id"
@@ -112,6 +113,10 @@ export default {
       type: Boolean,
       default: true
     },
+    highLight: {
+      type: Boolean,
+      default: false
+    },
     selectOnIndeterminate: {
       type: Boolean,
       default: false
@@ -153,7 +158,7 @@ export default {
     },
     /* row单击  */
     rowClick(row, column, event) {
-      console.log(999, row)
+      // console.log(999, row)
       this.$emit('rowClick', row)
     },
     /* 表格排序 */

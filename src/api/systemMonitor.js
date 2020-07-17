@@ -30,21 +30,27 @@ export const sysApi = {
       Message.error(err)
     })
   },
-  /* 保存菜单编辑*/
-  saveMenu: (param) => {
-    return httpRequestor.postFormData(`a/sys/menu/save`, param).catch(err => {
+  /* 系统监控 缓存监控 缓存名称*/
+  deleteKeyFunc: (param) => {
+    return httpRequestor.post(`a/state/cache/clearCache?cacheName=${param.id}`, param).catch(err => {
       Message.error(err)
     })
   },
-  /* 删除编辑 */
-  deleteMenu: (param) => {
-    return httpRequestor.post(`a/sys/menu/delete?menuCode=${param.menuCode}`).catch(err => {
+  /* 系统监控 缓存监控 缓存键名 */
+  deleteValFunc: (param) => {
+    return httpRequestor.post(`a/state/cache/clearCache?cacheName==${param.cacheName}&key=${param.id}`).catch(err => {
       Message.error(err)
     })
   },
-  /* 保存排序*/
-  updateTreeSort: (param) => {
-    return httpRequestor.postFormData(`a/sys/menu/updateTreeSort`, param).catch(err => {
+  /* 系统监控 缓存监控 获取缓存内容*/
+  getCacheValue: (param) => {
+    return httpRequestor.postFormData(`a/state/cache/cacheValue`, param).catch(err => {
+      Message.error(err)
+    })
+  },
+  /* 系统监控 缓存监控 清理全部缓存*/
+  clearAll: (param) => {
+    return httpRequestor.post(`a/state/cache/clearAll`, param).catch(err => {
       Message.error(err)
     })
   },
