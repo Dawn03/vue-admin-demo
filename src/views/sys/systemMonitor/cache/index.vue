@@ -235,7 +235,7 @@ export default {
 .cache {
   width: 100%;
   height: calc(100vh - 100px);
-  display: box;
+  display: flex;
   display: -webkit-box;
   // align-items: center;
   // justify-content: center;
@@ -266,6 +266,7 @@ export default {
       height: 70px;
       width: 6px;
       line-height: 70px;
+      border-radius: 5px;
       .icon-position {
         margin-left: -5px;
       }

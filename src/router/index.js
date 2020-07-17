@@ -198,7 +198,15 @@ export const asyncRoutes = [
     component: () => import('@/views/sys/systemMonitor/cache'),
     name: 'cache',
     meta: {
-      title: 'cache'
+      title: '缓存监控'
+    }
+  },
+  {
+    path: `${baseFontURl}/a/state/server/index`,
+    component: () => import('@/views/sys/systemMonitor/server'),
+    name: 'server',
+    meta: {
+      title: '服务器监控'
     }
   },
   {

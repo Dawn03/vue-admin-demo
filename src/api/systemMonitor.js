@@ -54,15 +54,15 @@ export const sysApi = {
       Message.error(err)
     })
   },
-  /* 获取新增下级菜单初始化数据*/
-  getSubMenuData: (param) => {
-    return httpRequestor.get(`a/sys/menu/form.json?parentCode=${param.parentCode}&sysCode=default`).catch(err => {
+  /* 系统监控 服务器监控 */
+  getServer: (param) => {
+    return httpRequestor.get(`a/state/server/rtInfo?__notUpdateSession=true`).catch(err => {
       Message.error(err)
     })
   },
   /* 系统监控 模块管理 */
-  getModule: (param) => {
-    return httpRequestor.postFormData(`a/sys/module/listData`, param).catch(err => {
+  getServerIndex: (param) => {
+    return httpRequestor.get(`a/state/server/index.form.json`, param).catch(err => {
       Message.error(err)
     })
   },
