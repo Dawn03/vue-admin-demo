@@ -6,7 +6,7 @@
       :data="tableData"
       border
       stripe
-      min-height="80"
+      height="80"
       header-align="center"
       lazy
       :load="load"
@@ -81,7 +81,6 @@ export default {
     Pagination
   },
   props: {
-
     tableFit: {
       type: Boolean,
       default: true

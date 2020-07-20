@@ -117,6 +117,7 @@ export default {
           cols: [12, 12, 12, 12],
           placeholder: '请输选择',
           value: 'postType',
+          width: '100%',
           options: this.getPostOption('sys_post_type')
         },
         {

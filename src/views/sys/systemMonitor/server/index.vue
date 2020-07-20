@@ -84,7 +84,7 @@
         </ServerCard>
       </el-col>
       <el-col :span="8">
-        <ServerCard :bar-data="jvm">
+        <ServerCard :bar-data="jvm" @clickIcon="clickIcon">
           <template slot="head">
             <el-row class="head-row bg">
               <el-col :span="8">属性</el-col>
@@ -220,7 +220,7 @@
           :table-fit="tableFit"
           style="margin-top: 10px;"
           :show-page="false"
-          :min-heigth="80"
+          height="100px"
         >
           <template slot="index">
             <el-table-column
@@ -250,8 +250,38 @@ export default {
   },
   data() {
     return {
-      dyData: {},
-      data: {},
+      dyData: {
+        cpu: {
+          cpuNum: '',
+          cpuLogicalNum: '',
+          maxGhz: '',
+          sysPerc: '',
+          userPerc: ''
+        },
+        mem: {
+          total: '',
+          used: '',
+          free: '',
+          usedPerc: ''
+        },
+        jvm: {
+          heapMax: '',
+          heapUsed: '',
+          heapAvailable: ''
+        }
+      },
+      data: {
+        server: {
+          hostName: '',
+          osArch: '',
+          javaName: '',
+          javaVersion: '',
+          javaArgs: '',
+          userDir: '',
+          logPath: '',
+          userfilesDir: ''
+        }
+      },
       cpu: {
         icon: 'fa icon-speedometer',
         text: 'CPU'
@@ -292,14 +322,24 @@ export default {
         used: '已用大小',
         usedPerc: '已用百分比'
       },
-      tableData: []
+      tableData: [],
+      timer: '',
+      value: 0
     }
   },
   created() {
-    this.getServer()
     this.getServerIndex()
+    this.getServer()
+    this.timer = setInterval(this.repeatFunc, 2000)
+  },
+  beforeDestroy() {
+    clearInterval(this.timer)
   },
   methods: {
+    repeatFunc(fn, delay) {
+      /* 以后考虑添加节流代码 */
+      this.getServer()
+    },
     moreThan(target, num) {
       return Number(target) < Number(num.replace('%', ''))
     },
@@ -391,6 +431,16 @@ export default {
         .catch(() => {
           this.$message.info('取消')
         })
+    },
+    // 执行垃圾回收任务
+    clickIcon() {
+      sysApi.serverGc().then(res => {
+        if (res.result === 'true') {
+          this.$message.success(res.message)
+        } else {
+          this.$message.error(res.message)
+        }
+      })
     }
   }
 }

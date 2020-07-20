@@ -1,6 +1,6 @@
 <template>
   <div class="server-card">
-    <el-collapse v-model="activeNames" @change="handleChange">
+    <el-collapse v-model="activeNames">
       <el-collapse-item name="1">
         <template slot="title">
           <div class="title-box clearfix">
@@ -8,7 +8,12 @@
               <i :class="barData.icon" style="margin: 0 6px 0 10px;"></i>
               {{ barData.text }}
             </span>
-            <span :title="barData.title" class="fr" style="margin-right: 10px;">
+            <span
+              class="fr"
+              style="margin-right: 10px;"
+              :title="barData.title"
+              @click="clickIcon"
+            >
               <i :class="barData.rightIcon"></i>
             </span>
           </div>
@@ -28,48 +33,15 @@ export default {
       type: Object,
       default: () => {}
     }
-
-    // tableData: {
-    //   type: Array,
-    //   default: () => []
-    // }
   },
   data() {
     return {
-      activeNames: ['1'],
-      tableData11: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        },
-        {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
-        },
-        {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }
-      ]
+      activeNames: ['1']
     }
   },
   methods: {
-    handleChange(val) {
-      console.log(val)
-    },
-    reLoad() {
-      this.$emit('reLoadFunc')
-    },
-    deleteHandleClick(row) {
-      this.$emit('deleteFunc', row)
+    clickIcon() {
+      this.$emit('clickIcon')
     }
   }
 }

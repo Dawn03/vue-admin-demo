@@ -66,11 +66,23 @@ export const sysApi = {
       Message.error(err)
     })
   },
+  /* 系统监控 执行垃圾回收任务 */
+  serverGc: (param) => {
+    return httpRequestor.post(`a/state/server/gc`, param).catch(err => {
+      Message.error(err)
+    })
+  },
   /* 系统监控 作业监控 */
   getJob: (param) => {
     return httpRequestor.postFormData(`a/job/listData`, param).catch(err => {
       Message.error(err)
     })
   },
+  /* 系统监控 在线文档 */
+  getSwagger: (param) => {
+    return httpRequestor.get(`swagger-ui.html`, param).catch(err => {
+      Message.error(err)
+    })
+  }
 
 }

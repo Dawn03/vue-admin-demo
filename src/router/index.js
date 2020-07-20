@@ -33,8 +33,8 @@ export const routesOutLayout = [
     hidden: true,
     children: [
       {
-      path: '/redirect/:path(.*)',
-      component: () => import('@/views/redirect/index')
+        path: '/redirect/:path(.*)',
+        component: () => import('@/views/redirect/index')
       }
     ]
   }
@@ -46,7 +46,8 @@ export function createRoutesInLayout(routes = []) {
       path: '/',
       redirect: '/dashboard',
       component: Layout,
-      children: [{
+      children: [
+        {
           path: 'dashboard',
           name: 'Dashboard',
           meta: {
@@ -208,12 +209,21 @@ export const asyncRoutes = [
       title: '服务器监控'
     }
   },
+  // 据说是付费版暂不做
+  // {
+  //   path: `${baseFontURl}/a/job/list`,
+  //   component: () => import('@/views/sys/systemMonitor/job'),
+  //   name: 'job',
+  //   meta: {
+  //     title: '作业监控'
+  //   }
+  // },
   {
-    path: `${baseFontURl}/a/job/list`,
-    component: () => import('@/views/sys/systemMonitor/job'),
-    name: 'job',
+    path: `${baseFontURl}/swagger-ui.html`,
+    component: () => import('@/views/sys/systemMonitor/swagger'),
+    name: 'swagger',
     meta: {
-      title: '作业监控'
+      title: '在线文档'
     }
   },
   {

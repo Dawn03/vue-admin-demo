@@ -5,25 +5,28 @@ import axios from 'axios'
 import Qs from 'qs'
 import {
   getToken
-} from '../utils/auth';
+} from '../utils/auth'
 import {
   MessageBox,
   Message
 } from 'element-ui'
 import errorCode from './error_code'
 import store from '@/store'
+// import {
+//   showFullScreenLoading,
+//   tryHideFullScreenLoading
+// } from './loading'
 import {
-  showFullScreenLoading,
   tryHideFullScreenLoading
-} from "./loading"
+} from './loading'
 const httpRequestor = {
   // 默认的异常处理方法，会传入完整的data对象，可以在这里弹提示框
   defaultErrorHandler: null
-};
+}
 // 后端默认超时时间必须比这里短
-const DEFAULT_TIME_OUT = 3000;
+const DEFAULT_TIME_OUT = 3000
 // 上传文件的默认超时时间
-const DEFAULT_UPLOAD_TIME_OUT = 120000;
+const DEFAULT_UPLOAD_TIME_OUT = 120000
 
 const axiosInstance = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
@@ -32,20 +35,20 @@ const axiosInstance = axios.create({
   //   '__sid': getToken(),
   //   withCredentials: true
   // }
-});
+})
 // 在发送请求之前做某件事
 axiosInstance.interceptors.request.use((config) => {
-  showFullScreenLoading()
+  // showFullScreenLoading()
   if (getToken()) {
-    config.headers['__sid'] = getToken();
+    config.headers['__sid'] = getToken()
   }
   return config
 }, error => {
-  console.log("error", error)
-  tryHideFullScreenLoading()
+  console.log('error', error)
+  // tryHideFullScreenLoading()
   return Promise.reject(error)
 })
-axiosInstance.interceptors.response.use(handleResponseSuccess, handleResponseFail);
+axiosInstance.interceptors.response.use(handleResponseSuccess, handleResponseFail)
 
 /**
  * 在url后面加个随机参数，以防浏览器缓存请求
@@ -77,8 +80,8 @@ httpRequestor.get = function get(url, params = {}, throwError, timeout) {
       'Content-Type': 'application/json'
       // 'X-Requested-With': 'XMLHttpRequest'
     }
-  });
-};
+  })
+}
 
 /**
  * 通过post发送数据，使后端直接收到json格式的数据。并统一处理常见的错误
@@ -123,8 +126,8 @@ httpRequestor.delete = function deletes(url, params = '', throwError, timeout) {
       'Content-Type': 'application/json'
       // 'X-Requested-With': 'XMLHttpRequest'
     }
-  });
-};
+  })
+}
 /**
  * put
  * @param {string} url
@@ -143,8 +146,8 @@ httpRequestor.put = function putFunc(url, params = {}, throwError, timeout) {
     headers: {
       'Content-Type': 'application/json'
     }
-  });
-};
+  })
+}
 /**
  * 通过post发送数据，使后端直接收到formData格式的数据。并统一处理常见的错误
  * @param {string} url
@@ -163,7 +166,7 @@ httpRequestor.postFormData = function postFormData(url, data = {}, throwError, t
       ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it])
     }
   }
-  data = ret;
+  data = ret
   return commonAjax({
     method: 'POST',
     url,
@@ -173,10 +176,10 @@ httpRequestor.postFormData = function postFormData(url, data = {}, throwError, t
     errorHandler: !throwError && httpRequestor.defaultErrorHandler || null,
     timeout: timeout || DEFAULT_TIME_OUT,
     headers: {
-      'Content-Type': "application/x-www-form-urlencoded;charset=UTF-8"
+      'Content-Type': 'application/x-www-form-urlencodedcharset=UTF-8'
     }
-  });
-};
+  })
+}
 
 /**
  * 通过post发送数据，使后端直接收到form - urlencoded格式的数据。并统一处理常见的错误
@@ -199,8 +202,8 @@ httpRequestor.postByFormStr = function postFormStr(url, data = {}, throwError, t
       'Content-Type': 'application/x-www-form-urlencoded',
       'X-Requested-With': 'XMLHttpRequest'
     }
-  });
-};
+  })
+}
 
 /**
  * 通过表单发送同步的post请求，服务器端可以在回包时重定向或下发文件
@@ -222,8 +225,8 @@ httpRequestor.filePost = function postJson(url, data = {}, throwError, timeout) 
       // 'Content-Type': 'application/x-www-form-urlencoded',
       // 'X-Requested-With': 'XMLHttpRequest'
     }
-  });
-};
+  })
+}
 
 /**
  * 通过表单发送同步的post请求，服务器端可以在回包时重定向或下发文件
@@ -231,21 +234,21 @@ httpRequestor.filePost = function postJson(url, data = {}, throwError, timeout) 
  * @param {object?} data={} 要发送数据的键值对，值不可以是对象，必须序列化成字符串
  */
 httpRequestor.postAndDownload = function postJsonSync(url, data = {}) {
-  const postForm = document.createElement('form'); // 表单对象
-  postForm.method = 'POST';
-  postForm.action = addVersionToUrl(httpRequestor.baseURL + url.slice(1));
-  // postForm.enctype = 'application/json';
+  const postForm = document.createElement('form') // 表单对象
+  postForm.method = 'POST'
+  postForm.action = addVersionToUrl(httpRequestor.baseURL + url.slice(1))
+  // postForm.enctype = 'application/json'
   Object.entries(data).forEach(([key, value]) => {
-    const input = document.createElement('input');
-    input.setAttribute('type', 'hidden');
-    input.setAttribute('name', key);
-    input.setAttribute('value', typeof value === 'object' ? JSON.stringify(value) : String(value));
-    postForm.appendChild(input);
+    const input = document.createElement('input')
+    input.setAttribute('type', 'hidden')
+    input.setAttribute('name', key)
+    input.setAttribute('value', typeof value === 'object' ? JSON.stringify(value) : String(value))
+    postForm.appendChild(input)
   })
-  document.body.appendChild(postForm);
-  postForm.submit();
-  document.body.removeChild(postForm);
-};
+  document.body.appendChild(postForm)
+  postForm.submit()
+  document.body.removeChild(postForm)
+}
 
 /**
  * 通过表单post上传文件并接收json格式的数据。并统一处理常见的错误
@@ -257,7 +260,7 @@ httpRequestor.postAndDownload = function postJsonSync(url, data = {}) {
  * @return {Promise} 返回一个promise对象。其中then方法传递回包中的data数据；catch事件则传递整个回包，其参数为{data:{},status{code:123,message:'xxx'}}
  */
 httpRequestor.uploadFile = function uploadFile(url, formElem, onUploadProgress, throwError, timeout) {
-  // $(formElem).attr('enctype', 'multipart/form-data');
+  // $(formElem).attr('enctype', 'multipart/form-data')
   return commonAjax({
     method: 'POST',
     url,
@@ -265,8 +268,8 @@ httpRequestor.uploadFile = function uploadFile(url, formElem, onUploadProgress, 
     onUploadProgress,
     errorHandler: !throwError && httpRequestor.defaultErrorHandler || null,
     timeout: timeout || DEFAULT_UPLOAD_TIME_OUT
-  });
-};
+  })
+}
 
 /**
  * 通用的发包和回包处理逻辑。会将成功获取到的带有错误码的数据转换为异常通过catch返回出来，并会将所有error对象封装成统一的形式
@@ -289,24 +292,24 @@ function commonAjaxDelete(config) {
  * @returns {Promise}
  */
 function handleResponseSuccess(response) {
-  // console.log("请求成功", getToken(), response)
-  if (response.status === 200 && response.data.result === "login") {
+  // console.log('请求成功', getToken(), response)
+  if (response.status === 200 && response.data.result === 'login') {
     store.dispatch('user/resetToken').then(() => {
       location.reload()
     })
   }
   const token = getToken()
   if (token) {
-    axios.defaults.headers.common['__sid'] = token;
+    axios.defaults.headers.common['__sid'] = token
   }
-  const result = response.data;
+  const result = response.data
   if (response.status === 200) {
     tryHideFullScreenLoading()
-    return result;
+    return result
   }
 
   tryHideFullScreenLoading()
-  return handleError(response.config, result);
+  return handleError(response.config, result)
 }
 /**
  * 对发送失败的请求进行数据预处理，将error对象封装为统一的形式
@@ -321,9 +324,9 @@ function handleResponseFail(error) {
     Message({
       message: error.response.data.message,
       type: 'warning'
-    });
+    })
     // 跳转到默认页
-    // window.location.href = "/index/index.html#/"
+    // window.location.href = '/index/index.html#/'
   }
   /* token验证失效 */
   if (error.response.status === 401) {
@@ -337,7 +340,7 @@ function handleResponseFail(error) {
       })
     })
     // 跳转到默认页
-    // window.location.href = "/index/index.html#/"
+    // window.location.href = '/index/index.html#/'
   }
   if (error.response) {
     // 请求已发送，响应中返回了非2xx的错误码，包括304等
@@ -359,7 +362,7 @@ function handleResponseFail(error) {
   } else {
     result = fillErrorMessage(errorCode.HTTP_NETWORK_ERR, error.message)
   }
-  return handleError(error.config, result);
+  return handleError(error.config, result)
 }
 
 /**
@@ -375,7 +378,7 @@ function fillErrorMessage(code, debugMessage, data = null) {
     code,
     message: errorCode.getCodeData(code).message,
     debugMessage
-  };
+  }
 }
 
 /**
@@ -390,14 +393,14 @@ function fillErrorMessage(code, debugMessage, data = null) {
  */
 function handleError(requestConfig, result) {
   // 必须是Error对象，否则throw时vuex要报warning
-  let err;
+  let err
   if (result instanceof Error) {
     err = result
   } else {
-    err = new Error(result.message);
-    err.data = result.data;
-    err.code = result.code;
-    err.debugMessage = result.debugMessage;
+    err = new Error(result.message)
+    err.data = result.data
+    err.code = result.code
+    err.debugMessage = result.debugMessage
   }
 
   if (requestConfig && requestConfig.errorHandler) {
@@ -408,4 +411,4 @@ function handleError(requestConfig, result) {
   return Promise.reject(err)
 }
 
-export default httpRequestor;
+export default httpRequestor
