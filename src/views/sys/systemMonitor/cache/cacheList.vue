@@ -11,8 +11,8 @@
       :column-text-postion="columnTextPostion"
       :table-fit="tableFit"
       :show-page="false"
+      :high-light="true"
       v-on="$listeners"
-      :highLight="true"
     >
       <template slot="index">
         <el-table-column

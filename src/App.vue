@@ -91,6 +91,15 @@ export default {
 .tl {
   text-align: left;
 }
+.tc {
+  text-align: center;
+}
+.tr {
+  text-align: right;
+}
+.ti {
+  text-indent: 10px;
+}
 /* 修改 elementUI 默认的icon 小图标颜色 */
 .el-icon-edit,
 .el-icon-circle-check {

@@ -9,7 +9,7 @@
               {{ barData.text }}
             </span>
             <span :title="barData.title" class="fr" style="margin-right: 10px;">
-              <i  :class="barData.rightIcon"></i>
+              <i :class="barData.rightIcon"></i>
             </span>
           </div>
         </template>

@@ -6,8 +6,7 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/layout'
 
-export const routesOutLayout = [
-  {
+export const routesOutLayout = [{
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true
@@ -31,23 +30,19 @@ export const routesOutLayout = [
     path: '/redirect',
     component: Layout,
     hidden: true,
-    children: [
-      {
-        path: '/redirect/:path(.*)',
-        component: () => import('@/views/redirect/index')
-      }
-    ]
+    children: [{
+      path: '/redirect/:path(.*)',
+      component: () => import('@/views/redirect/index')
+    }]
   }
 ]
 
 export function createRoutesInLayout(routes = []) {
-  return [
-    {
+  return [{
       path: '/',
       redirect: '/dashboard',
       component: Layout,
-      children: [
-        {
+      children: [{
           path: 'dashboard',
           name: 'Dashboard',
           meta: {
@@ -80,8 +75,7 @@ export const constantRoutes = createRoutesInLayout().concat(routesOutLayout)
  * asyncRoutes
  * the routes that need to be dynamically loaded based on user roles
  */
-export const asyncRoutes = [
-  {
+export const asyncRoutes = [{
     path: `${baseFontURl}/a/sys/empUser/index`,
     component: () => import('@/views/sys/organazation/userManager'),
     name: 'userManager',
@@ -207,6 +201,14 @@ export const asyncRoutes = [
     name: 'server',
     meta: {
       title: '服务器监控'
+    }
+  },
+  {
+    path: `${baseFontURl}/a/job/list`,
+    component: () => import('@/views/sys/systemMonitor/job'),
+    name: 'job',
+    meta: {
+      title: '作业监控'
     }
   },
   {

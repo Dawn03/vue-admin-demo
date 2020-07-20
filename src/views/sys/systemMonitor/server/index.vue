@@ -1,6 +1,6 @@
 <template>
   <div class="server  wrapper_content">
-    <el-row :gutter="20">
+    <el-row :gutter="20" class="tc ">
       <el-col :span="8">
         <ServerCard :barData="cpu">
           <template slot="head">
@@ -13,29 +13,29 @@
             <el-row class="inner-row">
               <el-col :span="12"> 核心个数 </el-col>
               <el-col :span="12">
-                {{ data.cpu.cpuNum }} / {{ data.cpu.cpuLogicalNum }}
+                {{ dyData.cpu.cpuNum }} / {{ dyData.cpu.cpuLogicalNum }}
               </el-col>
             </el-row>
             <el-row class="inner-row bg">
               <el-col :span="12"> 核心频率 </el-col>
-              <el-col :span="12">{{ data.cpu.maxGhz }}</el-col>
+              <el-col :span="12">{{ dyData.cpu.maxGhz }}</el-col>
             </el-row>
             <el-row class="inner-row">
               <el-col :span="12"> 系统 / 用户 </el-col>
               <el-col :span="12">
-                <span :class="moreThan(50, data.cpu.sysPerc) ? 'rc' : 'gc'">
-                  {{ data.cpu.sysPerc }}
+                <span :class="moreThan(50, dyData.cpu.sysPerc) ? 'rc' : 'gc'">
+                  {{ dyData.cpu.sysPerc }}
                 </span>
-                <span :class="moreThan(50, data.cpu.sysPerc) ? 'rc' : 'gc'">
-                  {{ data.cpu.userPerc }}
+                <span :class="moreThan(50, dyData.cpu.sysPerc) ? 'rc' : 'gc'">
+                  {{ dyData.cpu.userPerc }}
                 </span>
               </el-col>
             </el-row>
             <el-row class="inner-row bg">
               <el-col :span="12"> 使用率 </el-col>
               <el-col :span="12">
-                <span :class="moreThan(50, data.cpu.sysPerc) ? 'rc' : 'gc'">
-                  {{ data.cpu.usedPerc }}
+                <span :class="moreThan(50, dyData.cpu.sysPerc) ? 'rc' : 'gc'">
+                  {{ dyData.cpu.usedPerc }}
                 </span>
               </el-col>
             </el-row>
@@ -54,29 +54,29 @@
           <template slot="content">
             <el-row class="inner-row">
               <el-col :span="8"> 总内存 </el-col>
-              <el-col :span="8"> {{ data.mem.total }} </el-col>
-              <el-col :span="8"> {{ data.jvm.heapMax }} </el-col>
+              <el-col :span="8"> {{ dyData.mem.total }} </el-col>
+              <el-col :span="8"> {{ dyData.jvm.heapMax }} </el-col>
             </el-row>
             <el-row class="inner-row bg">
               <el-col :span="8"> 已用内存 </el-col>
-              <el-col :span="8">{{ data.mem.used }}</el-col>
-              <el-col :span="8"> {{ data.jvm.heapUsed }} </el-col>
+              <el-col :span="8">{{ dyData.mem.used }}</el-col>
+              <el-col :span="8"> {{ dyData.jvm.heapUsed }} </el-col>
             </el-row>
             <el-row class="inner-row">
               <el-col :span="8"> 剩余内存 </el-col>
-              <el-col :span="8"> {{ data.mem.free }} </el-col>
-              <el-col :span="8"> {{ data.jvm.heapAvailable }} </el-col>
+              <el-col :span="8"> {{ dyData.mem.free }} </el-col>
+              <el-col :span="8"> {{ dyData.jvm.heapAvailable }} </el-col>
             </el-row>
             <el-row class="inner-row bg">
               <el-col :span="8"> 使用率 </el-col>
               <el-col :span="8">
-                <span :class="moreThan(50, data.cpu.sysPerc) ? 'rc' : 'gc'">
-                  {{ data.mem.usedPerc }}
+                <span :class="moreThan(50, dyData.cpu.sysPerc) ? 'rc' : 'gc'">
+                  {{ dyData.mem.usedPerc }}
                 </span>
               </el-col>
               <el-col :span="8">
-                <span :class="moreThan(50, data.cpu.sysPerc) ? 'rc' : 'gc'">
-                  {{ data.jvm.usedPerc }}
+                <span :class="moreThan(50, dyData.cpu.sysPerc) ? 'rc' : 'gc'">
+                  {{ dyData.jvm.usedPerc }}
                 </span>
               </el-col>
             </el-row>
@@ -95,29 +95,122 @@
           <template slot="content">
             <el-row class="inner-row">
               <el-col :span="8"> 初始大小 </el-col>
-              <el-col :span="8"> {{ data.jvm.heapInit }} </el-col>
-              <el-col :span="8"> {{ data.jvm.nonHeapInit }} </el-col>
+              <el-col :span="8"> {{ dyData.jvm.heapInit }} </el-col>
+              <el-col :span="8"> {{ dyData.jvm.nonHeapInit }} </el-col>
             </el-row>
             <el-row class="inner-row bg">
               <el-col :span="8"> 最大内存 </el-col>
-              <el-col :span="8">{{ data.jvm.heapMax }}</el-col>
-              <el-col :span="8"> {{ data.jvm.nonHeapMax }} </el-col>
+              <el-col :span="8">{{ dyData.jvm.heapMax }}</el-col>
+              <el-col :span="8"> {{ dyData.jvm.nonHeapMax }} </el-col>
             </el-row>
             <el-row class="inner-row">
               <el-col :span="8"> 已用内存 </el-col>
-              <el-col :span="8"> {{ data.jvm.heapUsed }} </el-col>
-              <el-col :span="8"> {{ data.jvm.nonHeapUsed }} </el-col>
+              <el-col :span="8"> {{ dyData.jvm.heapUsed }} </el-col>
+              <el-col :span="8"> {{ dyData.jvm.nonHeapUsed }} </el-col>
             </el-row>
             <el-row class="inner-row bg">
               <el-col :span="8"> 可用内存 </el-col>
-              <el-col :span="8"> {{ data.jvm.heapAvailable }} </el-col>
-              <el-col :span="8"> {{ data.jvm.nonHeapAvailable }} </el-col>
+              <el-col :span="8"> {{ dyData.jvm.heapAvailable }} </el-col>
+              <el-col :span="8"> {{ dyData.jvm.nonHeapAvailable }} </el-col>
             </el-row>
           </template>
         </ServerCard>
       </el-col>
     </el-row>
-    <ServerCard></ServerCard>
+    <ServerCard class="car-box tl " :barData="server">
+      <template slot="head">
+        <el-row class="ti">
+          <el-col :span="12">
+            <el-row class="inner-row bg ">
+              <el-col :span="6">服务器名称</el-col>
+              <el-col :span="18"> {{ data.server.hostName }} </el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="12">
+            <el-row class="inner-row  bg  ">
+              <el-col :span="6">操作系统</el-col>
+              <el-col :span="18"> {{ data.server.osName }} </el-col>
+            </el-row>
+          </el-col>
+        </el-row>
+        <el-row class="ti">
+          <el-col :span="12">
+            <el-row class="inner-row">
+              <el-col :span="6">服务器IP</el-col>
+              <el-col :span="18"> {{ data.server.hostAddress }} </el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="12">
+            <el-row class="inner-row ">
+              <el-col :span="6">系统架构</el-col>
+              <el-col :span="18"> {{ data.server.osArch }} </el-col>
+            </el-row>
+          </el-col>
+        </el-row>
+      </template>
+    </ServerCard>
+
+    <ServerCard class="car-box tl " :barData="java">
+      <template slot="head">
+        <el-row class="ti">
+          <el-col :span="12">
+            <el-row class="inner-row bg">
+              <el-col :span="6">Java名称</el-col>
+              <el-col :span="18"> {{ data.server.javaName }} </el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="12">
+            <el-row class="inner-row  bg t-l">
+              <el-col :span="6">Java版本</el-col>
+              <el-col :span="18"> {{ data.server.javaVersion }} </el-col>
+            </el-row>
+          </el-col>
+        </el-row>
+        <el-row class="ti">
+          <el-col :span="12">
+            <el-row class="inner-row">
+              <el-col :span="6">启动时间</el-col>
+              <el-col :span="18"> {{ data.server.startTime }} </el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="12">
+            <el-row class="inner-row ">
+              <el-col :span="6">运行时长</el-col>
+              <el-col :span="18"> {{ data.server.uptime }} </el-col>
+            </el-row>
+          </el-col>
+        </el-row>
+        <el-row class="inner-row bg ti">
+          <el-col :span="3">安装路径</el-col>
+          <el-col :span="21"> {{ data.server.javaHome }} </el-col>
+        </el-row>
+        <el-row class="inner-row ">
+          <el-col :span="3">启动参数</el-col>
+          <el-col :span="21">
+            <div v-for="(item, index) in data.server.javaArgs" :key="index">
+              {{ item }}
+            </div>
+          </el-col>
+        </el-row>
+      </template>
+    </ServerCard>
+
+    <ServerCard class="car-box tl" :barData="platform">
+      <template slot="head">
+        <el-row class="inner-row bg ti">
+          <el-col :span="3">当前工作路径</el-col>
+          <el-col :span="21"> {{ data.server.userDir }} </el-col>
+        </el-row>
+        <el-row class="inner-row ti">
+          <el-col :span="3">日志存放路径</el-col>
+          <el-col :span="21"> {{ data.server.logPath }} </el-col>
+        </el-row>
+        <el-row class="inner-row ti">
+          <el-col :span="3">上传文件路径</el-col>
+          <el-col :span="21"> {{ data.server.userfilesDir }} </el-col>
+        </el-row>
+      </template>
+    </ServerCard>
   </div>
 </template>
 <script>
@@ -132,6 +225,7 @@ export default {
   },
   data() {
     return {
+      dyData: {},
       data: {},
       cpu: {
         icon: 'fa icon-speedometer',
@@ -146,6 +240,22 @@ export default {
         text: '堆/非堆',
         title: '执行垃圾回收任务',
         rightIcon: 'fa fa-eraser'
+      },
+      server: {
+        icon: 'fa icon-screen-tablet',
+        text: '服务器信息'
+      },
+      java: {
+        icon: 'fa icon-cup',
+        text: 'Java虚拟机信息'
+      },
+      platform: {
+        icon: 'fa icon-eyeglass',
+        text: '平台参数'
+      },
+      disk: {
+        icon: 'fa icon-drawer',
+        text: '磁盘状态'
       }
     }
   },
@@ -165,7 +275,7 @@ export default {
     },
     getServer() {
       sysApi.getServer().then(res => {
-        this.data = res
+        this.dyData = res
         // this.rowClick(res[0])
       })
     },
@@ -260,9 +370,11 @@ export default {
     line-height: 36px;
   }
   .inner-row {
-    text-align: center;
     font-size: 14px;
     line-height: 36px;
+  }
+  .car-box {
+    margin-top: 20px;
   }
   .bg {
     background: #f9f9f9;
