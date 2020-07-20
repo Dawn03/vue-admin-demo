@@ -6,7 +6,8 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/layout'
 
-export const routesOutLayout = [{
+export const routesOutLayout = [
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true
@@ -30,15 +31,18 @@ export const routesOutLayout = [{
     path: '/redirect',
     component: Layout,
     hidden: true,
-    children: [{
+    children: [
+      {
       path: '/redirect/:path(.*)',
       component: () => import('@/views/redirect/index')
-    }]
+      }
+    ]
   }
 ]
 
 export function createRoutesInLayout(routes = []) {
-  return [{
+  return [
+    {
       path: '/',
       redirect: '/dashboard',
       component: Layout,
@@ -75,7 +79,8 @@ export const constantRoutes = createRoutesInLayout().concat(routesOutLayout)
  * asyncRoutes
  * the routes that need to be dynamically loaded based on user roles
  */
-export const asyncRoutes = [{
+export const asyncRoutes = [
+  {
     path: `${baseFontURl}/a/sys/empUser/index`,
     component: () => import('@/views/sys/organazation/userManager'),
     name: 'userManager',

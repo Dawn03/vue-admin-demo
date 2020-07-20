@@ -2,7 +2,7 @@
   <div class="server  wrapper_content">
     <el-row :gutter="20" class="tc ">
       <el-col :span="8">
-        <ServerCard :barData="cpu">
+        <ServerCard :bar-data="cpu">
           <template slot="head">
             <el-row class="bg head-row">
               <el-col :span="12"> 属性</el-col>
@@ -43,7 +43,7 @@
         </ServerCard>
       </el-col>
       <el-col :span="8">
-        <ServerCard :barData="mem">
+        <ServerCard :bar-data="mem">
           <template slot="head">
             <el-row class="head-row bg">
               <el-col :span="8">属性</el-col>
@@ -84,7 +84,7 @@
         </ServerCard>
       </el-col>
       <el-col :span="8">
-        <ServerCard :barData="jvm">
+        <ServerCard :bar-data="jvm">
           <template slot="head">
             <el-row class="head-row bg">
               <el-col :span="8">属性</el-col>
@@ -117,8 +117,8 @@
         </ServerCard>
       </el-col>
     </el-row>
-    <ServerCard class="car-box tl " :barData="server">
-      <template slot="head">
+    <ServerCard class="car-box tl " :bar-data="server">
+      <template slot="content">
         <el-row class="ti">
           <el-col :span="12">
             <el-row class="inner-row bg ">
@@ -150,8 +150,8 @@
       </template>
     </ServerCard>
 
-    <ServerCard class="car-box tl " :barData="java">
-      <template slot="head">
+    <ServerCard class="car-box tl " :bar-data="java">
+      <template slot="content">
         <el-row class="ti">
           <el-col :span="12">
             <el-row class="inner-row bg">
@@ -184,7 +184,7 @@
           <el-col :span="3">安装路径</el-col>
           <el-col :span="21"> {{ data.server.javaHome }} </el-col>
         </el-row>
-        <el-row class="inner-row ">
+        <el-row class="inner-row ti">
           <el-col :span="3">启动参数</el-col>
           <el-col :span="21">
             <div v-for="(item, index) in data.server.javaArgs" :key="index">
@@ -195,8 +195,8 @@
       </template>
     </ServerCard>
 
-    <ServerCard class="car-box tl" :barData="platform">
-      <template slot="head">
+    <ServerCard class="car-box tl" :bar-data="platform">
+      <template slot="content">
         <el-row class="inner-row bg ti">
           <el-col :span="3">当前工作路径</el-col>
           <el-col :span="21"> {{ data.server.userDir }} </el-col>
@@ -211,17 +211,42 @@
         </el-row>
       </template>
     </ServerCard>
+
+    <ServerCard class="car-box tl" :bar-data="disk">
+      <template slot="content">
+        <TableTree
+          :table-head="tableHead"
+          :table-data="data.diskList"
+          :table-fit="tableFit"
+          style="margin-top: 10px;"
+          :show-page="false"
+          :min-heigth="80"
+        >
+          <template slot="index">
+            <el-table-column
+              fixed
+              label="#"
+              type="index"
+              align="center"
+              width="50"
+            ></el-table-column>
+          </template>
+        </TableTree>
+      </template>
+    </ServerCard>
   </div>
 </template>
 <script>
 import ServerCard from './serverCard'
+import TableTree from '@/components/tableTree'
 // import { clearFilterVal, getInputVal, dictTypeMap } from "@/utils/pubFunc";
 import { sysApi } from '../../../../api/systemMonitor'
 export default {
   name: 'Server',
   inject: ['reload'],
   components: {
-    ServerCard
+    ServerCard,
+    TableTree
   },
   data() {
     return {
@@ -256,7 +281,18 @@ export default {
       disk: {
         icon: 'fa icon-drawer',
         text: '磁盘状态'
-      }
+      },
+      tableFit: true,
+      tableHead: {
+        name: '盘符名称',
+        mount: '盘符路径',
+        type: '文件系统',
+        total: '总大小',
+        avail: '可用大小',
+        used: '已用大小',
+        usedPerc: '已用百分比'
+      },
+      tableData: []
     }
   },
   created() {
