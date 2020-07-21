@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-const baseFontURl = '/web'
+const baseFontURl = '/js'
 Vue.use(Router)
 
 /* Layout */
